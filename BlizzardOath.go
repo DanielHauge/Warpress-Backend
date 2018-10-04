@@ -20,7 +20,7 @@ var oauthCfg = &oauth2.Config{
 
 	// Endpoint from this library
 	Endpoint: bnet.Endpoint("eu"),
-	RedirectURL: "https://localhost/bnet/auth/callback",
+	RedirectURL: "https://localhost:443/bnet/auth/callback",
 }
 
 
@@ -57,8 +57,8 @@ func HandleOauthCallback(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	authClient := oauthCfg.Client(oauth2.NoContext, token)
 
+	authClient := oauthCfg.Client(oauth2.NoContext, token)
 	client := bnet.NewClient("eu", authClient)
 	user, _, _ := client.Account().User()
 	fmt.Fprint(w, "BattleTag: %s", user.BattleTag)
