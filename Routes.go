@@ -23,7 +23,25 @@ var routes = Routes{
 		Index,
 		ExampleInput{"hello", 5},
 		ExampleOutput{[]int{1,2,3,4,5,6}},
-
 	},
 
+}
+
+var restrictedRoutes = Routes{
+	Route{
+		"Authenticate",
+		"GET",
+		"/bnet/auth",
+		HandleAuthenticate,
+		nil,
+		nil,
+	},
+	Route{
+		"Callback",
+		"GET",
+		"/bnet/auth/callback",
+		HandleOauthCallback,
+		nil,
+		nil,
+	},
 }

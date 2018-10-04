@@ -1,22 +1,26 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
-	"gopkg.in/russross/blackfriday.v2"
 	"bytes"
-	"reflect"
 	"encoding/json"
+	"fmt"
+	"gopkg.in/russross/blackfriday.v2"
+	"net/http"
+	"reflect"
 )
 
 
 func SetupIndexPage()[]byte{
 	var buffer bytes.Buffer
+
 	for _, v := range routes {
-		buffer.WriteString("### "+v.Name+"\n")
+		buffer.WriteString("\n\n### "+v.Name+"\n")
 		buffer.WriteString("##### Route: "+v.Pattern+"\n")
 		buffer.WriteString("##### Method: "+v.Method+"\n")
+		if v.ExpectedInput == nil { continue }
+		if v.ExpectedOutput == nil { continue }
 		buffer.WriteString("##### Input: \n")
+
 		inputFields := reflect.Indirect(reflect.ValueOf(v.ExpectedInput))
 		numOfInputFields := inputFields.Type().NumField()
 
@@ -65,4 +69,6 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	output := blackfriday.Run([]byte(buffer.Bytes()))
 	w.Write(output)
 }
+
+
 
