@@ -21,7 +21,6 @@ type WOWCharacter struct {
 	Guild 				string		`json:"guild"`
 	GuildRealm 			string		`json:"guildRealm"`
 	LastModified 		int			`json:"last_modified"`
-
 }
 
 type WowSpec struct {

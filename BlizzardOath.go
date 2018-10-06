@@ -35,7 +35,6 @@ func generateStateOauthCookie(w http.ResponseWriter) string {
 	return state
 }
 
-
 func HandleAuthenticate(w http.ResponseWriter, r *http.Request){
 	oauthState := generateStateOauthCookie(w)
 	AuthUrl := oauthCfg.AuthCodeURL(oauthState)
@@ -59,18 +58,20 @@ func HandleOauthCallback(w http.ResponseWriter, r *http.Request){
 	authClient := oauthCfg.Client(oauth2.NoContext, token)
 	client := bnet.NewClient("eu", authClient)
 	user, _, e := client.Account().User()
-	log.Println(user.ID)
 
 	// If user.id exists in database, fetch data and redirect to login with that pass and accesstoken.
+	isRegistered := IsUserRegistered(user.ID)
+	if isRegistered {
+		http.Redirect(w,r, "https://Site.com/Login?"+string(user.ID), http.StatusPermanentRedirect)
+	} else { // Redirect to register
+		WowProfile, _, e := client.Profile().WOW()
+		if e != nil { log.Println(e.Error()) }
+		chars := WowProfile.Characters
+		sort.Sort(bnet.ByLevel(chars))
+		http.Redirect(w,r, "https://site.com/register?", http.StatusPermanentRedirect)
+	}
 
 
-
-
-	// Else get all chars and redirect to register profile
-	WowProfile, _, e := client.Profile().WOW()
-	chars := WowProfile.Characters
-	sort.Sort(bnet.ByLevel(chars))
-	log.Println(chars[0])
 
 	if e != nil {
 		log.Println(e.Error())

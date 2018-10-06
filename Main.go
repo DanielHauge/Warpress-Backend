@@ -12,6 +12,7 @@ import (
 // go get github.com/gorilla/mux
 // go get github.com/rs/cors
 // go get gopkg.in/russross/blackfriday.v2
+// go get -u github.com/go-redis/redis
 
 
 var DB *sql.DB
@@ -19,6 +20,7 @@ var DB *sql.DB
 // 1. BNET_CLIENTID
 // 2. BNET_SECRET
 // 3. CONNECTION_STRING
+// 4. APIKEY
 
 func main() {
 
