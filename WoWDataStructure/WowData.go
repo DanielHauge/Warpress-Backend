@@ -26,7 +26,7 @@ type Item struct {
 	ToolTipParams ToolTipParams `json:"tooltipParams"`
 	stats []Stat `json:"stats"`
 	Armor int `json:"armor"`
-	WeaponInfo
+	WeaponInfo WeaponInfo `json:"weaponInfo"`
 	Context string `json:"context"`
 	bonusLists []int `json:"bonusLists"`
 	ArtifactId int `json:"artifactId"`
