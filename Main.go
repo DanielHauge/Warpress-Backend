@@ -16,7 +16,9 @@ import (
 
 var DB *sql.DB
 
-
+// 1. BNET_CLIENTID
+// 2. BNET_SECRET
+// 3. CONNECTION_STRING
 
 func main() {
 

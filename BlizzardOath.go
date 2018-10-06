@@ -1,26 +1,25 @@
 package main
 
 import (
+	"./GoBnet"
 	"context"
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
-	"github.com/mitchellh/go-bnet"
 	"golang.org/x/oauth2"
 	"log"
 	"net/http"
 	"os"
+	"sort"
 	"time"
 )
 
 var oauthCfg = &oauth2.Config{
-	// Get from dev.battle.net
-	ClientID:     os.Args[1],
-	ClientSecret: os.Args[2],
-
-	// Endpoint from this library
-	Endpoint: bnet.Endpoint("eu"),
-	RedirectURL: "https://localhost:443/bnet/auth/callback",
+	ClientID:     	os.Args[1],
+	ClientSecret: 	os.Args[2],
+	Scopes:   		[]string{"wow.profile"},
+	Endpoint: 		bnet.Endpoint("eu"),
+	RedirectURL: 	"https://localhost:443/bnet/auth/callback",
 }
 
 
@@ -57,10 +56,29 @@ func HandleOauthCallback(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-
 	authClient := oauthCfg.Client(oauth2.NoContext, token)
 	client := bnet.NewClient("eu", authClient)
-	user, _, _ := client.Account().User()
-	fmt.Fprint(w, "BattleTag: %s", user.BattleTag)
+	user, _, e := client.Account().User()
+	log.Println(user.ID)
+
+	// If user.id exists in database, fetch data and redirect to login with that pass and accesstoken.
+
+
+
+
+	// Else get all chars and redirect to register profile
+	WowProfile, _, e := client.Profile().WOW()
+	chars := WowProfile.Characters
+	sort.Sort(bnet.ByLevel(chars))
+	log.Println(chars[0])
+
+	if e != nil {
+		log.Println(e.Error())
+		fmt.Fprint(w, "Something went wrong!", e.Error())
+	}
+
 
 }
+
+
+
