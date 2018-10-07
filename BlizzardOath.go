@@ -54,21 +54,26 @@ func HandleOauthCallback(w http.ResponseWriter, r *http.Request){
 		fmt.Errorf("code exchange wrong: %s", err.Error())
 		return
 	}
-
 	authClient := oauthCfg.Client(oauth2.NoContext, token)
 	client := bnet.NewClient("eu", authClient)
 	user, _, e := client.Account().User()
+	CacheAccesToken(user.ID, token)
 
 	// If user.id exists in database, fetch data and redirect to login with that pass and accesstoken.
 	isRegistered := IsUserRegistered(user.ID)
 	if isRegistered {
-		http.Redirect(w,r, "https://Site.com/Login?"+string(user.ID), http.StatusPermanentRedirect)
+		// Gad vide om man kan skrive til responsewriteren og fange det i fronteden som json?
+		http.Redirect(w,r, "http://localhost:8080/#/Login/"+string(user.ID), http.StatusPermanentRedirect)
 	} else { // Redirect to register
 		WowProfile, _, e := client.Profile().WOW()
 		if e != nil { log.Println(e.Error()) }
 		chars := WowProfile.Characters
 		sort.Sort(bnet.ByLevel(chars))
-		http.Redirect(w,r, "https://site.com/register?", http.StatusPermanentRedirect)
+		//bytes, e := json.Marshal(chars[0:4])
+		coockie := http.Cookie{Name: "WarpressAccessToken", Value: string(user.ID), Expires: time.Now().Add(time.Hour)}
+
+		http.SetCookie(w, &coockie)
+		http.Redirect(w,r, "http://localhost:8080/#/Register", http.StatusFound)
 	}
 
 
