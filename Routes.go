@@ -15,6 +15,8 @@ type Route struct {
 
 type Routes []Route
 
+
+
 var routes = Routes{
 	Route{
 		"Index",
@@ -24,7 +26,38 @@ var routes = Routes{
 		ExampleInput{"hello", 5},
 		ExampleOutput{[]int{1,2,3,4,5,6}},
 	},
-
+	Route{
+		"GetChars",
+		"GET",
+		"/chars",
+		GetCharactersForRegistration,
+		nil,
+		nil,
+	},
+	Route{
+		"SetMain",
+		"POST",
+		"/main",
+		SetMainCharacter,
+		charRequest{Name:"Rakhoal", Realm:"Twisting-Nether", Locale:"en_GB"},
+		nil,
+	},
+	Route{
+		"GetMain",
+		"GET",
+		"/main",
+		GetMainCharacter,
+		nil,
+		charRequest{Name:"Rakhoal", Realm:"Twisting-Nether", Locale:"en_GB"},
+	},
+	Route{
+		"Get Full Char Information",
+		"POST",
+		"/char",
+		GetFullCharInfo,
+		nil,
+		nil,
+	},
 }
 
 var restrictedRoutes = Routes{
@@ -44,4 +77,5 @@ var restrictedRoutes = Routes{
 		nil,
 		nil,
 	},
+
 }

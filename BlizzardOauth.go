@@ -10,7 +10,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"sort"
 	"time"
 )
 
@@ -42,49 +41,60 @@ func HandleAuthenticate(w http.ResponseWriter, r *http.Request){
 }
 
 func HandleOauthCallback(w http.ResponseWriter, r *http.Request){
+	// Checks if oauthstate from blizzard is correct, in case of hacks and stuff.
 	oauthState, _ := r.Cookie("oauthstate")
 	if r.FormValue("state") != oauthState.Value {
 		log.Println("invalid oauth blizzard state")
-		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect) // TODO: redirect til error side eller sådan noget.
 		return
 	}
 
+	// Gets accessToken
 	token, err := oauthCfg.Exchange(context.Background(), r.FormValue("code"))
 	if err != nil {
 		fmt.Errorf("code exchange wrong: %s", err.Error())
 		return
 	}
+
+	// Creates client from token and fetches the users accountId
 	authClient := oauthCfg.Client(oauth2.NoContext, token)
 	client := bnet.NewClient("eu", authClient)
 	user, _, e := client.Account().User()
+	log.Println(user.ID)
+	log.Print("TOKEN: ")
+	log.Println(token)
+
+
+	// Caches the AccessToken in redis for later validation.
 	CacheAccesToken(user.ID, token)
+
+	SetAccessTokenCookieOnClient(user.ID, token, w)
+
 
 	// If user.id exists in database, fetch data and redirect to login with that pass and accesstoken.
 	isRegistered := IsUserRegistered(user.ID)
 	if isRegistered {
-		// Gad vide om man kan skrive til responsewriteren og fange det i fronteden som json?
-		http.Redirect(w,r, "http://localhost:8080/#/Login/"+string(user.ID), http.StatusPermanentRedirect)
+		http.Redirect(w,r, "http://localhost:8080/#/Login", http.StatusPermanentRedirect)
 	} else { // Redirect to register
-		WowProfile, _, e := client.Profile().WOW()
-		if e != nil { log.Println(e.Error()) }
-		chars := WowProfile.Characters
-		sort.Sort(bnet.ByLevel(chars))
-		//bytes, e := json.Marshal(chars[0:4])
-		coockie := http.Cookie{Name: "WarpressAccessToken", Value: string(user.ID), Expires: time.Now().Add(time.Hour)}
-
-		http.SetCookie(w, &coockie)
-		http.Redirect(w,r, "http://localhost:8080/#/Register", http.StatusFound)
+		http.Redirect(w,r, "http://localhost:8080/#/Register", http.StatusPermanentRedirect)
 	}
-
-
 
 	if e != nil {
 		log.Println(e.Error())
 		fmt.Fprint(w, "Something went wrong!", e.Error())
 	}
-
-
 }
+
+func AreAccessTokensSame(a oauth2.Token, b oauth2.Token)bool{
+	at := a.AccessToken == b.AccessToken
+	rt := a.RefreshToken == b.RefreshToken
+	tt := a.TokenType == b.TokenType
+	return at && rt && tt
+}
+
+
+
+
 
 
 

@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"gopkg.in/russross/blackfriday.v2"
 	"net/http"
 	"reflect"
@@ -17,40 +16,52 @@ func SetupIndexPage()[]byte{
 		buffer.WriteString("\n\n### "+v.Name+"\n")
 		buffer.WriteString("##### Route: "+v.Pattern+"\n")
 		buffer.WriteString("##### Method: "+v.Method+"\n")
-		if v.ExpectedInput == nil { continue }
-		if v.ExpectedOutput == nil { continue }
-		buffer.WriteString("##### Input: \n")
 
-		inputFields := reflect.Indirect(reflect.ValueOf(v.ExpectedInput))
-		numOfInputFields := inputFields.Type().NumField()
 
-		for i := 0; i<numOfInputFields ;i++  {
-			buffer.WriteString("- ")
-			buffer.WriteString(inputFields.Type().Field(i).Name)
-			buffer.WriteString(" : ")
-			buffer.WriteString(inputFields.Type().Field(i).Type.Kind().String()+"\n\n")
+		if v.ExpectedInput != nil {
+			buffer.WriteString("##### Input: \n")
+
+			inputFields := reflect.Indirect(reflect.ValueOf(v.ExpectedInput))
+			numOfInputFields := inputFields.Type().NumField()
+
+			for i := 0; i < numOfInputFields; i++ {
+				buffer.WriteString("- ")
+				buffer.WriteString(inputFields.Type().Field(i).Name)
+				buffer.WriteString(" : ")
+				buffer.WriteString(inputFields.Type().Field(i).Type.Kind().String() + "\n\n")
+			}
 		}
 
-		buffer.WriteString("##### Output: \n")
-		outputFields := reflect.Indirect(reflect.ValueOf(v.ExpectedOutput))
-		numOfOutputFields := outputFields.Type().NumField()
+		if v.ExpectedOutput != nil {
+			buffer.WriteString("##### Output: \n")
+			outputFields := reflect.Indirect(reflect.ValueOf(v.ExpectedOutput))
+			numOfOutputFields := outputFields.Type().NumField()
 
-		for i := 0; i<numOfOutputFields ;i++  {
-			buffer.WriteString("- ")
-			buffer.WriteString(outputFields.Type().Field(i).Name)
-			buffer.WriteString(" : ")
-			buffer.WriteString(outputFields.Type().Field(i).Type.Kind().String()+"\n")
+			for i := 0; i < numOfOutputFields; i++ {
+				buffer.WriteString("- ")
+				buffer.WriteString(outputFields.Type().Field(i).Name)
+				buffer.WriteString(" : ")
+				buffer.WriteString(outputFields.Type().Field(i).Type.Kind().String() + "\n")
+			}
 		}
-
 
 		buffer.WriteString("\n##### Example:\n")
 		buffer.WriteString("- Input:\n")
-		b, err := json.Marshal(v.ExpectedInput)
+		var b []byte
+		if v.ExpectedInput != nil{
+			b, _ = json.Marshal(v.ExpectedInput)
+		} else {
+			b = []byte("Nothing")
+		}
 		buffer.WriteString(string(b)+"\n")
+
 		buffer.WriteString("\n- Output:\n")
-		b, err = json.Marshal(v.ExpectedOutput)
+		if v.ExpectedOutput != nil {
+			b, _ = json.Marshal(v.ExpectedOutput)
+		} else {
+			b = []byte("Nothing")
+		}
 		buffer.WriteString(string(b)+"\n")
-		if err != nil {	fmt.Printf("Error: %s", err)	}
 	}
 	return buffer.Bytes()
 }

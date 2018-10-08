@@ -1,9 +1,11 @@
 package main
 
 import (
+	"errors"
 	"github.com/go-redis/redis"
 	"golang.org/x/oauth2"
 	"log"
+	"strconv"
 	"time"
 )
 
@@ -14,7 +16,7 @@ func IsUserRegistered(accountid int) bool{
 		Password: "",
 		DB: 0,
 	})
-	d, _ := client.Exists(string(accountid)).Result()
+	d, _ := client.Exists("MAIN:"+strconv.Itoa(accountid)).Result()
 	if d == 1{
 		return true
 	} else{
@@ -22,18 +24,31 @@ func IsUserRegistered(accountid int) bool{
 	}
 }
 
-func GetAccessToken(accountid int) (bool, string){
-	AID := string(accountid)
+func GetAccessToken(accountid int) (oauth2.Token, error){
+	AID := strconv.Itoa(accountid)
 	client := redis.NewClient(&redis.Options{
 		Addr: "localhost:6379",
 		Password: "",
 		DB: 0,
 	})
-	isRegistered, e := client.Exists(AID).Result()
-	if isRegistered == 0 {return false, ""}
-	accesToken, e := client.Get("AT:"+AID).Result()
-	if e != nil { log.Println(e.Error())	}
-	return true, accesToken
+	isRegistered, e := client.Exists("AT:"+AID).Result()
+	if isRegistered == 0 {
+		log.Println("User does not have any accessToken stored in the system.")
+		return oauth2.Token{}, errors.New("User does not have any accessToken stored in system")
+	}
+	value, e := client.HGetAll("AT:"+AID).Result()
+	time, e := time.Parse(time.RFC3339,value["expire"])
+	accessToken := oauth2.Token{
+		Expiry: time,
+		TokenType: value["tokentype"],
+		RefreshToken: value["refreshtoken"],
+		AccessToken: value["accesstoken"],
+	}
+	if e != nil {
+		log.Println(e.Error())
+		return oauth2.Token{}, e
+	}
+	return accessToken, nil
 }
 
 func CacheAccesToken(accountId int,accessToken *oauth2.Token){
@@ -43,27 +58,47 @@ func CacheAccesToken(accountId int,accessToken *oauth2.Token){
 		DB: 0,
 	})
 	m := map[string]interface{}{
-		"accessToken": accessToken.AccessToken,
-		"Expire": accessToken.Expiry.String(),
-		"Refresh": accessToken.RefreshToken,
-		"Type": accessToken.TokenType,
+		"accesstoken": accessToken.AccessToken,
+		"expire": accessToken.Expiry.Format(time.RFC3339),
+		"refresh": accessToken.RefreshToken,
+		"tokentype": accessToken.TokenType,
 	}
-	AID := string(accountId)
+	expiredur := accessToken.Expiry.Sub(time.Now())
+	AID := strconv.Itoa(accountId)
 	client.HMSet("AT:"+AID,m)
-	client.Expire("AT:"+AID, accessToken.Expiry.Sub(time.Now()))
+
+	client.Expire("AT:"+AID, expiredur)
 }
 
-/*
-func GetUserLoginInfo(accountid int) LoginInfo {
+func GetMainChar(accountid int) (charRequest, error){
+	AID := strconv.Itoa(accountid)
 	client := redis.NewClient(&redis.Options{
 		Addr: "localhost:6379",
 		Password: "",
 		DB: 0,
 	})
-	mainChar, e := client.HGetAll("MAIN-"+string(accountid)).Result()
-	alts, e := client.SMembers("ALTS-"+string(accountid)).Result()
-	if e != nil { panic(e.Error()) }
-	loginInfo := LoginInfo{Main:CharInfo{Name:mainChar["Name"], Realm:mainChar["Realm"], Locale:mainChar["Locale"]}, Alts:alts}
-	return loginInfo
+
+	value, e := client.HGetAll("MAIN:"+AID).Result()
+	if e != nil{
+		log.Println(e.Error())
+		return charRequest{}, e
+	}
+	d := charRequest{Name:value["name"], Realm:value["realm"], Locale:value["locale"]}
+	return d, nil
 }
-*/
+
+func SetMainChar(accountid int, mainChar charRequest){
+	client := redis.NewClient(&redis.Options{
+		Addr: "localhost:6379",
+		Password: "",
+		DB: 0,
+	})
+	m := map[string]interface{}{
+		"name": mainChar.Name,
+		"realm": mainChar.Realm,
+		"locale": mainChar.Locale,
+	}
+	AID := strconv.Itoa(accountid)
+	client.HMSet("MAIN:"+AID, m)
+
+}

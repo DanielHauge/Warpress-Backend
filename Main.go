@@ -13,6 +13,7 @@ import (
 // go get github.com/rs/cors
 // go get gopkg.in/russross/blackfriday.v2
 // go get -u github.com/go-redis/redis
+// go get github.com/gorilla/securecookie
 
 
 var DB *sql.DB

@@ -2,9 +2,17 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5500fa19-5bd9-42b3-becf-91ba0ea5e778" name="Default" comment="">
+      <change afterPath="$PROJECT_DIR$/BlizzardHandlers.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/BlizzardOauthCookie.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BlizzardOath.go" beforeDir="false" afterPath="$PROJECT_DIR$/BlizzardOath.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BlizzardOath.go" beforeDir="false" afterPath="$PROJECT_DIR$/BlizzardOauth.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BlizzardOpenAPI.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data.go" beforeDir="false" afterPath="$PROJECT_DIR$/Data.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Handlers.go" beforeDir="false" afterPath="$PROJECT_DIR$/Handlers.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Main.go" beforeDir="false" afterPath="$PROJECT_DIR$/Main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/RedisHandler.go" beforeDir="false" afterPath="$PROJECT_DIR$/RedisHandler.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Routes.go" beforeDir="false" afterPath="$PROJECT_DIR$/Routes.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WoWDataStructure/WowData.go" beforeDir="false" afterPath="$PROJECT_DIR$/Blizzard/WowData.go" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -16,32 +24,32 @@
     <session id="-1999860671">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="6" />
+          <entry key="project.closed" value="8" />
           <entry key="project.open.time.2" value="1" />
           <entry key="project.open.time.3" value="3" />
-          <entry key="project.open.time.4" value="3" />
-          <entry key="project.opened" value="7" />
+          <entry key="project.open.time.4" value="4" />
+          <entry key="project.opened" value="8" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="go" value="7773" />
+          <entry key="go" value="13503" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Go" value="7773" />
+          <entry key="Go" value="13503" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="go" value="52" />
+          <entry key="go" value="67" />
           <entry key="s" value="2" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="Go" value="52" />
+          <entry key="Go" value="67" />
           <entry key="x86 Plan9 Assembly" value="2" />
         </counts>
       </usages-collector>
@@ -49,6 +57,8 @@
       <usages-collector id="statistics.go.postfix.template.usages.trigger">
         <counts>
           <entry key=".notnil" value="6" />
+          <entry key=".print" value="1" />
+          <entry key=".println" value="1" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.js.language.service.starts" />
@@ -56,11 +66,18 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/BlizzardOath.go">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/BlizzardOauth.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="644">
-              <caret line="70" column="38" lean-forward="true" selection-start-line="70" selection-start-column="38" selection-end-line="70" selection-end-column="38" />
+            <state relative-caret-position="476">
+              <caret line="42" column="64" selection-start-line="42" selection-start-column="64" selection-end-line="42" selection-end-column="64" />
+              <folding>
+                <element signature="e#14#152#0" expanded="true" />
+                <element signature="n#!!block;n#generateStateOauthCookie#0" />
+                <element signature="n#!!block;n#HandleAuthenticate#0" />
+                <element signature="n#!!block;n#HandleOauthCallback#0" />
+                <element signature="n#!!block;n#AreAccessTokensSame#0" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -68,8 +85,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Handlers.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="459">
-              <caret line="70" column="1" selection-start-line="70" selection-start-column="1" selection-end-line="70" selection-end-column="1" />
+            <state relative-caret-position="187">
+              <caret line="11" column="27" selection-start-line="11" selection-start-column="27" selection-end-line="11" selection-end-column="27" />
               <folding>
                 <element signature="e#14#116#0" expanded="true" />
                 <element signature="n#!!block;n#SetupIndexPage#0" />
@@ -79,12 +96,23 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Main.go">
+        <entry file="file://$PROJECT_DIR$/Data.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="374">
-              <caret line="22" column="12" selection-start-line="22" selection-start-column="12" selection-end-line="22" selection-end-column="12" />
+            <state relative-caret-position="204">
+              <caret line="12" lean-forward="true" selection-start-line="12" selection-end-line="12" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/BlizzardOauthCookie.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="289">
+              <caret line="38" selection-start-line="38" selection-end-line="38" />
               <folding>
-                <element signature="e#14#95#0" expanded="true" />
+                <element signature="e#14#59#0" expanded="true" />
+                <element signature="n#!!block;n#SetCookieOnClient#0" />
+                <element signature="n#!!block;n#GetAccessTokenCookieFromClient#0" />
               </folding>
             </state>
           </provider>
@@ -93,53 +121,45 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/RedisHandler.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="327">
-              <caret line="53" column="1" lean-forward="true" selection-start-line="53" selection-start-column="1" selection-end-line="53" selection-end-column="1" />
+            <state relative-caret-position="493">
+              <caret line="29" column="31" lean-forward="true" selection-start-line="29" selection-start-column="31" selection-end-line="29" selection-end-column="31" />
+              <folding>
+                <element signature="e#14#91#0" expanded="true" />
+                <element signature="n#!!block;n#CacheAccesToken#0" />
+                <element signature="n#!!block;n#GetMainChar#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/BlizzardHandlers.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="238">
+              <caret line="14" selection-start-line="14" selection-end-line="14" />
+              <folding>
+                <element signature="e#14#88#0" expanded="true" />
+                <element signature="n#!!block;n#GetCharactersForRegistration#0" />
+                <element signature="n#!!block;n#DoesUserHaveAccess#0" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$USER_HOME$/go/src/golang.org/x/oauth2/token.go">
+        <entry file="file://$PROJECT_DIR$/Blizzard/WowData.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="248">
-              <caret line="30" column="5" selection-start-line="30" selection-start-column="5" selection-end-line="30" selection-end-column="5" />
+            <state>
+              <caret column="16" selection-start-column="16" selection-end-column="16" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Data.go">
+        <entry file="file://$PROJECT_DIR$/GoBnet/account.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="272">
-              <caret line="16" selection-start-line="16" selection-end-line="16" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Logger.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="136">
-              <caret line="12" selection-start-line="12" selection-end-line="12" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/WoWDataStructure/WowData.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-135">
-              <caret line="52" column="1" lean-forward="true" selection-start-line="52" selection-start-column="1" selection-end-line="52" selection-end-column="1" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/BlizzardOpenAPI.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="204">
-              <caret line="18" column="46" selection-start-line="18" selection-start-column="46" selection-end-line="18" selection-end-column="46" />
+            <state relative-caret-position="357">
+              <caret line="21" column="37" selection-start-line="21" selection-start-column="37" selection-end-line="21" selection-end-column="37" />
             </state>
           </provider>
         </entry>
@@ -153,6 +173,15 @@
           </provider>
         </entry>
       </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/GoBnet/client.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="801">
+              <caret line="132" selection-start-line="132" selection-end-line="132" />
+            </state>
+          </provider>
+        </entry>
+      </file>
     </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
@@ -162,6 +191,11 @@
       </list>
     </option>
   </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>string(</find>
+    </findStrings>
+  </component>
   <component name="GOROOT" path="C:\Go" />
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -169,20 +203,31 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/Routes.go" />
-        <option value="$PROJECT_DIR$/Handlers.go" />
         <option value="$PROJECT_DIR$/Router.go" />
         <option value="$PROJECT_DIR$/SQLHandler.go" />
         <option value="$PROJECT_DIR$/Oauth2Extention.go" />
         <option value="$PROJECT_DIR$/GoBnet/error.go" />
         <option value="$PROJECT_DIR$/GoBnet/profile.go" />
-        <option value="$PROJECT_DIR$/Main.go" />
         <option value="$PROJECT_DIR$/GoBnet/wow.go" />
-        <option value="$PROJECT_DIR$/Data.go" />
-        <option value="$PROJECT_DIR$/BlizzardOpenAPI.go" />
         <option value="$PROJECT_DIR$/WoWDataStructure/WowData.go" />
-        <option value="$PROJECT_DIR$/RedisHandler.go" />
         <option value="$PROJECT_DIR$/BlizzardOath.go" />
+        <option value="$PROJECT_DIR$/BlizzardOuathCookie.go" />
+        <option value="$PROJECT_DIR$/Main.go" />
+        <option value="$PROJECT_DIR$/BlizzardCharRegistration.go" />
+        <option value="$PROJECT_DIR$/Blizzard/BlizzardOauthCookie.go" />
+        <option value="$PROJECT_DIR$/Blizzard/BlizzardOpenAPI.go" />
+        <option value="$PROJECT_DIR$/Blizzard/BlizzardOauth.go" />
+        <option value="$PROJECT_DIR$/BlizzardOpenAPI.go" />
+        <option value="$PROJECT_DIR$/Blizzard/WowData.go" />
+        <option value="$PROJECT_DIR$/BlizzardOauth.go" />
+        <option value="$PROJECT_DIR$/BlizzardCommunicator/SetMain.go" />
+        <option value="$PROJECT_DIR$/RedisHandler.go" />
+        <option value="$PROJECT_DIR$/Handlers.go" />
+        <option value="$PROJECT_DIR$/BlizzardCommunicator.go" />
+        <option value="$PROJECT_DIR$/Routes.go" />
+        <option value="$PROJECT_DIR$/Data.go" />
+        <option value="$PROJECT_DIR$/BlizzardOauthCookie.go" />
+        <option value="$PROJECT_DIR$/BlizzardHandlers.go" />
       </list>
     </option>
   </component>
@@ -193,8 +238,8 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="3328" />
-    <option name="y" value="-19" />
+    <option name="x" value="284" />
+    <option name="y" value="-8" />
     <option name="width" value="1280" />
     <option name="height" value="1392" />
   </component>
@@ -226,6 +271,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -241,7 +287,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -253,6 +298,12 @@
     <property name="go.sdk.automatically.set" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../go-bnet" />
     <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Daniel\Desktop\Warpress-Backend" />
+      <recent name="C:\Users\Daniel\Desktop\Warpress-Backend\Blizzard" />
+    </key>
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -293,21 +344,21 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="2552" y="-8" width="2576" height="1416" extended-state="6" />
+    <frame x="-8" y="-8" width="2576" height="1416" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.11883943" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.11963434" />
       <window_info id="Structure" order="1" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32917318" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32761312" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.32761312" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39937598" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" weight="0.32969603" />
-      <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info anchor="bottom" id="Terminal" order="8" />
+      <window_info anchor="bottom" id="TODO" order="6" weight="0.32917318" />
+      <window_info anchor="bottom" id="Version Control" order="7" weight="0.3299532" />
+      <window_info anchor="bottom" id="Terminal" order="8" weight="0.3299532" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
       <window_info anchor="bottom" id="Database Changes" order="10" show_stripe_button="false" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
@@ -374,37 +425,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/GoBnet/sc2.go" />
-    <entry file="file://$PROJECT_DIR$/Router.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="12" column="32" selection-start-line="12" selection-start-column="32" selection-end-line="12" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Routes.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="16" selection-start-line="16" selection-end-line="16" />
-          <folding>
-            <element signature="e#14#36#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/GoBnet/client.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2091">
-          <caret line="132" selection-start-line="132" selection-end-line="132" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/GoBnet/account.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="357">
-          <caret line="21" column="37" selection-start-line="21" selection-start-column="37" selection-end-line="21" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/GoBnet/profile.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="306">
@@ -415,6 +435,37 @@
     <entry file="file://$PROJECT_DIR$/GoBnet/response.go">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
+    <entry file="file://$PROJECT_DIR$/GoBnet/endpoint.go">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$USER_HOME$/go/src/golang.org/x/oauth2/token.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="340">
+          <caret line="30" column="5" selection-start-line="30" selection-start-column="5" selection-end-line="30" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/BlizzardCharRegistration.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" selection-start-line="2" selection-end-line="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/BlizzardCommunicator/SetMain.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="4" column="61" selection-start-line="4" selection-start-column="61" selection-end-line="4" selection-end-column="61" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Router.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="12" column="32" selection-start-line="12" selection-start-column="32" selection-end-line="12" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/GoBnet/wow.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="578">
@@ -422,13 +473,30 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/GoBnet/endpoint.go">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/GoBnet/error.go">
+    <entry file="file://C:/Go/src/reflect/value.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="17" selection-start-line="17" selection-end-line="17" />
+        <state relative-caret-position="279">
+          <caret line="1742" column="20" lean-forward="true" selection-start-line="1742" selection-start-column="20" selection-end-line="1742" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Routes.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1003">
+          <caret line="59" column="6" selection-start-line="59" selection-start-column="6" selection-end-line="59" selection-end-column="6" />
+          <folding>
+            <element signature="e#14#36#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Main.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="561">
+          <caret line="33" column="15" lean-forward="true" selection-start-line="33" selection-start-column="15" selection-end-line="33" selection-end-column="15" />
+          <folding>
+            <element signature="e#14#95#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -439,20 +507,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Main.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
-          <caret line="22" column="12" selection-start-line="22" selection-start-column="12" selection-end-line="22" selection-end-column="12" />
-          <folding>
-            <element signature="e#14#95#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Handlers.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="459">
-          <caret line="70" column="1" selection-start-line="70" selection-start-column="1" selection-end-line="70" selection-end-column="1" />
+        <state relative-caret-position="187">
+          <caret line="11" column="27" selection-start-line="11" selection-start-column="27" selection-end-line="11" selection-end-column="27" />
           <folding>
             <element signature="e#14#116#0" expanded="true" />
             <element signature="n#!!block;n#SetupIndexPage#0" />
@@ -460,45 +518,88 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/go/src/golang.org/x/oauth2/token.go">
+    <entry file="file://$PROJECT_DIR$/Data.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="248">
-          <caret line="30" column="5" selection-start-line="30" selection-start-column="5" selection-end-line="30" selection-end-column="5" />
+        <state relative-caret-position="204">
+          <caret line="12" lean-forward="true" selection-start-line="12" selection-end-line="12" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/RedisHandler.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="327">
-          <caret line="53" column="1" lean-forward="true" selection-start-line="53" selection-start-column="1" selection-end-line="53" selection-end-column="1" />
+        <state relative-caret-position="493">
+          <caret line="29" column="31" lean-forward="true" selection-start-line="29" selection-start-column="31" selection-end-line="29" selection-end-column="31" />
+          <folding>
+            <element signature="e#14#91#0" expanded="true" />
+            <element signature="n#!!block;n#CacheAccesToken#0" />
+            <element signature="n#!!block;n#GetMainChar#0" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Data.go">
+    <entry file="file://$PROJECT_DIR$/BlizzardOauthCookie.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="16" selection-start-line="16" selection-end-line="16" />
+        <state relative-caret-position="289">
+          <caret line="38" selection-start-line="38" selection-end-line="38" />
+          <folding>
+            <element signature="e#14#59#0" expanded="true" />
+            <element signature="n#!!block;n#SetCookieOnClient#0" />
+            <element signature="n#!!block;n#GetAccessTokenCookieFromClient#0" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/BlizzardOpenAPI.go">
+    <entry file="file://$PROJECT_DIR$/BlizzardOauth.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="476">
+          <caret line="42" column="64" selection-start-line="42" selection-start-column="64" selection-end-line="42" selection-end-column="64" />
+          <folding>
+            <element signature="e#14#152#0" expanded="true" />
+            <element signature="n#!!block;n#generateStateOauthCookie#0" />
+            <element signature="n#!!block;n#HandleAuthenticate#0" />
+            <element signature="n#!!block;n#HandleOauthCallback#0" />
+            <element signature="n#!!block;n#AreAccessTokensSame#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/GoBnet/account.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="357">
+          <caret line="21" column="37" selection-start-line="21" selection-start-column="37" selection-end-line="21" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/GoBnet/client.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="801">
+          <caret line="132" selection-start-line="132" selection-end-line="132" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/GoBnet/error.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="204">
-          <caret line="18" column="46" selection-start-line="18" selection-start-column="46" selection-end-line="18" selection-end-column="46" />
+          <caret line="17" selection-start-line="17" selection-end-line="17" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/WoWDataStructure/WowData.go">
+    <entry file="file://$PROJECT_DIR$/Blizzard/WowData.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-135">
-          <caret line="52" column="1" lean-forward="true" selection-start-line="52" selection-start-column="1" selection-end-line="52" selection-end-column="1" />
+        <state>
+          <caret column="16" selection-start-column="16" selection-end-column="16" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/BlizzardOath.go">
+    <entry file="file://$PROJECT_DIR$/BlizzardHandlers.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="644">
-          <caret line="70" column="38" lean-forward="true" selection-start-line="70" selection-start-column="38" selection-end-line="70" selection-end-column="38" />
+        <state relative-caret-position="238">
+          <caret line="14" selection-start-line="14" selection-end-line="14" />
+          <folding>
+            <element signature="e#14#88#0" expanded="true" />
+            <element signature="n#!!block;n#GetCharactersForRegistration#0" />
+            <element signature="n#!!block;n#DoesUserHaveAccess#0" />
+          </folding>
         </state>
       </provider>
     </entry>

@@ -1,4 +1,4 @@
-package WoWDataStructure
+package Blizzard
 
 type FullCharInfo struct {
 	LastModified int `json:"lastModified"`
