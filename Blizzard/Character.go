@@ -9,12 +9,34 @@ type FullCharInfo struct {
 	Race int `json:"race"`
 	Gender int `json:"gender"`
 	Level int `json:"level"`
-	AchievementPoints string `json:"achievementPoints"`
+	AchievementPoints int `json:"achievementPoints"`
 	Thumbnail string `json:"thumbnail"`
 	CalcClass string `json:"calcClass"`
 	Faction int `json:"faction"`
 	TotalHonorableKills int `json:"totalHonorableKills"`
-	Items []Item `json:"items"`
+	Guild Guild `json:"guild"`
+	Items Items `json:"items"`
+}
+
+type Items struct {
+	AverageItemLevel int `json:"averageItemLevel"`
+	AverItemLevelEquipped int `json:"averItemLevelEquipped"`
+	Head Item `json:"head"`
+	Neck Item `json:"neck"`
+	Shoulder Item `json:"shoulder"`
+	Back Item `json:"back"`
+	Chest Item `json:"chest"`
+	Wrist Item `json:"wrist"`
+	Hands Item `json:"hands"`
+	Waist Item `json:"waist"`
+	Legs Item `json:"legs"`
+	Feet Item `json:"feet"`
+	Finger1 Item `json:"finger1"`
+	Finger2 Item `json:"finger2"`
+	Trinket1 Item `json:"trinket1"`
+	Trinket2 Item `json:"trinket2"`
+	MainHand Item `json:"mainHand"`
+	OffHand Item `json:"offHand"`
 }
 
 type Item struct {
@@ -31,7 +53,7 @@ type Item struct {
 	bonusLists []int `json:"bonusLists"`
 	ArtifactId int `json:"artifactId"`
 	DisplayInfoId int `json:"displayInfoId"`
-	ArtifactAppearanceId string `json:"artifactAppearanceId"`
+	ArtifactAppearanceId int `json:"artifactAppearanceId"`
 	ArtifactTraits []ArtifactTrait `json:"artifactTraits"`
 	Relics []Relic `json:"relics"`
 	Appearance Apperence `json:"appearance"`
@@ -46,10 +68,10 @@ type WeaponInfo struct {
 }
 
 type Dmg struct {
-	Min int `json:"min"`
-	Max int `json:"max"`
-	ExactMin int `json:"exactMin"`
-	ExactMax int `json:"exactMax"`
+	Min float32 `json:"min"`
+	Max float32 `json:"max"`
+	ExactMin float32 `json:"exactMin"`
+	ExactMax float32 `json:"exactMax"`
 }
 
 type AzeriteEmpItem struct {

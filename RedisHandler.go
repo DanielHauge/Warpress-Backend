@@ -7,8 +7,21 @@ import (
 	"log"
 	"strconv"
 	"time"
+
 )
 
+
+
+func CanIConnect() error{
+	client := redis.NewClient(&redis.Options{
+		Addr: "localhost:6379",
+		Password: "",
+		DB: 0,
+	})
+	_, e := client.Ping().Result()
+
+	return e
+}
 
 func IsUserRegistered(accountid int) bool{
 	client := redis.NewClient(&redis.Options{

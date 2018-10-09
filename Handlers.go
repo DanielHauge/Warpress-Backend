@@ -3,9 +3,16 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/avelino/slugify"
 	"gopkg.in/russross/blackfriday.v2"
+	"log"
 	"net/http"
 	"reflect"
+	"./WarcraftLogs"
+	"./Raider.io"
+	"./Wowprogress"
+	"./Blizzard"
+	"sync"
 )
 
 
@@ -75,11 +82,75 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	buffer.WriteString("## Api endpoints:\n\n")
 	buffer.Write(IndexPage)
 
-
-
 	output := blackfriday.Run([]byte(buffer.Bytes()))
 	w.Write(output)
 }
+
+
+func GetPersonalCharInfo(w http.ResponseWriter, r *http.Request) {
+
+	acces, id := DoesUserHaveAccess(w, r)
+	if acces {
+
+		var Profile PersonalProfile
+
+		char, e := GetMainChar(id)
+
+		var wg sync.WaitGroup
+		var blizzwait sync.WaitGroup
+		blizzwait.Add(1)
+		wg.Add(4)
+
+		var blizzChar Blizzard.FullCharInfo
+		go func(){
+			blizzChar, e = GetBlizzardChar(char)
+			Profile.Character = blizzChar
+			wg.Done()
+			blizzwait.Done()
+		}()
+
+		var raiderio Raider_io.CharacterProfile
+		go func() {
+			raiderio, e = Raider_io.GetRaiderIORank(Raider_io.CharInput{Name:char.Name, Realm:char.Realm, Region:FromLocaleToRegion(char.Locale)})
+			Profile.RaiderIOProfile = raiderio
+			wg.Done()
+		}()
+
+
+		var logs []WarcraftLogs.Encounter
+		go func() {
+			logs, e = WarcraftLogs.GetWarcraftLogsRanks(WarcraftLogs.CharInput{Name:char.Name, Realm:char.Realm, Region:FromLocaleToRegion(char.Locale)})
+			Profile.WarcraftLogsRanks = logs
+			wg.Done()
+		}()
+
+		var wowprog Wowprogress.GuildRank
+		go func() {
+			blizzwait.Wait()
+			wowprog, e = Wowprogress.GetGuildRank(Wowprogress.Input{Region: FromLocaleToRegion(char.Locale), Realm: slugify.Slugify(char.Realm), Guild: blizzChar.Guild.Name})
+			Profile.GuildRank = wowprog
+			wg.Done()
+		}()
+
+		wg.Wait()
+
+		if e != nil{
+			w.WriteHeader(500)
+			w.Write([]byte(e.Error()))
+			log.Println(e.Error())
+		} else {
+			msg, err := json.Marshal(Profile); if err != nil{ log.Println(err); w.Write([]byte(err.Error())); return}
+			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+			w.WriteHeader(200)
+			w.Write(msg)
+		}
+
+	} else {
+		w.WriteHeader(http.StatusUnauthorized)
+	}
+
+}
+
 
 
 

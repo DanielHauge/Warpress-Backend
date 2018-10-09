@@ -4,6 +4,7 @@ import (
 	"./Blizzard"
 	"./GoBnet"
 	"encoding/json"
+	"github.com/avelino/slugify"
 	"golang.org/x/oauth2"
 	"io"
 	"io/ioutil"
@@ -69,6 +70,7 @@ func SetMainCharacter(w http.ResponseWriter, r*http.Request){
 				panic(err)
 			}
 		}
+		char.Realm = slugify.Slugify(char.Realm)
 		w.WriteHeader(200)
 		SetMainChar(id, char)
 	} else {
@@ -106,7 +108,7 @@ func DoesUserHaveAccess(w http.ResponseWriter, r *http.Request) (bool, int) {
 	return AreAccessTokensSame(accesToken, cachedAccessToken), accountid
 }
 
-func GetFullCharInfo(w http.ResponseWriter, r *http.Request){
+func GetFullCharHandle(w http.ResponseWriter, r *http.Request){
 	acces, _ := DoesUserHaveAccess(w, r)
 	if acces {
 
@@ -129,7 +131,7 @@ func GetFullCharInfo(w http.ResponseWriter, r *http.Request){
 		}
 
 
-		fullChar, e := getFullCharInfo(char)
+		fullChar, e := GetBlizzardChar(char)
 
 		if e != nil{
 			w.WriteHeader(500)
@@ -149,14 +151,47 @@ func GetFullCharInfo(w http.ResponseWriter, r *http.Request){
 	}
 }
 
-func getFullCharInfo(char charRequest) (Blizzard.FullCharInfo, error){
+func GetBlizzardChar(char charRequest) (Blizzard.FullCharInfo, error){
 
-	url := ApiURL+"/character/"+char.Realm+"/"+char.Name+"?locale="+char.Locale+"apikey="+os.Args[4]
+	url := ApiURL+"/character/"+char.Realm+"/"+char.Name+"?fields=guild+items&locale="+char.Locale+"&apikey="+os.Args[4]
 	resp, e := http.Get(url)
 
 	var fullChar Blizzard.FullCharInfo
-	e = json.NewDecoder(resp.Body).Decode(fullChar)
+	e = json.NewDecoder(resp.Body).Decode(&fullChar)
 	if e != nil { log.Println(e.Error()) }
 
 	return fullChar, e
+}
+
+func FromLocaleToRegion(locale string) string{
+	switch locale {
+	case "en_GB":
+		return "EU"
+	case "de_DE":
+		return "EU"
+	case "es_ES":
+		return "EU"
+	case "fr_FR":
+		return "EU"
+	case "it_IT":
+		return "EU"
+	case "pl_PL":
+		return "EU"
+	case "pt_PT":
+		return "EU"
+	case "ru_RU":
+		return "EU"
+	case "en_US":
+		return "US"
+	case "pt_BR":
+		return "US"
+	case "es_MX":
+		return "US"
+	case "zh_TW":
+		return "TW"
+	case "ko_KR":
+		return "KR"
+	default:
+		return "EU"
+	}
 }

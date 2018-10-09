@@ -14,6 +14,7 @@ import (
 // go get gopkg.in/russross/blackfriday.v2
 // go get -u github.com/go-redis/redis
 // go get github.com/gorilla/securecookie
+// go get github.com/avelino/slugify
 
 
 var DB *sql.DB
@@ -22,6 +23,8 @@ var DB *sql.DB
 // 2. BNET_SECRET
 // 3. CONNECTION_STRING
 // 4. APIKEY
+// 5. Public warcraftlogs
+// 6. private warcraftlogs
 
 func main() {
 
@@ -53,7 +56,10 @@ func main() {
 		TLSNextProto: make(map[string]func(*http.Server, *tls.Conn, http.Handler), 0),
 	}
 
-
+	if e := CanIConnect(); e != nil{
+		log.Println("Cannot connect to database. Make sure redis is running.")
+		log.Fatal(e)
+	}
 	//Start Server
 	log.Fatal(srv.ListenAndServeTLS("server.crt", "server.key"))
 

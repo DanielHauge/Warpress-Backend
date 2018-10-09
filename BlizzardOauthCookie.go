@@ -28,7 +28,8 @@ func SetAccessTokenCookieOnClient(accountId int, token *oauth2.Token, w http.Res
 			Name: "WarpressAccessToken",
 			Value: encoded,
 			Expires: token.Expiry,
-			Path: "/chars",
+			Path: "/",
+			HttpOnly:true,
 		}
 		log.Println("Setting cookie")
 		http.SetCookie(w, cookie)

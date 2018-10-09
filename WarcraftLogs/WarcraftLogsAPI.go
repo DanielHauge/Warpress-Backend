@@ -1,0 +1,26 @@
+package WarcraftLogs
+
+import (
+	"encoding/json"
+	"log"
+	"net/http"
+	"os"
+)
+
+var warcraftLogsAPIURL = "https://www.warcraftlogs.com:443/v1"
+
+func GetWarcraftLogsRanks(input CharInput) ([]Encounter, error){
+	fullUrl := warcraftLogsAPIURL+"/rankings/character/"+input.Name+"/"+input.Realm+"/"+input.Region+"?api_key="+os.Args[5]
+
+	resp, e := http.Get(fullUrl)
+	if e != nil{
+		log.Println(e.Error())
+		return []Encounter{}, e
+	}
+
+	var rankings []Encounter
+	e = json.NewDecoder(resp.Body).Decode(&rankings)
+	if e != nil { log.Println(e.Error()) }
+
+	return rankings, e
+}
