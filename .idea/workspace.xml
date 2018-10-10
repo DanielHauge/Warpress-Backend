@@ -5,7 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5500fa19-5bd9-42b3-becf-91ba0ea5e778" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/BlizzardOauthCookie.go" beforeDir="false" afterPath="$PROJECT_DIR$/BlizzardOauthCookie.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BlizzardOauth.go" beforeDir="false" afterPath="$PROJECT_DIR$/BlizzardOauth.go" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -26,24 +26,24 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="go" value="21124" />
+          <entry key="go" value="21128" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Go" value="21124" />
+          <entry key="Go" value="21128" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="go" value="171" />
+          <entry key="go" value="172" />
           <entry key="md" value="1" />
           <entry key="s" value="2" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="Go" value="171" />
+          <entry key="Go" value="172" />
           <entry key="PLAIN_TEXT" value="1" />
           <entry key="x86 Plan9 Assembly" value="2" />
         </counts>
@@ -62,15 +62,6 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Data.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="68">
-              <caret line="9" selection-start-line="9" selection-end-line="9" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ExampleData.go">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="272">
@@ -79,11 +70,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/BlizzardOauthCookie.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="544">
-              <caret line="38" column="1" lean-forward="true" selection-start-line="38" selection-start-column="1" selection-end-line="38" selection-end-column="1" />
+            <state relative-caret-position="661">
+              <caret line="44" column="21" lean-forward="true" selection-start-line="44" selection-start-column="21" selection-end-line="44" selection-end-column="21" />
               <folding>
                 <element signature="e#14#120#0" expanded="true" />
               </folding>
@@ -92,25 +83,38 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$USER_HOME$/go/src/github.com/gorilla/securecookie/securecookie.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="483">
+              <caret line="314" column="29" lean-forward="true" selection-start-line="314" selection-start-column="29" selection-end-line="314" selection-end-column="29" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/BlizzardHandlers.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1105">
-              <caret line="40" column="42" lean-forward="true" selection-start-line="40" selection-start-column="42" selection-end-line="40" selection-end-column="42" />
+            <state relative-caret-position="508">
+              <caret line="38" column="73" selection-start-line="38" selection-start-column="73" selection-end-line="38" selection-end-column="73" />
               <folding>
                 <element signature="e#14#194#0" expanded="true" />
+                <element signature="n#!!block;n#GetCharactersForRegistration#0" />
+                <element signature="n#!!block;n#SetMainCharacter#0" />
                 <element signature="n#!!block;n#GetMainCharacter#0" />
                 <element signature="n#!!block;n#DoesUserHaveAccess#0" />
+                <element signature="n#!!block;n#GetFullCharHandle#0" />
+                <element signature="n#!!block;n#GetBlizzardChar#0" />
                 <element signature="n#!!block;n#FromLocaleToRegion#0" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/BlizzardOauth.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="340">
-              <caret line="49" column="62" selection-start-line="49" selection-start-column="62" selection-end-line="49" selection-end-column="62" />
+            <state relative-caret-position="544">
+              <caret line="76" column="69" lean-forward="true" selection-start-line="76" selection-start-column="69" selection-end-line="76" selection-end-column="69" />
               <folding>
                 <element signature="e#14#166#0" expanded="true" />
                 <element signature="n#!!block;n#generateStateOauthCookie#0" />
@@ -225,7 +229,6 @@
         <option value="$PROJECT_DIR$/Redis/RedisHSET.go" />
         <option value="$PROJECT_DIR$/Redis/RedisHandler.go" />
         <option value="$PROJECT_DIR$/BlizzardHandlers.go" />
-        <option value="$PROJECT_DIR$/BlizzardOauth.go" />
         <option value="$PROJECT_DIR$/Redis/RedisTokenCaching.go" />
         <option value="$PROJECT_DIR$/Router.go" />
         <option value="$PROJECT_DIR$/Handlers.go" />
@@ -234,6 +237,7 @@
         <option value="$PROJECT_DIR$/ExampleData.go" />
         <option value="$PROJECT_DIR$/Routes.go" />
         <option value="$PROJECT_DIR$/BlizzardOauthCookie.go" />
+        <option value="$PROJECT_DIR$/BlizzardOauth.go" />
       </list>
     </option>
   </component>
@@ -645,32 +649,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/BlizzardHandlers.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1105">
-          <caret line="40" column="42" lean-forward="true" selection-start-line="40" selection-start-column="42" selection-end-line="40" selection-end-column="42" />
-          <folding>
-            <element signature="e#14#194#0" expanded="true" />
-            <element signature="n#!!block;n#GetMainCharacter#0" />
-            <element signature="n#!!block;n#DoesUserHaveAccess#0" />
-            <element signature="n#!!block;n#FromLocaleToRegion#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/BlizzardOauth.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="340">
-          <caret line="49" column="62" selection-start-line="49" selection-start-column="62" selection-end-line="49" selection-end-column="62" />
-          <folding>
-            <element signature="e#14#166#0" expanded="true" />
-            <element signature="n#!!block;n#generateStateOauthCookie#0" />
-            <element signature="n#!!block;n#HandleAuthenticate#0" />
-            <element signature="n#!!block;n#AreAccessTokensSame#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Redis/RedisUtil.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="340">
@@ -690,10 +668,47 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/BlizzardOauthCookie.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="544">
-          <caret line="38" column="1" lean-forward="true" selection-start-line="38" selection-start-column="1" selection-end-line="38" selection-end-column="1" />
+        <state relative-caret-position="661">
+          <caret line="44" column="21" lean-forward="true" selection-start-line="44" selection-start-column="21" selection-end-line="44" selection-end-column="21" />
           <folding>
             <element signature="e#14#120#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/go/src/github.com/gorilla/securecookie/securecookie.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="483">
+          <caret line="314" column="29" lean-forward="true" selection-start-line="314" selection-start-column="29" selection-end-line="314" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/BlizzardHandlers.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="508">
+          <caret line="38" column="73" selection-start-line="38" selection-start-column="73" selection-end-line="38" selection-end-column="73" />
+          <folding>
+            <element signature="e#14#194#0" expanded="true" />
+            <element signature="n#!!block;n#GetCharactersForRegistration#0" />
+            <element signature="n#!!block;n#SetMainCharacter#0" />
+            <element signature="n#!!block;n#GetMainCharacter#0" />
+            <element signature="n#!!block;n#DoesUserHaveAccess#0" />
+            <element signature="n#!!block;n#GetFullCharHandle#0" />
+            <element signature="n#!!block;n#GetBlizzardChar#0" />
+            <element signature="n#!!block;n#FromLocaleToRegion#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/BlizzardOauth.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="544">
+          <caret line="76" column="69" lean-forward="true" selection-start-line="76" selection-start-column="69" selection-end-line="76" selection-end-column="69" />
+          <folding>
+            <element signature="e#14#166#0" expanded="true" />
+            <element signature="n#!!block;n#generateStateOauthCookie#0" />
+            <element signature="n#!!block;n#HandleAuthenticate#0" />
+            <element signature="n#!!block;n#AreAccessTokensSame#0" />
           </folding>
         </state>
       </provider>

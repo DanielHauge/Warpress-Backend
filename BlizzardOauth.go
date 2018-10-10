@@ -74,7 +74,7 @@ func HandleOauthCallback(w http.ResponseWriter, r *http.Request){
 
 
 	// If user.id exists in database, fetch data and redirect to login with that pass and accesstoken.
-	isRegistered := Redis.DoesKeyExist("AT:"+strconv.Itoa(user.ID))
+	isRegistered := Redis.DoesKeyExist("MAIN:"+strconv.Itoa(user.ID))
 	if isRegistered {
 		http.Redirect(w,r, "http://localhost:8080/#/Login", http.StatusPermanentRedirect)
 	} else { // Redirect to register
