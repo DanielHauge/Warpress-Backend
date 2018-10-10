@@ -17,7 +17,7 @@ var s = securecookie.New(hashKey, blockKey)
 func SetAccessTokenCookieOnClient(accountId int, token *oauth2.Token, w http.ResponseWriter) {
 	tokenAsMap := map[string]string{
 		"accountId": strconv.Itoa(accountId),
-		"expire":token.Expiry.String(),
+		"expire":token.Expiry.Format(time.RFC3339),
 		"tokentype":token.TokenType,
 		"refreshtoken":token.RefreshToken,
 		"accesstoken":token.AccessToken,
@@ -43,7 +43,7 @@ func GetAccessTokenCookieFromClient(r *http.Request) (oauth2.Token, int,error) {
 	if err == nil{
 		value := make(map[string]string)
 		if err = s.Decode("WarpressAccessToken", cookie.Value, &value); err == nil{
-			time, err := time.Parse("yymmdd", value["expire"])
+			time, err := time.Parse(time.RFC3339, value["expire"])
 			token := oauth2.Token{
 				Expiry: time,
 				TokenType: value["tokentype"],
@@ -54,6 +54,8 @@ func GetAccessTokenCookieFromClient(r *http.Request) (oauth2.Token, int,error) {
 			aid, err := strconv.Atoi(value["accountId"])
 
 			return token, aid, err
+		} else {
+			log.Println(err.Error())
 		}
 	}
 	return oauth2.Token{}, 0, err
