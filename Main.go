@@ -1,6 +1,7 @@
 package main
 
 import (
+	"./Redis"
 	"crypto/tls"
 	"database/sql"
 	"github.com/rs/cors"
@@ -15,6 +16,7 @@ import (
 // go get -u github.com/go-redis/redis
 // go get github.com/gorilla/securecookie
 // go get github.com/avelino/slugify
+// go get github.com/brianvoe/gofakeit
 
 
 var DB *sql.DB
@@ -28,14 +30,9 @@ var DB *sql.DB
 
 func main() {
 
-	// Router
 	router := NewRouter()
 	handler := cors.Default().Handler(router)
 	IndexPage = SetupIndexPage()
-
-	// DB Stuff
-	//SetupDB()
-	//defer DB.Close()
 
 	cfg := &tls.Config{
 		MinVersion:               tls.VersionTLS12,
@@ -56,7 +53,7 @@ func main() {
 		TLSNextProto: make(map[string]func(*http.Server, *tls.Conn, http.Handler), 0),
 	}
 
-	if e := CanIConnect(); e != nil{
+	if e := Redis.CanIConnect(); e != nil{
 		log.Println("Cannot connect to database. Make sure redis is running.")
 		log.Fatal(e)
 	}

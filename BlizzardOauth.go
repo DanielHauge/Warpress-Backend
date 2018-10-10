@@ -2,6 +2,7 @@ package main
 
 import (
 	"./GoBnet"
+	"./Redis"
 	"context"
 	"crypto/rand"
 	"encoding/base64"
@@ -10,6 +11,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -66,13 +68,13 @@ func HandleOauthCallback(w http.ResponseWriter, r *http.Request){
 
 
 	// Caches the AccessToken in redis for later validation.
-	CacheAccesToken(user.ID, token)
+	Redis.CacheAccesToken("AT:"+strconv.Itoa(user.ID), token)
 
 	SetAccessTokenCookieOnClient(user.ID, token, w)
 
 
 	// If user.id exists in database, fetch data and redirect to login with that pass and accesstoken.
-	isRegistered := IsUserRegistered(user.ID)
+	isRegistered := Redis.DoesKeyExist("AT:"+strconv.Itoa(user.ID))
 	if isRegistered {
 		http.Redirect(w,r, "http://localhost:8080/#/Login", http.StatusPermanentRedirect)
 	} else { // Redirect to register

@@ -12,6 +12,8 @@ import (
 	"./Raider.io"
 	"./Wowprogress"
 	"./Blizzard"
+	"./Redis"
+	"strconv"
 	"sync"
 )
 
@@ -87,14 +89,15 @@ func Index(w http.ResponseWriter, r *http.Request) {
 }
 
 
-func GetPersonalCharInfo(w http.ResponseWriter, r *http.Request) {
+func GetPersonalFull(w http.ResponseWriter, r *http.Request) {
 
 	acces, id := DoesUserHaveAccess(w, r)
 	if acces {
 
 		var Profile PersonalProfile
 
-		char, e := GetMainChar(id)
+		charMap, e := Redis.GetStruct("MAIN:"+strconv.Itoa(id))
+		char := CharacterMinimalFromMap(charMap)
 
 		var wg sync.WaitGroup
 		var blizzwait sync.WaitGroup
@@ -151,6 +154,78 @@ func GetPersonalCharInfo(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func GetPersonalRaiderio(w http.ResponseWriter, r *http.Request){
+	acces, id := DoesUserHaveAccess(w, r)
+	if acces {
 
+		charMap, e := Redis.GetStruct("MAIN:"+strconv.Itoa(id))
+		char := CharacterMinimalFromMap(charMap)
 
+		raiderio, e := Raider_io.GetRaiderIORank(Raider_io.CharInput{Name:char.Name, Realm:char.Realm, Region:FromLocaleToRegion(char.Locale)})
+
+		if e != nil{
+			w.WriteHeader(500)
+			w.Write([]byte(e.Error()))
+			log.Println(e.Error())
+		} else {
+			msg, err := json.Marshal(raiderio); if err != nil{ log.Println(err); w.Write([]byte(err.Error())); return}
+			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+			w.WriteHeader(200)
+			w.Write(msg)
+		}
+
+	} else {
+		w.WriteHeader(http.StatusUnauthorized)
+	}
+}
+
+func GetPersonalWarcraftLogs(w http.ResponseWriter, r *http.Request){
+	acces, id := DoesUserHaveAccess(w, r)
+	if acces {
+
+		charMap, e := Redis.GetStruct("MAIN:"+strconv.Itoa(id))
+		char := CharacterMinimalFromMap(charMap)
+
+		logs, e := WarcraftLogs.GetWarcraftLogsRanks(WarcraftLogs.CharInput{Name:char.Name, Realm:char.Realm, Region:FromLocaleToRegion(char.Locale)})
+
+		if e != nil{
+			w.WriteHeader(500)
+			w.Write([]byte(e.Error()))
+			log.Println(e.Error())
+		} else {
+			msg, err := json.Marshal(logs); if err != nil{ log.Println(err); w.Write([]byte(err.Error())); return}
+			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+			w.WriteHeader(200)
+			w.Write(msg)
+		}
+
+	} else {
+		w.WriteHeader(http.StatusUnauthorized)
+	}
+}
+
+func GetPersonalBlizzardChar(w http.ResponseWriter, r *http.Request){
+	acces, id := DoesUserHaveAccess(w, r)
+	if acces {
+
+		charMap, e := Redis.GetStruct("MAIN:"+strconv.Itoa(id))
+		char := CharacterMinimalFromMap(charMap)
+
+		blizzChar, e := GetBlizzardChar(char)
+
+		if e != nil{
+			w.WriteHeader(500)
+			w.Write([]byte(e.Error()))
+			log.Println(e.Error())
+		} else {
+			msg, err := json.Marshal(blizzChar); if err != nil{ log.Println(err); w.Write([]byte(err.Error())); return}
+			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+			w.WriteHeader(200)
+			w.Write(msg)
+		}
+
+	} else {
+		w.WriteHeader(http.StatusUnauthorized)
+	}
+}
 

@@ -3,6 +3,7 @@ package main
 import (
 	"./Blizzard"
 	"./GoBnet"
+	"./Redis"
 	"encoding/json"
 	"github.com/avelino/slugify"
 	"golang.org/x/oauth2"
@@ -12,14 +13,27 @@ import (
 	"net/http"
 	"os"
 	"sort"
+	"strconv"
 )
 
 var ApiURL = "https://eu.api.battle.net/wow/"
 
-type charRequest struct {
+type CharacterMinimal struct {
 	Name string `json:"name"`
 	Realm string `json:"realm"`
 	Locale string `json:"locale"`
+}
+
+func (char *CharacterMinimal) ToMap() map[string]interface{}{
+	return map[string]interface{}{
+		"name": char.Name,
+		"realm": char.Realm,
+		"locale": char.Locale,
+	}
+}
+
+func CharacterMinimalFromMap(m map[string]string) CharacterMinimal{
+	return CharacterMinimal{Name:m["name"], Realm:m["realm"], Locale:m["locale"]}
 }
 
 func GetCharactersForRegistration(w http.ResponseWriter, r *http.Request){
@@ -29,7 +43,7 @@ func GetCharactersForRegistration(w http.ResponseWriter, r *http.Request){
 		w.Write([]byte("Something went wrong:"+e.Error()))
 		return
 	}
-	cachedAccessToken, e := GetAccessToken(accountid)
+	cachedAccessToken, e := Redis.GetAccessToken("AT:"+strconv.Itoa(accountid))
 
 	if AreAccessTokensSame(accesToken, cachedAccessToken){
 		authClient := oauthCfg.Client(oauth2.NoContext, &accesToken)
@@ -53,7 +67,7 @@ func SetMainCharacter(w http.ResponseWriter, r*http.Request){
 	acces, id := DoesUserHaveAccess(w, r)
 	if acces {
 
-		var char charRequest
+		var char CharacterMinimal
 		body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 		if err != nil{
 			log.Println(err)
@@ -72,7 +86,7 @@ func SetMainCharacter(w http.ResponseWriter, r*http.Request){
 		}
 		char.Realm = slugify.Slugify(char.Realm)
 		w.WriteHeader(200)
-		SetMainChar(id, char)
+		Redis.SetStruct("MAIN:"+strconv.Itoa(id), char.ToMap())
 	} else {
 		w.WriteHeader(http.StatusUnauthorized)
 	}
@@ -81,13 +95,14 @@ func SetMainCharacter(w http.ResponseWriter, r*http.Request){
 func GetMainCharacter(w http.ResponseWriter, r *http.Request){
 	acces, id := DoesUserHaveAccess(w, r)
 	if acces {
-		d, e := GetMainChar(id)
+		d, e := Redis.GetStruct("MAIN:"+strconv.Itoa(id))
+		char := CharacterMinimalFromMap(d)
 		if e != nil{
 			w.WriteHeader(500)
 			w.Write([]byte(e.Error()))
 			log.Println(e.Error())
 		} else {
-			msg, err := json.Marshal(d); if err != nil{ log.Println(err); w.Write([]byte(err.Error())); return}
+			msg, err := json.Marshal(char); if err != nil{ log.Println(err); w.Write([]byte(err.Error())); return}
 			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 			w.WriteHeader(200)
 			w.Write(msg)
@@ -104,7 +119,7 @@ func DoesUserHaveAccess(w http.ResponseWriter, r *http.Request) (bool, int) {
 		w.WriteHeader(500)
 		return false, 0
 	}
-	cachedAccessToken, e := GetAccessToken(accountid)
+	cachedAccessToken, e := Redis.GetAccessToken("AT:"+strconv.Itoa(accountid))
 	return AreAccessTokensSame(accesToken, cachedAccessToken), accountid
 }
 
@@ -112,7 +127,7 @@ func GetFullCharHandle(w http.ResponseWriter, r *http.Request){
 	acces, _ := DoesUserHaveAccess(w, r)
 	if acces {
 
-		var char charRequest
+		var char CharacterMinimal
 		body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 		if err != nil{
 			log.Println(err)
@@ -151,7 +166,7 @@ func GetFullCharHandle(w http.ResponseWriter, r *http.Request){
 	}
 }
 
-func GetBlizzardChar(char charRequest) (Blizzard.FullCharInfo, error){
+func GetBlizzardChar(char CharacterMinimal) (Blizzard.FullCharInfo, error){
 
 	url := ApiURL+"/character/"+char.Realm+"/"+char.Name+"?fields=guild+items&locale="+char.Locale+"&apikey="+os.Args[4]
 	resp, e := http.Get(url)
