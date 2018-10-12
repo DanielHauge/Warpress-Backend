@@ -13,7 +13,7 @@ var ApiURL = "https://eu.api.battle.net/wow/"
 
 func GetBlizzardChar(char CharacterMinimal) (FullCharInfo, error){
 
-	url := ApiURL+"/character/"+char.Realm+"/"+char.Name+"?fields=guild+items&locale="+char.Locale+"&apikey="+os.Args[4]
+	url := ApiURL+"/character/"+char.Realm+"/"+char.Name+"?fields=guild+items&locale="+char.Locale+"&apikey="+os.Getenv("BLIZZARD_APIKEY")
 	resp, e := http.Get(url)
 
 	var fullChar FullCharInfo

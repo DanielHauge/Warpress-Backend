@@ -16,6 +16,7 @@ import (
 // go get gopkg.in/russross/blackfriday.v2
 // go get -u github.com/go-redis/redis
 // go get github.com/gorilla/securecookie
+// go get golang.org/x/oauth2
 // go get github.com/avelino/slugify
 // go get github.com/brianvoe/gofakeit
 // go get github.com/json-iterator/go

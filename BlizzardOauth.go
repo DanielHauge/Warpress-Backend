@@ -16,8 +16,8 @@ import (
 )
 
 var oauthCfg = &oauth2.Config{
-	ClientID:     	os.Args[1],
-	ClientSecret: 	os.Args[2],
+	ClientID:     	os.Getenv("BNET_CLIENTID"),
+	ClientSecret: 	os.Getenv("BNET_SECRET"),
 	Scopes:   		[]string{"wow.profile"},
 	Endpoint: 		bnet.Endpoint("eu"),
 	RedirectURL: 	"https://localhost:443/bnet/auth/callback",

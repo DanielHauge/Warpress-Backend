@@ -1,0 +1,7 @@
+*.git*
+*.idea*
+*.gitignore*
+*LICENSE*
+*.md*
+*Dockerfile*
+*.dockerignore*

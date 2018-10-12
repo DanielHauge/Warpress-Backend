@@ -59,7 +59,7 @@ func SetMainCharacter(w http.ResponseWriter, r*http.Request){
 			return
 		}
 		if err := r.Body.Close(); err != nil {
-			panic(err)
+			log.Println(err.Error())
 		}
 		if err := json.Unmarshal(body, &char); err != nil{
 			w.Header().Set("Content-Type", "application/json; charset=UTF-8")

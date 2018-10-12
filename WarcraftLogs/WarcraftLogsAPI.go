@@ -12,7 +12,7 @@ var json = jsoniter.ConfigFastest
 var warcraftLogsAPIURL = "https://www.warcraftlogs.com:443/v1"
 
 func GetWarcraftLogsRanks(input CharInput) ([]Encounter, error){
-	fullUrl := warcraftLogsAPIURL+"/rankings/character/"+input.Name+"/"+input.Realm+"/"+input.Region+"?api_key="+os.Args[5]
+	fullUrl := warcraftLogsAPIURL+"/rankings/character/"+input.Name+"/"+input.Realm+"/"+input.Region+"?api_key="+os.Getenv("PUBLIC_LOGS")
 
 	resp, e := http.Get(fullUrl)
 	if e != nil{

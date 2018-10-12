@@ -3,11 +3,12 @@ package Redis
 import (
 	"github.com/go-redis/redis"
 	"log"
+	"os"
 )
 
 
 
-var Addr string = "localhost"
+var Addr string = os.Getenv("CONNECTION_STRING")
 var Port string = ":6379"
 var Password string = ""
 var DB int = 0
