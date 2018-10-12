@@ -2,14 +2,16 @@ package bnet
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
+	"github.com/json-iterator/go"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
 )
+
+var json = jsoniter.ConfigFastest
 
 const (
 	libraryVersion = "0.1"

@@ -4,6 +4,7 @@ import (
 	"./Redis"
 	"crypto/tls"
 	"database/sql"
+	"github.com/json-iterator/go"
 	"github.com/rs/cors"
 	"log"
 	"net/http"
@@ -17,9 +18,14 @@ import (
 // go get github.com/gorilla/securecookie
 // go get github.com/avelino/slugify
 // go get github.com/brianvoe/gofakeit
+// go get github.com/json-iterator/go
+// go get -u github.com/go-redis/cache
+// go get github.com/vmihailenco/msgpack
+// go get github.com/prometheus/client_golang/prometheus
 
 
 var DB *sql.DB
+var json = jsoniter.ConfigFastest
 
 // 1. BNET_CLIENTID
 // 2. BNET_SECRET
@@ -27,6 +33,9 @@ var DB *sql.DB
 // 4. APIKEY
 // 5. Public warcraftlogs
 // 6. private warcraftlogs
+
+
+
 
 func main() {
 

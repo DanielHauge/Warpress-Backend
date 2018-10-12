@@ -1,6 +1,8 @@
 package main
 
 import (
+	"./Blizzard"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
 )
 
@@ -19,7 +21,7 @@ type Routes []Route
 
 var routes = Routes{
 	Route{
-		"Index",
+		"Index -> This page",
 		"GET",
 		"/",
 		Index,
@@ -27,7 +29,7 @@ var routes = Routes{
 		ExampleOutput{[]int{1,2,3,4,5,6}},
 	},
 	Route{
-		"GetChars",
+		"Get all character for requesting account",
 		"GET",
 		"/chars",
 		GetCharactersForRegistration,
@@ -35,28 +37,20 @@ var routes = Routes{
 		nil,
 	},
 	Route{
-		"SetMain",
+		"Set main for requesting account",
 		"POST",
 		"/main",
 		SetMainCharacter,
-		CharacterMinimal{Name: "Rakhoal", Realm:"Twisting-Nether", Locale:"en_GB"},
+		Blizzard.CharacterMinimal{Name: "Rakhoal", Realm:"Twisting-Nether", Locale:"en_GB"},
 		nil,
 	},
 	Route{
-		"GetMain",
+		"Get main for requesting account",
 		"GET",
 		"/main",
 		GetMainCharacter,
 		nil,
-		CharacterMinimal{Name: "Rakhoal", Realm:"Twisting-Nether", Locale:"en_GB"},
-	},
-	Route{
-		"Get All Characters for an account",
-		"POST",
-		"/char",
-		GetFullCharHandle,
-		CharacterMinimal{Name: "Rakhoal", Realm:"Twisting-Nether", Locale:"en_GB"},
-		ExampleFullBlizzChar,
+		Blizzard.CharacterMinimal{Name: "Rakhoal", Realm:"Twisting-Nether", Locale:"en_GB"},
 	},
 	Route{
 		"Get Full Personal View, Includes: (Blizzard, Raider.io, warcraftlogs, wowprogress) profiles",
@@ -106,6 +100,14 @@ var restrictedRoutes = Routes{
 		"GET",
 		"/bnet/auth/callback",
 		HandleOauthCallback,
+		nil,
+		nil,
+	},
+	Route{
+		"Prometheus Metrics",
+		"GET",
+		"/metrics",
+		promhttp.Handler().ServeHTTP,
 		nil,
 		nil,
 	},

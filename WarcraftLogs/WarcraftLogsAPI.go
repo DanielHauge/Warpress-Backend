@@ -1,11 +1,13 @@
 package WarcraftLogs
 
 import (
-	"encoding/json"
 	"log"
+	"github.com/json-iterator/go"
 	"net/http"
 	"os"
 )
+
+var json = jsoniter.ConfigFastest
 
 var warcraftLogsAPIURL = "https://www.warcraftlogs.com:443/v1"
 

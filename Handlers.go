@@ -1,20 +1,16 @@
 package main
 
 import (
+	"./Blizzard"
+	"./Raider.io"
+	"./Redis"
+	"./WarcraftLogs"
 	"bytes"
-	"encoding/json"
-	"github.com/avelino/slugify"
 	"gopkg.in/russross/blackfriday.v2"
 	"log"
 	"net/http"
 	"reflect"
-	"./WarcraftLogs"
-	"./Raider.io"
-	"./Wowprogress"
-	"./Blizzard"
-	"./Redis"
 	"strconv"
-	"sync"
 )
 
 
@@ -83,7 +79,6 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	buffer.WriteString("This is a api for the website of Warpress, this page is only available during development\n\n")
 	buffer.WriteString("## Api endpoints:\n\n")
 	buffer.Write(IndexPage)
-
 	output := blackfriday.Run([]byte(buffer.Bytes()))
 	w.Write(output)
 }
@@ -93,49 +88,21 @@ func GetPersonalFull(w http.ResponseWriter, r *http.Request) {
 
 	acces, id := DoesUserHaveAccess(w, r)
 	if acces {
-
 		var Profile PersonalProfile
+		key := "PERSONAL:"+strconv.Itoa(id)
+		var e error
+		if Redis.DoesKeyExist(key){
+			e = Redis.CacheGetResult(key, &Profile)
+			go func() {
+				var Caching PersonalProfile
+				FetchFullPersonal(id, &Caching)
+				Redis.CacheSetResult("PERSONAL:"+strconv.Itoa(id), Caching)
+			}()
+		} else {
+			e = FetchFullPersonal(id, &Profile)
+			go Redis.CacheSetResult("PERSONAL:"+strconv.Itoa(id), Profile)
+		}
 
-		charMap, e := Redis.GetStruct("MAIN:"+strconv.Itoa(id))
-		char := CharacterMinimalFromMap(charMap)
-
-		var wg sync.WaitGroup
-		var blizzwait sync.WaitGroup
-		blizzwait.Add(1)
-		wg.Add(4)
-
-		var blizzChar Blizzard.FullCharInfo
-		go func(){
-			blizzChar, e = GetBlizzardChar(char)
-			Profile.Character = blizzChar
-			wg.Done()
-			blizzwait.Done()
-		}()
-
-		var raiderio Raider_io.CharacterProfile
-		go func() {
-			raiderio, e = Raider_io.GetRaiderIORank(Raider_io.CharInput{Name:char.Name, Realm:char.Realm, Region:FromLocaleToRegion(char.Locale)})
-			Profile.RaiderIOProfile = raiderio
-			wg.Done()
-		}()
-
-
-		var logs []WarcraftLogs.Encounter
-		go func() {
-			logs, e = WarcraftLogs.GetWarcraftLogsRanks(WarcraftLogs.CharInput{Name:char.Name, Realm:char.Realm, Region:FromLocaleToRegion(char.Locale)})
-			Profile.WarcraftLogsRanks = logs
-			wg.Done()
-		}()
-
-		var wowprog Wowprogress.GuildRank
-		go func() {
-			blizzwait.Wait()
-			wowprog, e = Wowprogress.GetGuildRank(Wowprogress.Input{Region: FromLocaleToRegion(char.Locale), Realm: slugify.Slugify(char.Realm), Guild: blizzChar.Guild.Name})
-			Profile.GuildRank = wowprog
-			wg.Done()
-		}()
-
-		wg.Wait()
 
 		if e != nil{
 			w.WriteHeader(500)
@@ -147,7 +114,6 @@ func GetPersonalFull(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(200)
 			w.Write(msg)
 		}
-
 	} else {
 		w.WriteHeader(http.StatusUnauthorized)
 	}
@@ -159,7 +125,7 @@ func GetPersonalRaiderio(w http.ResponseWriter, r *http.Request){
 	if acces {
 
 		charMap, e := Redis.GetStruct("MAIN:"+strconv.Itoa(id))
-		char := CharacterMinimalFromMap(charMap)
+		char := Blizzard.CharacterMinimalFromMap(charMap)
 
 		raiderio, e := Raider_io.GetRaiderIORank(Raider_io.CharInput{Name:char.Name, Realm:char.Realm, Region:FromLocaleToRegion(char.Locale)})
 
@@ -173,7 +139,6 @@ func GetPersonalRaiderio(w http.ResponseWriter, r *http.Request){
 			w.WriteHeader(200)
 			w.Write(msg)
 		}
-
 	} else {
 		w.WriteHeader(http.StatusUnauthorized)
 	}
@@ -184,7 +149,7 @@ func GetPersonalWarcraftLogs(w http.ResponseWriter, r *http.Request){
 	if acces {
 
 		charMap, e := Redis.GetStruct("MAIN:"+strconv.Itoa(id))
-		char := CharacterMinimalFromMap(charMap)
+		char := Blizzard.CharacterMinimalFromMap(charMap)
 
 		logs, e := WarcraftLogs.GetWarcraftLogsRanks(WarcraftLogs.CharInput{Name:char.Name, Realm:char.Realm, Region:FromLocaleToRegion(char.Locale)})
 
@@ -198,7 +163,6 @@ func GetPersonalWarcraftLogs(w http.ResponseWriter, r *http.Request){
 			w.WriteHeader(200)
 			w.Write(msg)
 		}
-
 	} else {
 		w.WriteHeader(http.StatusUnauthorized)
 	}
@@ -209,9 +173,9 @@ func GetPersonalBlizzardChar(w http.ResponseWriter, r *http.Request){
 	if acces {
 
 		charMap, e := Redis.GetStruct("MAIN:"+strconv.Itoa(id))
-		char := CharacterMinimalFromMap(charMap)
+		char := Blizzard.CharacterMinimalFromMap(charMap)
 
-		blizzChar, e := GetBlizzardChar(char)
+		blizzChar, e := Blizzard.GetBlizzardChar(char)
 
 		if e != nil{
 			w.WriteHeader(500)
@@ -223,7 +187,6 @@ func GetPersonalBlizzardChar(w http.ResponseWriter, r *http.Request){
 			w.WriteHeader(200)
 			w.Write(msg)
 		}
-
 	} else {
 		w.WriteHeader(http.StatusUnauthorized)
 	}

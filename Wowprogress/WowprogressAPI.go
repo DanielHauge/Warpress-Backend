@@ -1,11 +1,13 @@
 package Wowprogress
 
 import (
-	"encoding/json"
+	"github.com/json-iterator/go"
 	"log"
 	"net/http"
 	"strings"
 )
+
+var json = jsoniter.ConfigFastest
 
 type Input struct {
 	Region string

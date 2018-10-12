@@ -23,7 +23,6 @@ var oauthCfg = &oauth2.Config{
 	RedirectURL: 	"https://localhost:443/bnet/auth/callback",
 }
 
-
 func generateStateOauthCookie(w http.ResponseWriter) string {
 	var expiration = time.Now().Add(365 * 24 * time.Hour)
 
@@ -72,6 +71,9 @@ func HandleOauthCallback(w http.ResponseWriter, r *http.Request){
 
 	SetAccessTokenCookieOnClient(user.ID, token, w)
 
+	// Incrementing Prometheus logging of login.
+	promLogins.Inc()
+
 
 	// If user.id exists in database, fetch data and redirect to login with that pass and accesstoken.
 	isRegistered := Redis.DoesKeyExist("MAIN:"+strconv.Itoa(user.ID))
@@ -94,6 +96,16 @@ func AreAccessTokensSame(a oauth2.Token, b oauth2.Token)bool{
 	return at && rt && tt
 }
 
+func DoesUserHaveAccess(w http.ResponseWriter, r *http.Request) (bool, int) {
+	accesToken, accountid, e := GetAccessTokenCookieFromClient(r)
+	if e != nil{
+		w.Write([]byte("Something went wrong: "+e.Error()))
+		w.WriteHeader(500)
+		return false, 0
+	}
+	cachedAccessToken, e := Redis.GetAccessToken("AT:"+strconv.Itoa(accountid))
+	return AreAccessTokensSame(accesToken, cachedAccessToken), accountid
+}
 
 
 
