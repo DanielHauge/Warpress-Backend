@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/gorilla/securecookie"
+	log "github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"
-	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -31,10 +31,10 @@ func SetAccessTokenCookieOnClient(accountId int, token *oauth2.Token, w http.Res
 			Path: "/",
 			HttpOnly:true,
 		}
-		log.Println("Setting cookie")
+		log.Debug("Setting AccessToken: "+strconv.Itoa(accountId))
 		http.SetCookie(w, cookie)
 	} else {
-		log.Println(err.Error())
+		log.Error(err)
 	}
 }
 
@@ -50,12 +50,10 @@ func GetAccessTokenCookieFromClient(r *http.Request) (oauth2.Token, int,error) {
 				RefreshToken: value["refreshtoken"],
 				AccessToken: value["accesstoken"],
 			}
-			log.Println(value["accountId"])
+			log.Debug("Getting AccessToken: "+value["accountId"])
 			aid, err := strconv.Atoi(value["accountId"])
 
 			return token, aid, err
-		} else {
-			log.Println(err.Error())
 		}
 	}
 	return oauth2.Token{}, 0, err

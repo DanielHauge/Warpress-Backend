@@ -2,7 +2,7 @@ package Redis
 
 import (
 	"github.com/go-redis/redis"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"os"
 )
 
@@ -36,7 +36,7 @@ func DoesKeyExist(key string) bool{
 	})
 	d, e := client.Exists(key).Result()
 	if e != nil{
-		log.Println(e.Error())
+		log.Error(e)
 	}
 
 	if d == 1{

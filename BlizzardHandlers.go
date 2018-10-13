@@ -5,10 +5,10 @@ import (
 	"./GoBnet"
 	"./Redis"
 	"github.com/avelino/slugify"
+	log "github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"sort"
 	"strconv"
@@ -16,13 +16,11 @@ import (
 
 
 
-
-
-
 func GetCharactersForRegistration(w http.ResponseWriter, r *http.Request){
 
 	accesToken, accountid, e := GetAccessTokenCookieFromClient(r)
 	if e != nil{
+		log.Error(e)
 		w.Write([]byte("Something went wrong:"+e.Error()))
 		return
 	}
@@ -32,16 +30,18 @@ func GetCharactersForRegistration(w http.ResponseWriter, r *http.Request){
 		authClient := oauthCfg.Client(oauth2.NoContext, &accesToken)
 		client := bnet.NewClient("eu", authClient)
 		WowProfile, _, e := client.Profile().WOW()
-		if e != nil { log.Println(e.Error()) }
+		if e != nil { log.Error(e) }
 		chars := WowProfile.Characters
 		sort.Sort(bnet.ByLevel(chars))
 		e = json.NewEncoder(w).Encode(chars[0:4])
 		if e != nil{
 			w.WriteHeader(http.StatusInternalServerError)
+			log.Error(e)
 			w.Write([]byte("Unable to parse to json"))
 		}
 	} else {
-		w.WriteHeader(401)
+		log.Info("User tried to get characters for reg, but was not autherized")
+		w.WriteHeader(http.StatusUnauthorized)
 		w.Write([]byte("It seems like the credentials are not matching."))
 	}
 }
@@ -53,24 +53,27 @@ func SetMainCharacter(w http.ResponseWriter, r*http.Request){
 		var char Blizzard.CharacterMinimal
 		body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 		if err != nil{
-			log.Println(err)
+			log.Error(err)
 			w.WriteHeader(400)
 			w.Write([]byte("Could not read body"))
 			return
 		}
 		if err := r.Body.Close(); err != nil {
-			log.Println(err.Error())
+			log.Error(err)
 		}
 		if err := json.Unmarshal(body, &char); err != nil{
 			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 			if err := json.NewEncoder(w).Encode(err); err != nil{
-				panic(err)
+				log.Error(err)
+				w.WriteHeader(http.StatusBadRequest)
+				return
 			}
 		}
 		char.Realm = slugify.Slugify(char.Realm)
 		w.WriteHeader(201)
 		Redis.SetStruct("MAIN:"+strconv.Itoa(id), char.ToMap())
 	} else {
+		log.Info("User tried to Set Main, but was not autherized")
 		w.WriteHeader(http.StatusUnauthorized)
 	}
 }
@@ -83,14 +86,15 @@ func GetMainCharacter(w http.ResponseWriter, r *http.Request){
 		if e != nil{
 			w.WriteHeader(500)
 			w.Write([]byte(e.Error()))
-			log.Println(e.Error())
+			log.Error(e)
 		} else {
-			msg, err := json.Marshal(char); if err != nil{ log.Println(err); w.Write([]byte(err.Error())); return}
+			msg, err := json.Marshal(char); if err != nil{ log.Error(err); w.Write([]byte(err.Error())); return}
 			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 			w.WriteHeader(200)
 			w.Write(msg)
 		}
 	} else {
+		log.Info("User tried to get main, but was not autherized")
 		w.WriteHeader(http.StatusUnauthorized)
 	}
 }

@@ -7,13 +7,13 @@ var (
 
 	promRequests = prometheus.NewCounter(
 		prometheus.CounterOpts{
-			Name: "requests",
+			Name: "requests_total",
 			Help: "The ammount of requests that has occured since start",
 		},
 	)
 	promLogins = prometheus.NewCounter(
 		prometheus.CounterOpts{
-			Name: "logins",
+			Name: "logins_total",
 			Help: "The ammount of logins that has occured since start",
 		})
 
@@ -23,6 +23,4 @@ var (
 
 
 
-func init(){
-	prometheus.MustRegister(promRequests)
-}
+

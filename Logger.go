@@ -1,7 +1,7 @@
 package main
 
 import (
-"log"
+log "github.com/sirupsen/logrus"
 "net/http"
 "time"
 )
@@ -12,8 +12,8 @@ func Logger(inner http.Handler, name string) http.Handler {
 
 		inner.ServeHTTP(w, r)
 		promRequests.Inc()
-		log.Printf(
-			"%s\t%s\t%s\t%s",
+		log.Infof(
+			"%s %s %s %s",
 			r.Method,
 			r.RequestURI,
 			name,

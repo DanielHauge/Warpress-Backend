@@ -7,6 +7,7 @@ import (
 	"./WarcraftLogs"
 	"./Wowprogress"
 	"github.com/avelino/slugify"
+	log "github.com/sirupsen/logrus"
 	"strconv"
 	"sync"
 )
@@ -14,6 +15,10 @@ import (
 func FetchFullPersonal(id int, Profile *PersonalProfile) error{
 
 	charMap, e := Redis.GetStruct("MAIN:"+strconv.Itoa(id))
+	if e != nil{
+		log.Error(e, " -> It seems there is no main registered to the requesting user")
+		return e
+	}
 	char := Blizzard.CharacterMinimalFromMap(charMap)
 
 	var wg sync.WaitGroup

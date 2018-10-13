@@ -2,7 +2,7 @@ package Raider_io
 
 import (
 	"github.com/json-iterator/go"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 )
 
@@ -13,13 +13,13 @@ func GetRaiderIORank(input CharInput) (CharacterProfile, error){
 
 	resp, e := http.Get(url)
 	if e != nil{
-		log.Println(e.Error())
+		log.Error(e)
 		return CharacterProfile{}, e
 	}
 
 	var rankings CharacterProfile
 	e = json.NewDecoder(resp.Body).Decode(&rankings)
-	if e != nil { log.Println(e.Error()) }
+	if e != nil { log.Error(e) }
 
 	return rankings, e
 }

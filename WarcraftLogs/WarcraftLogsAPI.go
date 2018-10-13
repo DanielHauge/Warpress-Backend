@@ -1,8 +1,8 @@
 package WarcraftLogs
 
 import (
-	"log"
 	"github.com/json-iterator/go"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"os"
 )
@@ -16,13 +16,13 @@ func GetWarcraftLogsRanks(input CharInput) ([]Encounter, error){
 
 	resp, e := http.Get(fullUrl)
 	if e != nil{
-		log.Println(e.Error())
+		log.Error(e)
 		return []Encounter{}, e
 	}
 
 	var rankings []Encounter
 	e = json.NewDecoder(resp.Body).Decode(&rankings)
-	if e != nil { log.Println(e.Error()) }
+	if e != nil { log.Error(e) }
 
 	return rankings, e
 }

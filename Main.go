@@ -5,9 +5,13 @@ import (
 	"crypto/tls"
 	"database/sql"
 	"github.com/json-iterator/go"
+	"github.com/kz/discordrus"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/rs/cors"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
+	"os"
+	"time"
 )
 
 // go get github.com/go-sql-driver/mysql
@@ -23,6 +27,13 @@ import (
 // go get -u github.com/go-redis/cache
 // go get github.com/vmihailenco/msgpack
 // go get github.com/prometheus/client_golang/prometheus
+// go get github.com/sirupsen/logrus
+// go get -u github.com/kz/discordrus
+
+
+// Unsure but might need:
+// go get golang.org/x/sys/windows/svc/eventlog
+// go get gopkg.in/alecthomas/kingpin.v2
 
 
 var DB *sql.DB
@@ -36,7 +47,39 @@ var json = jsoniter.ConfigFastest
 // 6. private warcraftlogs
 
 
+func init(){
+	prometheus.MustRegister(promRequests, promLogins)
 
+	log.SetFormatter(&log.TextFormatter{
+		DisableColors: false,
+		TimestampFormat: time.RFC822,
+	})
+
+	log.SetOutput(os.Stderr)
+
+
+
+	log.AddHook(discordrus.NewHook(
+
+		os.Getenv("DISCORDRUS_WEBHOOK_URL"),
+		log.WarnLevel,
+		&discordrus.Opts{
+			Username: "Logrus",
+			EnableCustomColors: true,
+			CustomLevelColors: &discordrus.LevelColors{
+				Debug: 10170623,
+				Info:  3581519,
+				Warn:  14327864,
+				Error: 13631488,
+				Panic: 13631488,
+				Fatal: 13631488,
+			},
+			DisableInlineFields: false,
+		},
+		))
+
+
+}
 
 func main() {
 
@@ -64,7 +107,7 @@ func main() {
 	}
 
 	if e := Redis.CanIConnect(); e != nil{
-		log.Println("Cannot connect to database. Make sure redis is running.")
+		log.Warn("Cannot connect to database. Make sure redis is running.")
 		log.Fatal(e)
 	}
 	//Start Server

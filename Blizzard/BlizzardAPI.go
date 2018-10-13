@@ -2,7 +2,7 @@ package Blizzard
 
 import (
 	"github.com/json-iterator/go"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"os"
 )
@@ -18,7 +18,7 @@ func GetBlizzardChar(char CharacterMinimal) (FullCharInfo, error){
 
 	var fullChar FullCharInfo
 	e = json.NewDecoder(resp.Body).Decode(&fullChar)
-	if e != nil { log.Println(e.Error()) }
+	if e != nil { log.Error(e) }
 
 	return fullChar, e
 }

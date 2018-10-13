@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/json-iterator/go"
+	"github.com/prometheus/common/log"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -57,6 +58,7 @@ func NewClient(region string, c *http.Client) *Client {
 	if err != nil {
 		// We panic because we manually construct it above so it should
 		// never really fail unless the user gives us a REALLY bad region.
+		log.Error(err)
 		panic(err)
 	}
 

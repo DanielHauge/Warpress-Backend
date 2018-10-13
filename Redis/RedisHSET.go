@@ -1,8 +1,9 @@
 package Redis
 
 import (
+	"errors"
 	"github.com/go-redis/redis"
-	"log"
+	log "github.com/sirupsen/logrus"
 )
 
 func SetStruct(key string, obj map[string]interface{}){
@@ -14,7 +15,7 @@ func SetStruct(key string, obj map[string]interface{}){
 
 	e := client.HMSet(key, obj).Err()
 	if e != nil{
-		log.Println(e.Error())
+		log.Error(e)
 	}
 }
 
@@ -26,10 +27,22 @@ func GetStruct(key string) (map[string]string, error){
 		DB: 0,
 	})
 
-	value, e := client.HGetAll(key).Result()
+	exists, e := client.Exists(key).Result()
 	if e != nil{
-		log.Println(e.Error())
-		return map[string]string{}, e
+		log.Error(e)
+		return nil, e
 	}
-	return value, e
+
+	if exists == 1{
+		value, e := client.HGetAll(key).Result()
+		if e != nil{
+			log.Error(e)
+			return map[string]string{}, e
+		}
+		return value, e
+	} else {
+		return map[string]string{}, errors.New("The key did not exist")
+	}
+
+
 }

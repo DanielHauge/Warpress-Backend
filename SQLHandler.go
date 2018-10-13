@@ -2,8 +2,8 @@ package main
 
 import (
 	"database/sql"
-	"os"
 	"fmt"
+	"os"
 )
 
 func SetupDB(){

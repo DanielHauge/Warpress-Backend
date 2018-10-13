@@ -3,8 +3,8 @@ package Redis
 import (
 	"github.com/go-redis/cache"
 	"github.com/go-redis/redis"
+	log "github.com/sirupsen/logrus"
 	"github.com/vmihailenco/msgpack"
-	"log"
 	"time"
 )
 
@@ -31,7 +31,7 @@ func CacheSetResult(key string, obj interface{}){
 		Expiration: time.Minute*10,
 	})
 	if err != nil {
-		log.Println(err.Error())
+		log.Error(err)
 	}
 }
 
@@ -55,7 +55,7 @@ func CacheGetResult(Key string, obj interface{}) error{
 	}
 	err := codec.Get(Key, obj)
 	if err != nil {
-		log.Println(err.Error())
+		log.Error(err)
 	}
 	return err
 }

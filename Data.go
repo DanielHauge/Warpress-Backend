@@ -2,10 +2,10 @@ package main
 
 import (
 	"./Blizzard"
-	"./WarcraftLogs"
 	"./Raider.io"
+	"./WarcraftLogs"
 	"./Wowprogress"
-	)
+)
 
 
 

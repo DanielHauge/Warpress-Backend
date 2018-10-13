@@ -6,9 +6,8 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/base64"
-	"fmt"
+	log "github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"
-	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -45,7 +44,7 @@ func HandleOauthCallback(w http.ResponseWriter, r *http.Request){
 	// Checks if oauthstate from blizzard is correct, in case of hacks and stuff.
 	oauthState, _ := r.Cookie("oauthstate")
 	if r.FormValue("state") != oauthState.Value {
-		log.Println("invalid oauth blizzard state")
+		log.Error("invalid oauth blizzard state")
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect) // TODO: redirect til error side eller sådan noget.
 		return
 	}
@@ -53,7 +52,7 @@ func HandleOauthCallback(w http.ResponseWriter, r *http.Request){
 	// Gets accessToken
 	token, err := oauthCfg.Exchange(context.Background(), r.FormValue("code"))
 	if err != nil {
-		fmt.Errorf("code exchange wrong: %s", err.Error())
+		log.Error(err)
 		return
 	}
 
@@ -61,9 +60,7 @@ func HandleOauthCallback(w http.ResponseWriter, r *http.Request){
 	authClient := oauthCfg.Client(oauth2.NoContext, token)
 	client := bnet.NewClient("eu", authClient)
 	user, _, e := client.Account().User()
-	log.Println(user.ID)
-	log.Print("TOKEN: ")
-	log.Println(token)
+	log.Debug("TOKEN: " + strconv.Itoa(user.ID) ,token)
 
 
 	// Caches the AccessToken in redis for later validation.
@@ -84,8 +81,7 @@ func HandleOauthCallback(w http.ResponseWriter, r *http.Request){
 	}
 
 	if e != nil {
-		log.Println(e.Error())
-		fmt.Fprint(w, "Something went wrong!", e.Error())
+		log.Error(err)
 	}
 }
 
@@ -99,7 +95,7 @@ func AreAccessTokensSame(a oauth2.Token, b oauth2.Token)bool{
 func DoesUserHaveAccess(w http.ResponseWriter, r *http.Request) (bool, int) {
 	accesToken, accountid, e := GetAccessTokenCookieFromClient(r)
 	if e != nil{
-		w.Write([]byte("Something went wrong: "+e.Error()))
+		log.Error(e)
 		w.WriteHeader(500)
 		return false, 0
 	}

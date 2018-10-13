@@ -6,8 +6,8 @@ import (
 	"./Redis"
 	"./WarcraftLogs"
 	"bytes"
+	log "github.com/sirupsen/logrus"
 	"gopkg.in/russross/blackfriday.v2"
-	"log"
 	"net/http"
 	"reflect"
 	"strconv"
@@ -100,22 +100,24 @@ func GetPersonalFull(w http.ResponseWriter, r *http.Request) {
 			}()
 		} else {
 			e = FetchFullPersonal(id, &Profile)
-			go Redis.CacheSetResult("PERSONAL:"+strconv.Itoa(id), Profile)
+			if e == nil {
+				go Redis.CacheSetResult("PERSONAL:"+strconv.Itoa(id), Profile)
+			}
 		}
 
 
 		if e != nil{
 			w.WriteHeader(500)
 			w.Write([]byte(e.Error()))
-			log.Println(e.Error())
 		} else {
-			msg, err := json.Marshal(Profile); if err != nil{ log.Println(err); w.Write([]byte(err.Error())); return}
+			msg, err := json.Marshal(Profile); if err != nil{ log.Error(e); w.Write([]byte(err.Error())); return}
 			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 			w.WriteHeader(200)
 			w.Write(msg)
 		}
 	} else {
-		w.WriteHeader(http.StatusUnauthorized)
+		log.Info("User tried to get personal, but was not autherized")
+		w.Write([]byte("Unfortunately it seemed like you didn't have access, try login with blizzard again"))
 	}
 
 }
@@ -132,15 +134,15 @@ func GetPersonalRaiderio(w http.ResponseWriter, r *http.Request){
 		if e != nil{
 			w.WriteHeader(500)
 			w.Write([]byte(e.Error()))
-			log.Println(e.Error())
+			log.Error(e)
 		} else {
-			msg, err := json.Marshal(raiderio); if err != nil{ log.Println(err); w.Write([]byte(err.Error())); return}
+			msg, err := json.Marshal(raiderio); if err != nil{ log.Error(e); w.Write([]byte(err.Error())); return}
 			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 			w.WriteHeader(200)
 			w.Write(msg)
 		}
 	} else {
-		w.WriteHeader(http.StatusUnauthorized)
+		log.Info("User tried to get personal, but was not autherized")
 	}
 }
 
@@ -156,15 +158,15 @@ func GetPersonalWarcraftLogs(w http.ResponseWriter, r *http.Request){
 		if e != nil{
 			w.WriteHeader(500)
 			w.Write([]byte(e.Error()))
-			log.Println(e.Error())
+			log.Error(e)
 		} else {
-			msg, err := json.Marshal(logs); if err != nil{ log.Println(err); w.Write([]byte(err.Error())); return}
+			msg, err := json.Marshal(logs); if err != nil{ log.Error(e); w.Write([]byte(err.Error())); return}
 			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 			w.WriteHeader(200)
 			w.Write(msg)
 		}
 	} else {
-		w.WriteHeader(http.StatusUnauthorized)
+		log.Info("User tried to get personal, but was not autherized")
 	}
 }
 
@@ -180,15 +182,15 @@ func GetPersonalBlizzardChar(w http.ResponseWriter, r *http.Request){
 		if e != nil{
 			w.WriteHeader(500)
 			w.Write([]byte(e.Error()))
-			log.Println(e.Error())
+			log.Error(e)
 		} else {
-			msg, err := json.Marshal(blizzChar); if err != nil{ log.Println(err); w.Write([]byte(err.Error())); return}
+			msg, err := json.Marshal(blizzChar); if err != nil{ log.Error(e); w.Write([]byte(err.Error())); return}
 			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 			w.WriteHeader(200)
 			w.Write(msg)
 		}
 	} else {
-		w.WriteHeader(http.StatusUnauthorized)
+		log.Info("User tried to get personal, but was not autherized")
 	}
 }
 

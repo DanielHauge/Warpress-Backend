@@ -3,8 +3,8 @@ package Redis
 import (
 	"errors"
 	"github.com/go-redis/redis"
+	log "github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"
-	"log"
 	"time"
 )
 
