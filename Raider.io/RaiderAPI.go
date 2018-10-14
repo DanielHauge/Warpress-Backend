@@ -9,6 +9,7 @@ import (
 var json = jsoniter.ConfigFastest
 
 func GetRaiderIORank(input CharInput) (CharacterProfile, error){
+	log.Info("Fetching RaiderIO profile for: ",input)
 	url := "https://raider.io/api/v1/characters/profile?region="+input.Region+"&realm="+input.Realm+"&name="+input.Name+"&fields=mythoc_plus_scores%2Cmythic_plus_ranks%2Cmythic_plus_recent_runs%2Cmythic_plus_highest_level_runs%2Cmythic_plus_weekly_highest_level_runs%2C"
 
 	resp, e := http.Get(url)

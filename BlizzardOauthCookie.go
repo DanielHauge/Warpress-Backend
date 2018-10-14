@@ -22,10 +22,10 @@ func SetAccessTokenCookieOnClient(accountId int, token *oauth2.Token, w http.Res
 		"refreshtoken":token.RefreshToken,
 		"accesstoken":token.AccessToken,
 	}
-	encoded, err := s.Encode("WarpressAccessToken", tokenAsMap)
+	encoded, err := s.Encode("WowHubAccessToken", tokenAsMap)
 	if err == nil{
 		cookie := &http.Cookie{
-			Name: "WarpressAccessToken",
+			Name: "WowHubAccessToken",
 			Value: encoded,
 			Expires: token.Expiry,
 			Path: "/",
@@ -39,10 +39,10 @@ func SetAccessTokenCookieOnClient(accountId int, token *oauth2.Token, w http.Res
 }
 
 func GetAccessTokenCookieFromClient(r *http.Request) (oauth2.Token, int,error) { // TODO: When application starts, new key is generated, and therefor needs to ask for new accessToken from blizzard.
-	cookie, err := r.Cookie("WarpressAccessToken")
+	cookie, err := r.Cookie("WowHubAccessToken")
 	if err == nil{
 		value := make(map[string]string)
-		if err = s.Decode("WarpressAccessToken", cookie.Value, &value); err == nil{
+		if err = s.Decode("WowHubAccessToken", cookie.Value, &value); err == nil{
 			time, err := time.Parse(time.RFC3339, value["expire"])
 			token := oauth2.Token{
 				Expiry: time,

@@ -12,7 +12,7 @@ var json = jsoniter.ConfigFastest
 var ApiURL = "https://eu.api.battle.net/wow/"
 
 func GetBlizzardChar(char CharacterMinimal) (FullCharInfo, error){
-
+	log.Info("Fetching Blizzardchar for: ",char)
 	url := ApiURL+"character/"+char.Realm+"/"+char.Name+"?fields=guild+items&locale="+char.Locale+"&apikey="+os.Getenv("BLIZZARD_APIKEY")
 	resp, e := http.Get(url)
 	defer resp.Body.Close()

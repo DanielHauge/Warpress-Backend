@@ -1,12 +1,13 @@
 package Wowprogress
 
 import (
-	"encoding/json"
+	"github.com/json-iterator/go"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 	"strings"
 )
 
+var json = jsoniter.ConfigFastest
 
 type Input struct {
 	Region string
@@ -22,7 +23,7 @@ type GuildRank struct {
 }
 
 func GetGuildRank(input Input) (GuildRank, error){
-
+	log.Info("Fetching wowprogress Guildrank for: ", input)
 	fullUrl := "https://www.wowprogress.com/guild/"+input.Region +"/"+input.Realm+"/"+strings.Replace(input.Guild, " ", "+", -1)+"/json_rank"
 
 	resp, e := http.Get(fullUrl)

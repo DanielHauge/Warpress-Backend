@@ -75,8 +75,8 @@ var IndexPage []byte
 
 func Index(w http.ResponseWriter, r *http.Request) {
 	var buffer bytes.Buffer
-	buffer.WriteString("# Warpress API\n")
-	buffer.WriteString("This is a api for the website of Warpress, this page is only available during development\n\n")
+	buffer.WriteString("# Wowhub API\n")
+	buffer.WriteString("This is a api for the website of wowhub, this page is only available during development\n\n")
 	buffer.WriteString("## Api endpoints:\n\n")
 	buffer.Write(IndexPage)
 	output := blackfriday.Run([]byte(buffer.Bytes()))
@@ -120,7 +120,8 @@ func GetPersonalFull(w http.ResponseWriter, r *http.Request) {
 			w.Write(msg)
 		}
 	} else {
-		log.Info("User tried to get personal, but was not autherized")
+		log.Info("User tried to get full personal, but was not autherized")
+		w.WriteHeader(http.StatusUnauthorized)
 		w.Write([]byte("Unfortunately it seemed like you didn't have access, try login with blizzard again"))
 	}
 
@@ -162,7 +163,8 @@ func GetPersonalRaiderio(w http.ResponseWriter, r *http.Request){
 			w.Write(msg)
 		}
 	} else {
-		log.Info("User tried to get personal, but was not autherized")
+		log.Info("User tried to get personal raiderio, but was not autherized")
+		w.WriteHeader(http.StatusUnauthorized)
 		w.Write([]byte("Unfortunately it seemed like you didn't have access, try login with blizzard again"))
 	}
 }
@@ -205,7 +207,8 @@ func GetPersonalWarcraftLogs(w http.ResponseWriter, r *http.Request){
 			w.Write(msg)
 		}
 	} else {
-		log.Info("User tried to get personal, but was not autherized")
+		log.Info("User tried to get personal warcraftlogs, but was not autherized")
+		w.WriteHeader(http.StatusUnauthorized)
 		w.Write([]byte("Unfortunately it seemed like you didn't have access, try login with blizzard again"))
 	}
 }
@@ -245,8 +248,49 @@ func GetPersonalBlizzardChar(w http.ResponseWriter, r *http.Request){
 			w.Write(msg)
 		}
 	} else {
-		log.Info("User tried to get personal, but was not autherized")
+		log.Info("User tried to get personal blizzard, but was not autherized")
+		w.WriteHeader(http.StatusUnauthorized)
 		w.Write([]byte("Unfortunately it seemed like you didn't have access, try login with blizzard again"))
 	}
 }
 
+func GetPersonalImprovements(w http.ResponseWriter, r *http.Request){
+	acces, id := DoesUserHaveAccess(w, r)
+	if acces {
+
+		var improvementsProfile PersonalImprovement
+		key := "PERSONAL/IMPROVEMENT:"+strconv.Itoa(id)
+		var e error
+		if Redis.DoesKeyExist(key){
+
+			e = Redis.CacheGetResult(key, &improvementsProfile)
+			go func(){
+				var Caching PersonalImprovement
+				FetchPersonalImprovementsFull(id, &Caching)
+				Redis.CacheSetResult(key, Caching)
+			}()
+
+		} else {
+
+			e = FetchPersonalImprovementsFull(id, &improvementsProfile)
+			if e == nil{
+				go Redis.CacheSetResult(key, improvementsProfile)
+			}
+		}
+
+		if e != nil{
+			w.WriteHeader(500)
+			w.Write([]byte(e.Error()))
+			log.Error(e)
+		} else {
+			msg, err := json.Marshal(improvementsProfile); if err != nil{ log.Error(e); w.Write([]byte(err.Error())); return}
+			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+			w.WriteHeader(200)
+			w.Write(msg)
+		}
+	} else {
+		log.Info("User tried to get personal improvements, but was not authorized")
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write([]byte("Unfortunately it seemed like you didn't have access, try login with blizzard again"))
+	}
+}

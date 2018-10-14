@@ -84,6 +84,14 @@ var routes = Routes{
 		nil,
 		ExamplePleaseTryIt{AlotOfJson:"Please Try It And see."},
 	},
+	Route{
+		"Get personal improvements",
+		"GET",
+		"/personal/improvements",
+		GetPersonalImprovements,
+		nil,
+		ExamplePleaseTryIt{AlotOfJson:"Please Try It And see"},
+	},
 }
 
 var restrictedRoutes = Routes{

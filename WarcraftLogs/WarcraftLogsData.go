@@ -40,3 +40,12 @@ type GearPeace struct {
 	Icon string `json:"icon"`
 	Quality string `json:"quality"`
 }
+
+type friendly struct {
+	Name string `json:"name"`
+	Id int `json:"id"`
+}
+
+type Report struct {
+	Friendlies []friendly `json:"friendlies"`
+}
