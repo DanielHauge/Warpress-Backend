@@ -6,7 +6,6 @@ import (
 	"database/sql"
 	"github.com/json-iterator/go"
 	"github.com/kz/discordrus"
-	"github.com/prometheus/client_golang/prometheus"
 	"github.com/rs/cors"
 	log "github.com/sirupsen/logrus"
 	"net/http"
@@ -49,7 +48,7 @@ var json = jsoniter.ConfigFastest
 
 
 func init(){
-	prometheus.MustRegister(promRequests, promLogins)
+
 
 	log.SetFormatter(&log.TextFormatter{
 		DisableColors: false,

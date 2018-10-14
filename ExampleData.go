@@ -1,6 +1,6 @@
 package main
 
-import "./Blizzard"
+import "./Integrations/BlizzardOpenAPI"
 
 type ExampleInput struct {
 	ExampleString string `json:"example_string"`
@@ -15,7 +15,7 @@ type ExamplePleaseTryIt struct{
 	AlotOfJson string `json:"alot_of_json"`
 }
 
-var ExampleFullBlizzChar Blizzard.FullCharInfo = Blizzard.FullCharInfo{
+var ExampleFullBlizzChar = BlizzardOpenAPI.FullCharInfo{
 	LastModified: 23321321,
 	Name: "Rakhoal",
 	Realm: "Twisting-Nether",
@@ -29,13 +29,13 @@ var ExampleFullBlizzChar Blizzard.FullCharInfo = Blizzard.FullCharInfo{
 	CalcClass: "Some weird String -> Please go try the API, the items are long!",
 	Faction: 0,
 	TotalHonorableKills: 9001,
-	Guild: Blizzard.Guild{
+	Guild: BlizzardOpenAPI.Guild{
 		Name: "Time in Motion",
 		Realm: "Twisting-Nether",
 		Battlegroup: "BattleWorld / Yoyoyo",
 		Members: 502,
 		AchievementPoint: 9020,
-		Emblem: Blizzard.Emblem{
+		Emblem: BlizzardOpenAPI.Emblem{
 			Icon: 5,
 			IconColor: "Blue",
 			IconColorId: 5,

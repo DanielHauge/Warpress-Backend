@@ -1,8 +1,9 @@
-package main
+package BlizzardOauthAPI
 
 import (
-	"./GoBnet"
-	"./Redis"
+	"../../Prometheus"
+	"../../Redis"
+	"./BattleNetOauth"
 	"context"
 	"crypto/rand"
 	"encoding/base64"
@@ -22,9 +23,12 @@ var oauthCfg = &oauth2.Config{
 	RedirectURL: 	"https://localhost:443/bnet/auth/callback",
 }
 
+
+
+
+
 func generateStateOauthCookie(w http.ResponseWriter) string {
 	var expiration = time.Now().Add(365 * 24 * time.Hour)
-
 	b := make([]byte, 16)
 	rand.Read(b)
 	state := base64.URLEncoding.EncodeToString(b)
@@ -62,14 +66,13 @@ func HandleOauthCallback(w http.ResponseWriter, r *http.Request){
 	user, _, e := client.Account().User()
 	log.Debug("TOKEN: " + strconv.Itoa(user.ID) ,token)
 
+	//
+	Prometheus.LoginInc()
 
 	// Caches the AccessToken in redis for later validation.
 	Redis.CacheAccesToken("AT:"+strconv.Itoa(user.ID), token)
 
 	SetAccessTokenCookieOnClient(user.ID, token, w)
-
-	// Incrementing Prometheus logging of login.
-	promLogins.Inc()
 
 
 	// If user.id exists in database, fetch data and redirect to login with that pass and accesstoken.

@@ -1,4 +1,4 @@
-package Blizzard
+package BlizzardOpenAPI
 
 import (
 	"github.com/json-iterator/go"
@@ -11,11 +11,12 @@ var json = jsoniter.ConfigFastest
 
 var ApiURL = "https://eu.api.battle.net/wow/"
 
-func GetBlizzardChar(char CharacterMinimal) (FullCharInfo, error){
-	log.Info("Fetching Blizzardchar for: ",char)
-	url := ApiURL+"character/"+char.Realm+"/"+char.Name+"?fields=guild+items&locale="+char.Locale+"&apikey="+os.Getenv("BLIZZARD_APIKEY")
+func GetBlizzardChar(realm string, name string, locale string) (FullCharInfo, error){
+	log.Infof("Fetching Blizzardchar for: {Realm: %s - Name: %s - Locale: %s",realm, name, locale)
+	url := ApiURL+"character/"+realm+"/"+name+"?fields=guild+items&locale="+locale+"&apikey="+os.Getenv("BLIZZARD_APIKEY")
 	resp, e := http.Get(url)
 	defer resp.Body.Close()
+
 
 	var fullChar FullCharInfo
 	e = json.NewDecoder(resp.Body).Decode(&fullChar)

@@ -1,4 +1,4 @@
-package Blizzard
+package BlizzardOpenAPI
 
 type Guild struct {
 	Name string `json:"name"`

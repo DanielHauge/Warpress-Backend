@@ -1,9 +1,9 @@
-package main
+package Personal
 
 import (
-	"./Blizzard"
-	"./Redis"
-	"./WarcraftLogs"
+	"../Integrations/BlizzardOauthAPI"
+	"../Integrations/WarcraftLogs"
+	"../Redis"
 	log "github.com/sirupsen/logrus"
 	"strconv"
 )
@@ -93,9 +93,9 @@ func MakeSimBotUrls(id int) RaidBotSimulations {
 		log.Error(e, " -> It seems there is no main registered to the requesting user")
 		return RaidBotSimulations{}
 	}
-	char := Blizzard.CharacterMinimalFromMap(charMap)
+	char := BlizzardOauthAPI.CharacterMinimalFromMap(charMap)
 
-	rest := "?region="+FromLocaleToRegion(char.Locale)+"&realm="+char.Realm+"&name="+char.Name
+	rest := "?region="+BlizzardOauthAPI.FromLocaleToRegion(char.Locale)+"&realm="+char.Realm+"&name="+char.Name
 	return RaidBotSimulations{
 		GearSim: RaidBotUrl+"gear"+rest,
 		TalentSim: RaidBotUrl+"talent"+rest,

@@ -16,7 +16,7 @@ var json = jsoniter.ConfigFastest
 
 const (
 	libraryVersion = "0.1"
-	userAgent      = "GoBnet/" + libraryVersion
+	userAgent      = "BattleNetOauth/" + libraryVersion
 )
 
 // Client is the API client for Battle.net. Create this using NewClient.

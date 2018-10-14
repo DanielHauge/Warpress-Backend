@@ -1,4 +1,4 @@
-package main
+package BlizzardOauthAPI
 
 import (
 	"github.com/gorilla/securecookie"

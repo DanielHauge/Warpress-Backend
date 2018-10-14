@@ -1,9 +1,10 @@
 package main
 
 import (
-log "github.com/sirupsen/logrus"
-"net/http"
-"time"
+	"./Prometheus"
+	log "github.com/sirupsen/logrus"
+	"net/http"
+	"time"
 )
 
 func Logger(inner http.Handler, name string) http.Handler {
@@ -11,7 +12,7 @@ func Logger(inner http.Handler, name string) http.Handler {
 		start := time.Now()
 
 		inner.ServeHTTP(w, r)
-		promRequests.Inc()
+		Prometheus.RequestInc()
 		log.Infof(
 			"%s %s %s %s",
 			r.Method,

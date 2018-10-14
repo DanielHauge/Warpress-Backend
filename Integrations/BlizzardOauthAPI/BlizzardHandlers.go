@@ -1,10 +1,10 @@
-package main
+package BlizzardOauthAPI
 
 import (
-	"./Blizzard"
-	"./GoBnet"
-	"./Redis"
+	"../../Redis"
+	"./BattleNetOauth"
 	"github.com/avelino/slugify"
+	"github.com/json-iterator/go"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"
 	"io"
@@ -13,6 +13,11 @@ import (
 	"sort"
 	"strconv"
 )
+
+var json = jsoniter.ConfigFastest
+
+
+
 
 
 
@@ -50,7 +55,7 @@ func SetMainCharacter(w http.ResponseWriter, r*http.Request){
 	acces, id := DoesUserHaveAccess(w, r)
 	if acces {
 
-		var char Blizzard.CharacterMinimal
+		var char CharacterMinimal
 		body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 		if err != nil{
 			log.Error(err)
@@ -82,7 +87,7 @@ func GetMainCharacter(w http.ResponseWriter, r *http.Request){
 	acces, id := DoesUserHaveAccess(w, r)
 	if acces {
 		d, e := Redis.GetStruct("MAIN:"+strconv.Itoa(id))
-		char := Blizzard.CharacterMinimalFromMap(d)
+		char := CharacterMinimalFromMap(d)
 		if e != nil{
 			w.WriteHeader(500)
 			w.Write([]byte(e.Error()))

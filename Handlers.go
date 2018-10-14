@@ -1,10 +1,12 @@
 package main
 
 import (
-	"./Blizzard"
-	"./Raider.io"
+	"./Integrations/BlizzardOauthAPI"
+	"./Integrations/BlizzardOpenAPI"
+	"./Integrations/Raider.io"
+	"./Integrations/WarcraftLogs"
+	"./Personal"
 	"./Redis"
-	"./WarcraftLogs"
 	"bytes"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/russross/blackfriday.v2"
@@ -83,26 +85,25 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	w.Write(output)
 }
 
+func HandleGetPersonalFull(w http.ResponseWriter, r *http.Request) {
 
-func GetPersonalFull(w http.ResponseWriter, r *http.Request) {
-
-	acces, id := DoesUserHaveAccess(w, r)
+	acces, id := BlizzardOauthAPI.DoesUserHaveAccess(w, r)
 	if acces {
-		var Profile PersonalProfile
+		var Profile Personal.PersonalProfile
 		key := "PERSONAL:"+strconv.Itoa(id)
 		var e error
 		if Redis.DoesKeyExist(key){
 
 			e = Redis.CacheGetResult(key, &Profile)
 			go func() {
-				var Caching PersonalProfile
-				FetchFullPersonal(id, &Caching)
+				var Caching Personal.PersonalProfile
+				Personal.FetchFullPersonal(id, &Caching)
 				Redis.CacheSetResult(key, Caching)
 			}()
 
 		} else {
 
-			e = FetchFullPersonal(id, &Profile)
+			e = Personal.FetchFullPersonal(id, &Profile)
 			if e == nil {
 				go Redis.CacheSetResult(key, Profile)
 			}
@@ -127,8 +128,8 @@ func GetPersonalFull(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func GetPersonalRaiderio(w http.ResponseWriter, r *http.Request){
-	acces, id := DoesUserHaveAccess(w, r)
+func HandleGetPersonalRaiderio(w http.ResponseWriter, r *http.Request){
+	acces, id := BlizzardOauthAPI.DoesUserHaveAccess(w, r)
 	if acces {
 
 		var RaiderioProfile Raider_io.CharacterProfile
@@ -139,13 +140,13 @@ func GetPersonalRaiderio(w http.ResponseWriter, r *http.Request){
 			e = Redis.CacheGetResult(key, &RaiderioProfile)
 			go func(){
 				var Caching Raider_io.CharacterProfile
-				FetchRaiderioPersonal(id, &Caching)
+				Personal.FetchRaiderioPersonal(id, &Caching)
 				Redis.CacheSetResult(key, Caching)
 			}()
 
 		} else {
 
-			e = FetchRaiderioPersonal(id, &RaiderioProfile)
+			e = Personal.FetchRaiderioPersonal(id, &RaiderioProfile)
 			if e == nil{
 				go Redis.CacheSetResult(key, RaiderioProfile)
 			}
@@ -169,8 +170,8 @@ func GetPersonalRaiderio(w http.ResponseWriter, r *http.Request){
 	}
 }
 
-func GetPersonalWarcraftLogs(w http.ResponseWriter, r *http.Request){
-	acces, id := DoesUserHaveAccess(w, r)
+func HandleGetPersonalWarcraftLogs(w http.ResponseWriter, r *http.Request){
+	acces, id := BlizzardOauthAPI.DoesUserHaveAccess(w, r)
 	if acces {
 
 
@@ -184,13 +185,13 @@ func GetPersonalWarcraftLogs(w http.ResponseWriter, r *http.Request){
 			e = Redis.CacheGetResult(key, &logs)
 			go func(){
 				var Caching []WarcraftLogs.Encounter
-				FetchWarcraftlogsPersonal(id, &Caching)
+				Personal.FetchWarcraftlogsPersonal(id, &Caching)
 				Redis.CacheSetResult(key, Caching)
 			}()
 
 		} else {
 
-			e = FetchWarcraftlogsPersonal(id, &logs)
+			e = Personal.FetchWarcraftlogsPersonal(id, &logs)
 			if e == nil{
 				go Redis.CacheSetResult(key, logs)
 			}
@@ -213,25 +214,25 @@ func GetPersonalWarcraftLogs(w http.ResponseWriter, r *http.Request){
 	}
 }
 
-func GetPersonalBlizzardChar(w http.ResponseWriter, r *http.Request){
-	acces, id := DoesUserHaveAccess(w, r)
+func HandleGetPersonalBlizzardChar(w http.ResponseWriter, r *http.Request){
+	acces, id := BlizzardOauthAPI.DoesUserHaveAccess(w, r)
 	if acces {
 
-		var blizzProfile Blizzard.FullCharInfo
+		var blizzProfile BlizzardOpenAPI.FullCharInfo
 		key := "PERSONAL/BLIZZARD:"+strconv.Itoa(id)
 		var e error
 		if Redis.DoesKeyExist(key){
 
 			e = Redis.CacheGetResult(key, &blizzProfile)
 			go func(){
-				var Caching Blizzard.FullCharInfo
-				FetchBlizzardPersonal(id, &Caching)
+				var Caching BlizzardOpenAPI.FullCharInfo
+				Personal.FetchBlizzardPersonal(id, &Caching)
 				Redis.CacheSetResult(key, Caching)
 			}()
 
 		} else {
 
-			e = FetchBlizzardPersonal(id, &blizzProfile)
+			e = Personal.FetchBlizzardPersonal(id, &blizzProfile)
 			if e == nil{
 				go Redis.CacheSetResult(key, blizzProfile)
 			}
@@ -254,25 +255,25 @@ func GetPersonalBlizzardChar(w http.ResponseWriter, r *http.Request){
 	}
 }
 
-func GetPersonalImprovements(w http.ResponseWriter, r *http.Request){
-	acces, id := DoesUserHaveAccess(w, r)
+func HandleGetPersonalImprovements(w http.ResponseWriter, r *http.Request){
+	acces, id := BlizzardOauthAPI.DoesUserHaveAccess(w, r)
 	if acces {
 
-		var improvementsProfile PersonalImprovement
+		var improvementsProfile Personal.PersonalImprovement
 		key := "PERSONAL/IMPROVEMENT:"+strconv.Itoa(id)
 		var e error
 		if Redis.DoesKeyExist(key){
 
 			e = Redis.CacheGetResult(key, &improvementsProfile)
 			go func(){
-				var Caching PersonalImprovement
-				FetchPersonalImprovementsFull(id, &Caching)
+				var Caching Personal.PersonalImprovement
+				Personal.FetchPersonalImprovementsFull(id, &Caching)
 				Redis.CacheSetResult(key, Caching)
 			}()
 
 		} else {
 
-			e = FetchPersonalImprovementsFull(id, &improvementsProfile)
+			e = Personal.FetchPersonalImprovementsFull(id, &improvementsProfile)
 			if e == nil{
 				go Redis.CacheSetResult(key, improvementsProfile)
 			}
