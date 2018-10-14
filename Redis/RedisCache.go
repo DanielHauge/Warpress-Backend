@@ -31,7 +31,7 @@ func CacheSetResult(key string, obj interface{}){
 		Expiration: time.Minute*10,
 	})
 	if err != nil {
-		log.Error(err)
+		log.Error(err, " -> Error occured in set!")
 	}
 }
 
@@ -55,7 +55,7 @@ func CacheGetResult(Key string, obj interface{}) error{
 	}
 	err := codec.Get(Key, obj)
 	if err != nil {
-		log.Error(err)
+		log.Error(err, " -> Error Occured in get!")
 	}
 	return err
 }

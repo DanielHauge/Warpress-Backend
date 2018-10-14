@@ -13,13 +13,14 @@ func GetRaiderIORank(input CharInput) (CharacterProfile, error){
 
 	resp, e := http.Get(url)
 	if e != nil{
-		log.Error(e)
+		log.Error(e, " -> Something went wrong in getting data from RaiderIO")
 		return CharacterProfile{}, e
 	}
+	defer resp.Body.Close()
 
 	var rankings CharacterProfile
 	e = json.NewDecoder(resp.Body).Decode(&rankings)
-	if e != nil { log.Error(e) }
+	if e != nil { log.Error(e, "Something went wrong in decoding data from RaiderIO") }
 
 	return rankings, e
 }

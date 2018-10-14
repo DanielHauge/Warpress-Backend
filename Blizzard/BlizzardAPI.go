@@ -13,12 +13,13 @@ var ApiURL = "https://eu.api.battle.net/wow/"
 
 func GetBlizzardChar(char CharacterMinimal) (FullCharInfo, error){
 
-	url := ApiURL+"/character/"+char.Realm+"/"+char.Name+"?fields=guild+items&locale="+char.Locale+"&apikey="+os.Getenv("BLIZZARD_APIKEY")
+	url := ApiURL+"character/"+char.Realm+"/"+char.Name+"?fields=guild+items&locale="+char.Locale+"&apikey="+os.Getenv("BLIZZARD_APIKEY")
 	resp, e := http.Get(url)
+	defer resp.Body.Close()
 
 	var fullChar FullCharInfo
 	e = json.NewDecoder(resp.Body).Decode(&fullChar)
-	if e != nil { log.Error(e) }
+	if e != nil { log.Error(e, " -> Something went wrong with decoding blizzard") }
 
 	return fullChar, e
 }

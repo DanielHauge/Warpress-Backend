@@ -29,6 +29,7 @@ import (
 // go get github.com/prometheus/client_golang/prometheus
 // go get github.com/sirupsen/logrus
 // go get -u github.com/kz/discordrus
+// go get github.com/jinzhu/copier
 
 
 // Unsure but might need:
@@ -77,9 +78,8 @@ func init(){
 			DisableInlineFields: false,
 		},
 		))
-
-
 }
+
 
 func main() {
 

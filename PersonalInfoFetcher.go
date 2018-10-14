@@ -7,6 +7,7 @@ import (
 	"./WarcraftLogs"
 	"./Wowprogress"
 	"github.com/avelino/slugify"
+	"github.com/jinzhu/copier"
 	log "github.com/sirupsen/logrus"
 	"strconv"
 	"sync"
@@ -58,5 +59,44 @@ func FetchFullPersonal(id int, Profile *PersonalProfile) error{
 	}()
 
 	wg.Wait()
+	return e
+}
+
+func FetchRaiderioPersonal(id int, Profile *Raider_io.CharacterProfile) error{
+
+	charMap, e := Redis.GetStruct("MAIN:"+strconv.Itoa(id))
+	if e != nil{
+		log.Error(e, " -> It seems there is no main registered to the requesting user")
+		return e
+	}
+	char := Blizzard.CharacterMinimalFromMap(charMap)
+	prof, e := Raider_io.GetRaiderIORank(Raider_io.CharInput{Name:char.Name, Realm:char.Realm, Region:FromLocaleToRegion(char.Locale)})
+	copier.Copy(Profile, &prof)
+	return e
+}
+
+func FetchWarcraftlogsPersonal(id int, Logs *[]WarcraftLogs.Encounter) error{
+	charMap, e := Redis.GetStruct("MAIN:"+strconv.Itoa(id))
+	if e != nil{
+		log.Error(e, " -> It seems there is no main registered to the requesting user")
+		return e
+	}
+	char := Blizzard.CharacterMinimalFromMap(charMap)
+
+	logs, e := WarcraftLogs.GetWarcraftLogsRanks(WarcraftLogs.CharInput{Name:char.Name, Realm:char.Realm, Region:FromLocaleToRegion(char.Locale)})
+	copier.Copy(Logs, &logs)
+	return e
+}
+
+func FetchBlizzardPersonal(id int, Profile *Blizzard.FullCharInfo) error{
+
+	charMap, e := Redis.GetStruct("MAIN:"+strconv.Itoa(id))
+	if e != nil{
+		log.Error(e, " -> It seems there is no main registered to the requesting user")
+		return e
+	}
+	char := Blizzard.CharacterMinimalFromMap(charMap)
+	blizzChar, e := Blizzard.GetBlizzardChar(char)
+	copier.Copy(Profile, &blizzChar)
 	return e
 }

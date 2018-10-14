@@ -1,13 +1,12 @@
 package Wowprogress
 
 import (
-	"github.com/json-iterator/go"
-	"log"
+	"encoding/json"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"strings"
 )
 
-var json = jsoniter.ConfigFastest
 
 type Input struct {
 	Region string
@@ -28,13 +27,14 @@ func GetGuildRank(input Input) (GuildRank, error){
 
 	resp, e := http.Get(fullUrl)
 	if e != nil{
-		log.Println(e.Error())
+		log.Error(e, " -> Something went wrong in getting data from wowprogress")
 		return GuildRank{}, e
 	}
+	defer resp.Body.Close()
 
 	var rankings GuildRank
 	e = json.NewDecoder(resp.Body).Decode(&rankings)
-	if e != nil { log.Println(e.Error()) }
+	if e != nil { log.Error(e, "Something went wrong in decoding wowprogress") }
 
 	return rankings, e
 }

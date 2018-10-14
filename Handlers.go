@@ -92,17 +92,21 @@ func GetPersonalFull(w http.ResponseWriter, r *http.Request) {
 		key := "PERSONAL:"+strconv.Itoa(id)
 		var e error
 		if Redis.DoesKeyExist(key){
+
 			e = Redis.CacheGetResult(key, &Profile)
 			go func() {
 				var Caching PersonalProfile
 				FetchFullPersonal(id, &Caching)
-				Redis.CacheSetResult("PERSONAL:"+strconv.Itoa(id), Caching)
+				Redis.CacheSetResult(key, Caching)
 			}()
+
 		} else {
+
 			e = FetchFullPersonal(id, &Profile)
 			if e == nil {
-				go Redis.CacheSetResult("PERSONAL:"+strconv.Itoa(id), Profile)
+				go Redis.CacheSetResult(key, Profile)
 			}
+
 		}
 
 
@@ -126,23 +130,40 @@ func GetPersonalRaiderio(w http.ResponseWriter, r *http.Request){
 	acces, id := DoesUserHaveAccess(w, r)
 	if acces {
 
-		charMap, e := Redis.GetStruct("MAIN:"+strconv.Itoa(id))
-		char := Blizzard.CharacterMinimalFromMap(charMap)
+		var RaiderioProfile Raider_io.CharacterProfile
+		key := "PERSONAL/RAIDERIO:"+strconv.Itoa(id)
+		var e error
+		if Redis.DoesKeyExist(key){
 
-		raiderio, e := Raider_io.GetRaiderIORank(Raider_io.CharInput{Name:char.Name, Realm:char.Realm, Region:FromLocaleToRegion(char.Locale)})
+			e = Redis.CacheGetResult(key, &RaiderioProfile)
+			go func(){
+				var Caching Raider_io.CharacterProfile
+				FetchRaiderioPersonal(id, &Caching)
+				Redis.CacheSetResult(key, Caching)
+			}()
+
+		} else {
+
+			e = FetchRaiderioPersonal(id, &RaiderioProfile)
+			if e == nil{
+				go Redis.CacheSetResult(key, RaiderioProfile)
+			}
+
+		}
 
 		if e != nil{
 			w.WriteHeader(500)
 			w.Write([]byte(e.Error()))
 			log.Error(e)
 		} else {
-			msg, err := json.Marshal(raiderio); if err != nil{ log.Error(e); w.Write([]byte(err.Error())); return}
+			msg, err := json.Marshal(RaiderioProfile); if err != nil{ log.Error(e); w.Write([]byte(err.Error())); return}
 			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 			w.WriteHeader(200)
 			w.Write(msg)
 		}
 	} else {
 		log.Info("User tried to get personal, but was not autherized")
+		w.Write([]byte("Unfortunately it seemed like you didn't have access, try login with blizzard again"))
 	}
 }
 
@@ -150,10 +171,28 @@ func GetPersonalWarcraftLogs(w http.ResponseWriter, r *http.Request){
 	acces, id := DoesUserHaveAccess(w, r)
 	if acces {
 
-		charMap, e := Redis.GetStruct("MAIN:"+strconv.Itoa(id))
-		char := Blizzard.CharacterMinimalFromMap(charMap)
 
-		logs, e := WarcraftLogs.GetWarcraftLogsRanks(WarcraftLogs.CharInput{Name:char.Name, Realm:char.Realm, Region:FromLocaleToRegion(char.Locale)})
+
+
+		var logs []WarcraftLogs.Encounter
+		key := "PERSONAL/LOGS:"+strconv.Itoa(id)
+		var e error
+		if Redis.DoesKeyExist(key){
+
+			e = Redis.CacheGetResult(key, &logs)
+			go func(){
+				var Caching []WarcraftLogs.Encounter
+				FetchWarcraftlogsPersonal(id, &Caching)
+				Redis.CacheSetResult(key, Caching)
+			}()
+
+		} else {
+
+			e = FetchWarcraftlogsPersonal(id, &logs)
+			if e == nil{
+				go Redis.CacheSetResult(key, logs)
+			}
+		}
 
 		if e != nil{
 			w.WriteHeader(500)
@@ -167,6 +206,7 @@ func GetPersonalWarcraftLogs(w http.ResponseWriter, r *http.Request){
 		}
 	} else {
 		log.Info("User tried to get personal, but was not autherized")
+		w.Write([]byte("Unfortunately it seemed like you didn't have access, try login with blizzard again"))
 	}
 }
 
@@ -174,23 +214,39 @@ func GetPersonalBlizzardChar(w http.ResponseWriter, r *http.Request){
 	acces, id := DoesUserHaveAccess(w, r)
 	if acces {
 
-		charMap, e := Redis.GetStruct("MAIN:"+strconv.Itoa(id))
-		char := Blizzard.CharacterMinimalFromMap(charMap)
+		var blizzProfile Blizzard.FullCharInfo
+		key := "PERSONAL/BLIZZARD:"+strconv.Itoa(id)
+		var e error
+		if Redis.DoesKeyExist(key){
 
-		blizzChar, e := Blizzard.GetBlizzardChar(char)
+			e = Redis.CacheGetResult(key, &blizzProfile)
+			go func(){
+				var Caching Blizzard.FullCharInfo
+				FetchBlizzardPersonal(id, &Caching)
+				Redis.CacheSetResult(key, Caching)
+			}()
+
+		} else {
+
+			e = FetchBlizzardPersonal(id, &blizzProfile)
+			if e == nil{
+				go Redis.CacheSetResult(key, blizzProfile)
+			}
+		}
 
 		if e != nil{
 			w.WriteHeader(500)
 			w.Write([]byte(e.Error()))
 			log.Error(e)
 		} else {
-			msg, err := json.Marshal(blizzChar); if err != nil{ log.Error(e); w.Write([]byte(err.Error())); return}
+			msg, err := json.Marshal(blizzProfile); if err != nil{ log.Error(e); w.Write([]byte(err.Error())); return}
 			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 			w.WriteHeader(200)
 			w.Write(msg)
 		}
 	} else {
 		log.Info("User tried to get personal, but was not autherized")
+		w.Write([]byte("Unfortunately it seemed like you didn't have access, try login with blizzard again"))
 	}
 }
 
