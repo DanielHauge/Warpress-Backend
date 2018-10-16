@@ -83,7 +83,11 @@ func init(){
 func main() {
 
 	router := NewRouter()
-	handler := cors.Default().Handler(router)
+	handler := cors.New(cors.Options{
+		AllowedOrigins: []string{"http://localhost:8080",},
+			AllowCredentials: true,
+			Debug: true,
+		}).Handler(router)
 	IndexPage = SetupIndexPage()
 
 	cfg := &tls.Config{
