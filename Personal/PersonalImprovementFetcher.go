@@ -84,9 +84,6 @@ func GetCharId(ReportID string, Name string, ints map[string]int) string {
 }
 
 
-
-
-
 func MakeSimBotUrls(id int) RaidBotSimulations {
 	charMap, e := Redis.GetStruct("MAIN:"+strconv.Itoa(id))
 	if e != nil{
