@@ -9,11 +9,11 @@ import (
 
 var json = jsoniter.ConfigFastest
 
-var ApiURL = "https://eu.api.battle.net/wow/"
 
-func GetBlizzardChar(realm string, name string, locale string) (FullCharInfo, error){
-	log.Infof("Fetching Blizzardchar for: {Realm: %s - Name: %s - Locale: %s",realm, name, locale)
-	url := ApiURL+"character/"+realm+"/"+name+"?fields=guild+items&locale="+locale+"&apikey="+os.Getenv("BLIZZARD_APIKEY")
+func GetBlizzardChar(realm string, name string, region string) (FullCharInfo, error){
+
+	log.Infof("Fetching Blizzardchar for: {Realm: %s - Name: %s - Region: %s",realm, name, "en_GB")
+	url := "https://"+region+".api.battle.net/wow/"+"character/"+realm+"/"+name+"?fields=guild+items&locale=en_GB&apikey="+os.Getenv("BLIZZARD_APIKEY")
 	resp, e := http.Get(url)
 	defer resp.Body.Close()
 

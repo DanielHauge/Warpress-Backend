@@ -15,13 +15,25 @@ import (
 	"time"
 )
 
-var oauthCfg = &oauth2.Config{
+var (
+
+ EuOauthCfg = &oauth2.Config{
 	ClientID:     	os.Getenv("BNET_CLIENTID"),
 	ClientSecret: 	os.Getenv("BNET_SECRET"),
 	Scopes:   		[]string{"wow.profile"},
 	Endpoint: 		bnet.Endpoint("eu"),
 	RedirectURL: 	"https://localhost:443/bnet/auth/callback",
 }
+
+ UsOauthCfg = &oauth2.Config{
+	 ClientID:     	os.Getenv("BNET_CLIENTID"),
+	 ClientSecret: 	os.Getenv("BNET_SECRET"),
+	 Scopes:   		[]string{"wow.profile"},
+	 Endpoint: 		bnet.Endpoint("us"),
+	 RedirectURL: 	"https://localhost:443/bnet/auth/callback",
+ }
+
+)
 
 
 
@@ -38,35 +50,64 @@ func generateStateOauthCookie(w http.ResponseWriter) string {
 	return state
 }
 
+func generateRegionCookie(w http.ResponseWriter, region string){
+	var expiration = time.Now().Add(365 * 24 * time.Hour)
+	cookie := http.Cookie{Name: "wowhub_recent_region", Value:region, Expires:expiration, Path: "/" }
+	http.SetCookie(w, &cookie)
+}
+
 func HandleAuthenticate(w http.ResponseWriter, r *http.Request){
+
 	oauthState := generateStateOauthCookie(w)
-	AuthUrl := oauthCfg.AuthCodeURL(oauthState)
+	var AuthUrl string
+	if r.FormValue("region") == "eu"{
+		AuthUrl = EuOauthCfg.AuthCodeURL(oauthState)
+		generateRegionCookie(w, "eu")
+	} else if r.FormValue("region") == "us" {
+		AuthUrl = UsOauthCfg.AuthCodeURL(oauthState)
+		generateRegionCookie(w, "us")
+	}
+
 	http.Redirect(w,r, AuthUrl, http.StatusTemporaryRedirect)
 }
 
 func HandleOauthCallback(w http.ResponseWriter, r *http.Request){
+
 	// Checks if oauthstate from blizzard is correct, in case of hacks and stuff.
-	oauthState, _ := r.Cookie("oauthstate")
+	oauthState, e := r.Cookie("oauthstate")
 	if r.FormValue("state") != oauthState.Value {
 		log.Error("invalid oauth blizzard state")
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect) // TODO: redirect til error side eller sådan noget.
 		return
 	}
 
+	// Find out which region it should handle from:
+	region := "eu"
+	regionCookie, _ := r.Cookie("wowhub_recent_region")
+	region = regionCookie.Value
+
+
 	// Gets accessToken
-	token, err := oauthCfg.Exchange(context.Background(), r.FormValue("code"))
-	if err != nil {
-		log.Error(err)
+	var token *oauth2.Token
+	if region == "eu"{
+		token, e = EuOauthCfg.Exchange(context.Background(), r.FormValue("code"))
+	} else if region == "us"{
+		token, e = UsOauthCfg.Exchange(context.Background(), r.FormValue("code"))
+	} else {
+		token, e = EuOauthCfg.Exchange(context.Background(), r.FormValue("code"))
+	}
+	if e != nil {
+		log.Error(e)
 		return
 	}
 
 	// Creates client from token and fetches the users accountId
-	authClient := oauthCfg.Client(oauth2.NoContext, token)
-	client := bnet.NewClient("eu", authClient)
+	authClient := EuOauthCfg.Client(oauth2.NoContext, token)
+	client := bnet.NewClient(region, authClient)
 	user, _, e := client.Account().User()
 	log.Debug("TOKEN: " + strconv.Itoa(user.ID) ,token)
 
-	//
+
 	Prometheus.LoginInc()
 
 	// Caches the AccessToken in redis for later validation.
@@ -84,7 +125,7 @@ func HandleOauthCallback(w http.ResponseWriter, r *http.Request){
 	}
 
 	if e != nil {
-		log.Error(err)
+		log.Error(e)
 	}
 }
 

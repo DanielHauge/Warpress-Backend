@@ -109,6 +109,7 @@ func main() {
 		log.Warn("Cannot connect to database. Make sure redis is running.")
 		log.Fatal(e)
 	}
+
 	//Start Server
 	log.Fatal(srv.ListenAndServeTLS("server.crt", "server.key"))
 

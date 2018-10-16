@@ -95,7 +95,7 @@ func MakeSimBotUrls(id int) RaidBotSimulations {
 	}
 	char := BlizzardOauthAPI.CharacterMinimalFromMap(charMap)
 
-	rest := "?region="+BlizzardOauthAPI.FromLocaleToRegion(char.Locale)+"&realm="+char.Realm+"&name="+char.Name
+	rest := "?region="+char.Region+"&realm="+char.Realm+"&name="+char.Name
 	return RaidBotSimulations{
 		GearSim: RaidBotUrl+"gear"+rest,
 		TalentSim: RaidBotUrl+"talent"+rest,

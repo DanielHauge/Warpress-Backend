@@ -30,7 +30,7 @@ func FetchFullPersonal(id int, Profile *PersonalProfile) error{
 
 	var blizzChar BlizzardOpenAPI.FullCharInfo
 	go func(){
-		blizzChar, e = BlizzardOpenAPI.GetBlizzardChar(char.Realm, char.Name, char.Locale)
+		blizzChar, e = BlizzardOpenAPI.GetBlizzardChar(char.Realm, char.Name, char.Region)
 		Profile.Character = blizzChar
 		wg.Done()
 		blizzwait.Done()
@@ -38,7 +38,7 @@ func FetchFullPersonal(id int, Profile *PersonalProfile) error{
 
 	var raiderio Raider_io.CharacterProfile
 	go func() {
-		raiderio, e = Raider_io.GetRaiderIORank(Raider_io.CharInput{Name:char.Name, Realm:char.Realm, Region:BlizzardOauthAPI.FromLocaleToRegion(char.Locale)})
+		raiderio, e = Raider_io.GetRaiderIORank(Raider_io.CharInput{Name:char.Name, Realm:char.Realm, Region:char.Region})
 		Profile.RaiderIOProfile = raiderio
 		wg.Done()
 	}()
@@ -46,7 +46,7 @@ func FetchFullPersonal(id int, Profile *PersonalProfile) error{
 
 	var logs []WarcraftLogs.Encounter
 	go func() {
-		logs, e = WarcraftLogs.GetWarcraftLogsRanks(WarcraftLogs.CharInput{Name:char.Name, Realm:char.Realm, Region:BlizzardOauthAPI.FromLocaleToRegion(char.Locale)})
+		logs, e = WarcraftLogs.GetWarcraftLogsRanks(WarcraftLogs.CharInput{Name:char.Name, Realm:char.Realm, Region:char.Region})
 		Profile.WarcraftLogsRanks = logs
 		wg.Done()
 	}()
@@ -54,7 +54,7 @@ func FetchFullPersonal(id int, Profile *PersonalProfile) error{
 	var wowprog Wowprogress.GuildRank
 	go func() {
 		blizzwait.Wait()
-		wowprog, e = Wowprogress.GetGuildRank(Wowprogress.Input{Region: BlizzardOauthAPI.FromLocaleToRegion(char.Locale), Realm: slugify.Slugify(char.Realm), Guild: blizzChar.Guild.Name})
+		wowprog, e = Wowprogress.GetGuildRank(Wowprogress.Input{Region: char.Region, Realm: slugify.Slugify(char.Realm), Guild: blizzChar.Guild.Name})
 		Profile.GuildRank = wowprog
 		wg.Done()
 	}()
@@ -71,7 +71,7 @@ func FetchRaiderioPersonal(id int, Profile *Raider_io.CharacterProfile) error{
 		return e
 	}
 	char := BlizzardOauthAPI.CharacterMinimalFromMap(charMap)
-	prof, e := Raider_io.GetRaiderIORank(Raider_io.CharInput{Name:char.Name, Realm:char.Realm, Region:BlizzardOauthAPI.FromLocaleToRegion(char.Locale)})
+	prof, e := Raider_io.GetRaiderIORank(Raider_io.CharInput{Name:char.Name, Realm:char.Realm, Region:char.Region})
 	copier.Copy(Profile, &prof)
 	return e
 }
@@ -84,7 +84,7 @@ func FetchWarcraftlogsPersonal(id int, Logs *[]WarcraftLogs.Encounter) error{
 	}
 	char := BlizzardOauthAPI.CharacterMinimalFromMap(charMap)
 
-	logs, e := WarcraftLogs.GetWarcraftLogsRanks(WarcraftLogs.CharInput{Name:char.Name, Realm:char.Realm, Region:BlizzardOauthAPI.FromLocaleToRegion(char.Locale)})
+	logs, e := WarcraftLogs.GetWarcraftLogsRanks(WarcraftLogs.CharInput{Name:char.Name, Realm:char.Realm, Region:char.Region})
 	copier.Copy(Logs, &logs)
 	return e
 }
@@ -97,7 +97,7 @@ func FetchBlizzardPersonal(id int, Profile *BlizzardOpenAPI.FullCharInfo) error{
 		return e
 	}
 	char := BlizzardOauthAPI.CharacterMinimalFromMap(charMap)
-	blizzChar, e := BlizzardOpenAPI.GetBlizzardChar(char.Realm, char.Name, char.Locale)
+	blizzChar, e := BlizzardOpenAPI.GetBlizzardChar(char.Realm, char.Name, char.Region)
 	copier.Copy(Profile, &blizzChar)
 	return e
 }

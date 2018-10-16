@@ -41,7 +41,10 @@ var routes = Routes{
 		"POST",
 		"/main",
 		BlizzardOauthAPI.SetMainCharacter,
-		BlizzardOauthAPI.CharacterMinimal{Name: "Rakhoal", Realm:"Twisting-Nether", Locale:"en_GB"},
+		struct {
+			Name string
+			Realm string
+		}{ Name: "Rakhoal", Realm:"twisting-nether"},
 		nil,
 	},
 	Route{
@@ -50,7 +53,10 @@ var routes = Routes{
 		"/main",
 		BlizzardOauthAPI.GetMainCharacter,
 		nil,
-		BlizzardOauthAPI.CharacterMinimal{Name: "Rakhoal", Realm:"Twisting-Nether", Locale:"en_GB"},
+		struct {
+			Name string
+			Realm string
+		}{ Name: "Rakhoal", Realm:"twisting-nether"},
 	},
 	Route{
 		"Get Full Personal View, Includes: (BlizzardOpenAPI, Raider.io, warcraftlogs, wowprogress) profiles",

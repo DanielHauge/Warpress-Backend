@@ -29,16 +29,35 @@ func GetCharactersForRegistration(w http.ResponseWriter, r *http.Request){
 		w.Write([]byte("Something went wrong:"+e.Error()))
 		return
 	}
+
 	cachedAccessToken, e := Redis.GetAccessToken("AT:"+strconv.Itoa(accountid))
 
 	if AreAccessTokensSame(accesToken, cachedAccessToken){
-		authClient := oauthCfg.Client(oauth2.NoContext, &accesToken)
-		client := bnet.NewClient("eu", authClient)
+
+		region := "eu"
+		regionCookie, _ := r.Cookie("wowhub_recent_region")
+		region = regionCookie.Value
+
+		var authClient *http.Client
+		if region == "eu"{
+			authClient = EuOauthCfg.Client(oauth2.NoContext, &accesToken)
+		} else if region == "us"{
+			authClient = UsOauthCfg.Client(oauth2.NoContext, &accesToken)
+		} else {
+			authClient = EuOauthCfg.Client(oauth2.NoContext, &accesToken)
+		}
+
+		client := bnet.NewClient(region, authClient)
 		WowProfile, _, e := client.Profile().WOW()
 		if e != nil { log.Error(e) }
 		chars := WowProfile.Characters
 		sort.Sort(bnet.ByLevel(chars))
-		e = json.NewEncoder(w).Encode(chars[0:4])
+		if len(chars) > 3 {
+			e = json.NewEncoder(w).Encode(chars[0:4])
+		} else {
+			e = json.NewEncoder(w).Encode(chars[0:])
+		}
+
 		if e != nil{
 			w.WriteHeader(http.StatusInternalServerError)
 			log.Error(e)
@@ -54,6 +73,11 @@ func GetCharactersForRegistration(w http.ResponseWriter, r *http.Request){
 func SetMainCharacter(w http.ResponseWriter, r*http.Request){
 	acces, id := DoesUserHaveAccess(w, r)
 	if acces {
+
+		region := "eu"
+		regionCookie, _ := r.Cookie("wowhub_recent_region")
+		region = regionCookie.Value
+
 
 		var char CharacterMinimal
 		body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
@@ -75,6 +99,7 @@ func SetMainCharacter(w http.ResponseWriter, r*http.Request){
 			}
 		}
 		char.Realm = slugify.Slugify(char.Realm)
+		char.Region = region
 		w.WriteHeader(201)
 		Redis.SetStruct("MAIN:"+strconv.Itoa(id), char.ToMap())
 	} else {
@@ -101,38 +126,5 @@ func GetMainCharacter(w http.ResponseWriter, r *http.Request){
 	} else {
 		log.Info("User tried to get main, but was not autherized")
 		w.WriteHeader(http.StatusUnauthorized)
-	}
-}
-
-func FromLocaleToRegion(locale string) string{
-	switch locale {
-	case "en_GB":
-		return "EU"
-	case "de_DE":
-		return "EU"
-	case "es_ES":
-		return "EU"
-	case "fr_FR":
-		return "EU"
-	case "it_IT":
-		return "EU"
-	case "pl_PL":
-		return "EU"
-	case "pt_PT":
-		return "EU"
-	case "ru_RU":
-		return "EU"
-	case "en_US":
-		return "US"
-	case "pt_BR":
-		return "US"
-	case "es_MX":
-		return "US"
-	case "zh_TW":
-		return "TW"
-	case "ko_KR":
-		return "KR"
-	default:
-		return "EU"
 	}
 }
