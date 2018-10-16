@@ -20,6 +20,7 @@ func GetBlizzardChar(realm string, name string, region string) (FullCharInfo, er
 
 
 	var fullChar FullCharInfo
+
 	e = json.NewDecoder(resp.Body).Decode(&fullChar)
 	if e != nil { log.Error(e, " -> Something went wrong with decoding blizzard char") }
 

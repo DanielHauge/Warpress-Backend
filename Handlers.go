@@ -6,6 +6,7 @@ import (
 	"./Integrations/Raider.io"
 	"./Integrations/WarcraftLogs"
 	"./Personal"
+	"./Guild"
 	"./Redis"
 	"bytes"
 	log "github.com/sirupsen/logrus"
@@ -74,6 +75,10 @@ func SetupIndexPage()[]byte{
 }
 
 var IndexPage []byte
+
+
+//TODO: Create require crendetials wrapper på functions.
+//TODO: Ordenlig error handling osv.
 
 func Index(w http.ResponseWriter, r *http.Request) {
 	var buffer bytes.Buffer
@@ -291,6 +296,47 @@ func HandleGetPersonalImprovements(w http.ResponseWriter, r *http.Request){
 		}
 	} else {
 		log.Info("User tried to get personal improvements, but was not authorized")
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write([]byte("Unfortunately it seemed like you didn't have access, try login with blizzard again"))
+	}
+}
+
+func HandleGetGuildOverview(w http.ResponseWriter, r *http.Request){
+	acces, id := BlizzardOauthAPI.DoesUserHaveAccess(w, r)
+	if acces {
+
+		var GuildProfile Guild.FullGuildOverviewInfo
+		key := "GUILD/OVERVIEW:"+strconv.Itoa(id)
+		var e error
+		if Redis.DoesKeyExist(key){
+
+			e = Redis.CacheGetResult(key, &GuildProfile)
+			go func(){
+				var Caching Guild.FullGuildOverviewInfo
+				Guild.FetchFullGuildOverview(id, &Caching)
+				Redis.CacheSetResult(key, Caching)
+			}()
+
+		} else {
+
+			e = Guild.FetchFullGuildOverview(id, &GuildProfile)
+			if e == nil{
+				go Redis.CacheSetResult(key, GuildProfile)
+			}
+		}
+
+		if e != nil{
+			w.WriteHeader(500)
+			w.Write([]byte(e.Error()))
+			log.Error(e)
+		} else {
+			msg, err := json.Marshal(GuildProfile); if err != nil{ log.Error(e); w.Write([]byte(err.Error())); return}
+			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+			w.WriteHeader(200)
+			w.Write(msg)
+		}
+	} else {
+		log.Info("User tried to get personal blizzard, but was not autherized")
 		w.WriteHeader(http.StatusUnauthorized)
 		w.Write([]byte("Unfortunately it seemed like you didn't have access, try login with blizzard again"))
 	}

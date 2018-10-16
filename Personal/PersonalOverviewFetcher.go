@@ -31,6 +31,7 @@ func FetchFullPersonal(id int, Profile *PersonalProfile) error{
 	var blizzChar BlizzardOpenAPI.FullCharInfo
 	go func(){
 		blizzChar, e = BlizzardOpenAPI.GetBlizzardChar(char.Realm, char.Name, char.Region)
+		go Redis.Set("GUILD:"+strconv.Itoa(id), blizzChar.Guild.Name+":"+blizzChar.Guild.Realm+":"+char.Region)
 		Profile.Character = blizzChar
 		wg.Done()
 		blizzwait.Done()
@@ -98,6 +99,7 @@ func FetchBlizzardPersonal(id int, Profile *BlizzardOpenAPI.FullCharInfo) error{
 	}
 	char := BlizzardOauthAPI.CharacterMinimalFromMap(charMap)
 	blizzChar, e := BlizzardOpenAPI.GetBlizzardChar(char.Realm, char.Name, char.Region)
+	go Redis.Set("GUILD:"+strconv.Itoa(id), blizzChar.Guild.Name+":"+blizzChar.Guild.Realm+":"+char.Region)
 	copier.Copy(Profile, &blizzChar)
 	return e
 }

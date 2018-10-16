@@ -42,9 +42,9 @@ var routes = Routes{
 		"/main",
 		BlizzardOauthAPI.SetMainCharacter,
 		struct {
-			Name string
-			Realm string
-		}{ Name: "Rakhoal", Realm:"twisting-nether"},
+			name string
+			realm string
+		}{ name: "Rakhoal", realm:"twisting-nether"},
 		nil,
 	},
 	Route{
@@ -54,9 +54,9 @@ var routes = Routes{
 		BlizzardOauthAPI.GetMainCharacter,
 		nil,
 		struct {
-			Name string
-			Realm string
-		}{ Name: "Rakhoal", Realm:"twisting-nether"},
+			name string
+			realm string
+		}{ name: "Rakhoal", realm:"twisting-nether"},
 	},
 	Route{
 		"Get Full Personal View, Includes: (BlizzardOpenAPI, Raider.io, warcraftlogs, wowprogress) profiles",
@@ -95,6 +95,14 @@ var routes = Routes{
 		"GET",
 		"/personal/improvements",
 		HandleGetPersonalImprovements,
+		nil,
+		ExamplePleaseTryIt{AlotOfJson:"Please Try It And see"},
+	},
+	Route{
+		"Get Guild overview",
+		"GET",
+		"/guild",
+		HandleGetGuildOverview,
 		nil,
 		ExamplePleaseTryIt{AlotOfJson:"Please Try It And see"},
 	},

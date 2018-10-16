@@ -4,6 +4,7 @@ import (
 	"github.com/json-iterator/go"
 	log "github.com/sirupsen/logrus"
 	"net/http"
+	"strings"
 )
 
 var json = jsoniter.ConfigFastest
@@ -14,7 +15,7 @@ func GetRaiderIORank(input CharInput) (CharacterProfile, error){
 
 	resp, e := http.Get(url)
 	if e != nil{
-		log.Error(e, " -> Something went wrong in getting data from RaiderIO")
+		log.Error(e, " -> Something went wrong in getting raider data from RaiderIO")
 		return CharacterProfile{}, e
 	}
 	defer resp.Body.Close()
@@ -24,5 +25,26 @@ func GetRaiderIORank(input CharInput) (CharacterProfile, error){
 	if e != nil { log.Error(e, "Something went wrong in decoding data from RaiderIO") }
 
 	return rankings, e
+}
+
+func GetRaiderIOGuild(region string, realm string, guildname string) (GuildInfo, error){
+	log.Info("Fetching RaiderIO Guild Profile for: {Guild: %s - Realm: %s - Region: %s", guildname, realm, region)
+	urlguildname := strings.Replace(guildname, " ", "%20", -1)
+	urlrealm := strings.Replace(realm, " ", "%20", -1)
+	url := "https://raider.io/api/v1/guilds/profile?region="+region+"&realm="+urlrealm+"&name="+urlguildname+"&fields=raid_progression%2Craid_rankings"
+
+	resp, e := http.Get(url)
+	if e != nil{
+		log.Error(e, " -> Something went wrong in getting guild data from RaiderIO")
+		return GuildInfo{}, e
+	}
+	defer resp.Body.Close()
+
+	var guildinfo GuildInfo
+	e = json.NewDecoder(resp.Body).Decode(&guildinfo)
+	if e != nil { log.Error(e, "Something went wrong in decoding data from RaiderIO") }
+
+	return guildinfo, e
+
 }
 

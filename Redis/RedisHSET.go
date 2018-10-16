@@ -15,7 +15,7 @@ func SetStruct(key string, obj map[string]interface{}){
 
 	e := client.HMSet(key, obj).Err()
 	if e != nil{
-		log.Error(e)
+		log.Error(e, " -> Occured in Redis.SetStruct")
 	}
 }
 
@@ -29,14 +29,14 @@ func GetStruct(key string) (map[string]string, error){
 
 	exists, e := client.Exists(key).Result()
 	if e != nil{
-		log.Error(e)
+		log.Error(e, " -> Occured in Redis.GetStruct")
 		return nil, e
 	}
 
 	if exists == 1{
 		value, e := client.HGetAll(key).Result()
 		if e != nil{
-			log.Error(e)
+			log.Error(e, " -> Occured in Redis.GetStruct")
 			return map[string]string{}, e
 		}
 		return value, e
