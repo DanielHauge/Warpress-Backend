@@ -21,39 +21,33 @@ var json = jsoniter.ConfigFastest
 
 
 
-func GetCharactersForRegistration(w http.ResponseWriter, r *http.Request){
+func GetCharactersForRegistration(w http.ResponseWriter, r *http.Request, id int, region string){
 
-	accesToken, accountid, e := GetAccessTokenCookieFromClient(r)
+	accesToken, _, _, e := GetAccessTokenCookieFromClient(r)
 	if e != nil{
 		log.Error(e)
 		w.Write([]byte("Something went wrong:"+e.Error()))
 		return
 	}
 
-	cachedAccessToken, e := Redis.GetAccessToken("AT:"+strconv.Itoa(accountid))
+
+	cachedAccessToken, e := Redis.GetAccessToken("AT:"+strconv.Itoa(id))
 
 	if AreAccessTokensSame(accesToken, cachedAccessToken){
 
-		region := "eu"
-		regionCookie, _ := r.Cookie("wowhub_recent_region")
-		region = regionCookie.Value
+		AuthenticationCFG := *OauthCfg
+		AuthenticationCFG.Endpoint = bnet.Endpoint(region)
 
-		var authClient *http.Client
-		if region == "eu"{
-			authClient = EuOauthCfg.Client(oauth2.NoContext, &accesToken)
-		} else if region == "us"{
-			authClient = UsOauthCfg.Client(oauth2.NoContext, &accesToken)
-		} else {
-			authClient = EuOauthCfg.Client(oauth2.NoContext, &accesToken)
-		}
+		authClient := AuthenticationCFG.Client(oauth2.NoContext, &accesToken)
+
 
 		client := bnet.NewClient(region, authClient)
 		WowProfile, _, e := client.Profile().WOW()
 		if e != nil { log.Error(e) }
 		chars := WowProfile.Characters
 		sort.Sort(bnet.ByLevel(chars))
-		if len(chars) > 3 {
-			e = json.NewEncoder(w).Encode(chars[0:4])
+		if len(chars) > 4 {
+			e = json.NewEncoder(w).Encode(chars[0:5])
 		} else {
 			e = json.NewEncoder(w).Encode(chars[0:])
 		}
@@ -70,14 +64,9 @@ func GetCharactersForRegistration(w http.ResponseWriter, r *http.Request){
 	}
 }
 
-func SetMainCharacter(w http.ResponseWriter, r*http.Request){
-	acces, id := DoesUserHaveAccess(w, r)
-	if acces {
+func SetMainCharacter(w http.ResponseWriter, r*http.Request, id int, region string){
 
-		region := "eu"
-		regionCookie, _ := r.Cookie("wowhub_recent_region")
-		region = regionCookie.Value
-
+	//TODO: FY FOR DEN LEDE!. lav noget ordenligt til at læse fra bodien.
 
 		var char CharacterMinimal
 		body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
@@ -102,15 +91,11 @@ func SetMainCharacter(w http.ResponseWriter, r*http.Request){
 		char.Region = region
 		w.WriteHeader(201)
 		Redis.SetStruct("MAIN:"+strconv.Itoa(id), char.ToMap())
-	} else {
-		log.Info("User tried to Set Main, but was not autherized")
-		w.WriteHeader(http.StatusUnauthorized)
-	}
+
 }
 
-func GetMainCharacter(w http.ResponseWriter, r *http.Request){
-	acces, id := DoesUserHaveAccess(w, r)
-	if acces {
+func GetMainCharacter(w http.ResponseWriter, r *http.Request, id int, region string){
+
 		d, e := Redis.GetStruct("MAIN:"+strconv.Itoa(id))
 		char := CharacterMinimalFromMap(d)
 		if e != nil{
@@ -123,8 +108,5 @@ func GetMainCharacter(w http.ResponseWriter, r *http.Request){
 			w.WriteHeader(200)
 			w.Write(msg)
 		}
-	} else {
-		log.Info("User tried to get main, but was not autherized")
-		w.WriteHeader(http.StatusUnauthorized)
-	}
+
 }

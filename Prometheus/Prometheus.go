@@ -1,6 +1,8 @@
 package Prometheus
 
-import "github.com/prometheus/client_golang/prometheus"
+import (
+	"github.com/prometheus/client_golang/prometheus"
+)
 
 var promRequests = prometheus.NewCounter(
 		prometheus.CounterOpts{
@@ -16,11 +18,17 @@ var promLogins = prometheus.NewCounter(
 		},
 )
 
+var promRequestDuration = prometheus.NewHistogram(prometheus.HistogramOpts{
+	Name: "request_duration_all",
+	Help: "The duration of the requests from any route",
+})
+
 
 
 func init(){
 	prometheus.MustRegister(promRequests)
 	prometheus.MustRegister(promLogins)
+	prometheus.MustRegister(promRequestDuration)
 
 }
 
@@ -30,6 +38,10 @@ func LoginInc(){
 
 func RequestInc(){
 	promRequests.Inc()
+}
+
+func ReqDurationObserve(dur float64){
+	promRequestDuration.Observe(dur)
 }
 
 

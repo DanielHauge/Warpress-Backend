@@ -2,6 +2,7 @@ package main
 
 import (
 	"./Integrations/BlizzardOauthAPI"
+	. "./Filters"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
 )
@@ -32,7 +33,7 @@ var routes = Routes{
 		"Get all character for requesting account",
 		"GET",
 		"/chars",
-		BlizzardOauthAPI.GetCharactersForRegistration,
+		RequireAuthentication(BlizzardOauthAPI.GetCharactersForRegistration),
 		nil,
 		nil,
 	},
@@ -40,7 +41,7 @@ var routes = Routes{
 		"Set main for requesting account",
 		"POST",
 		"/main",
-		BlizzardOauthAPI.SetMainCharacter,
+		RequireAuthentication(BlizzardOauthAPI.SetMainCharacter),
 		struct {
 			name string
 			realm string
@@ -51,7 +52,7 @@ var routes = Routes{
 		"Get main for requesting account",
 		"GET",
 		"/main",
-		BlizzardOauthAPI.GetMainCharacter,
+		RequireAuthentication(BlizzardOauthAPI.GetMainCharacter),
 		nil,
 		struct {
 			name string
@@ -62,7 +63,7 @@ var routes = Routes{
 		"Get Full Personal View, Includes: (BlizzardOpenAPI, Raider.io, warcraftlogs, wowprogress) profiles",
 		"GET",
 		"/personal",
-		HandleGetPersonalFull,
+		RequireAuthentication(HandleGetPersonalFull),
 		nil,
 		ExamplePleaseTryIt{AlotOfJson:"Please Try It And see."},
 	},
@@ -70,7 +71,7 @@ var routes = Routes{
 		"Get Blizzards character profile",
 		"GET",
 		"/personal/blizzard",
-		HandleGetPersonalBlizzardChar,
+		RequireAuthentication(HandleGetPersonalBlizzardChar),
 		nil,
 		ExamplePleaseTryIt{AlotOfJson:"Please Try It And see."},
 	},
@@ -78,7 +79,7 @@ var routes = Routes{
 		"Get Raider.IO character profile",
 		"GET",
 		"/personal/raiderio",
-		HandleGetPersonalRaiderio,
+		RequireAuthentication(HandleGetPersonalRaiderio),
 		nil,
 		ExamplePleaseTryIt{AlotOfJson:"Please Try It And see."},
 	},
@@ -86,7 +87,7 @@ var routes = Routes{
 		"Get Warcraftlogs character profile",
 		"GET",
 		"/personal/warcraftlogs",
-		HandleGetPersonalWarcraftLogs,
+		RequireAuthentication(HandleGetPersonalWarcraftLogs),
 		nil,
 		ExamplePleaseTryIt{AlotOfJson:"Please Try It And see."},
 	},
@@ -94,7 +95,7 @@ var routes = Routes{
 		"Get personal improvements",
 		"GET",
 		"/personal/improvements",
-		HandleGetPersonalImprovements,
+		RequireAuthentication(HandleGetPersonalImprovements),
 		nil,
 		ExamplePleaseTryIt{AlotOfJson:"Please Try It And see"},
 	},
@@ -102,7 +103,7 @@ var routes = Routes{
 		"Get Guild overview",
 		"GET",
 		"/guild",
-		HandleGetGuildOverview,
+		RequireAuthentication(HandleGetGuildOverview),
 		nil,
 		ExamplePleaseTryIt{AlotOfJson:"Please Try It And see"},
 	},

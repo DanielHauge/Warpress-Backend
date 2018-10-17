@@ -1,7 +1,6 @@
-package main
+package Filters
 
 import (
-	"./Prometheus"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 	"time"
@@ -12,7 +11,6 @@ func Logger(inner http.Handler, name string) http.Handler {
 		start := time.Now()
 
 		inner.ServeHTTP(w, r)
-		Prometheus.RequestInc()
 		log.Infof(
 			"%s %s %s %s",
 			r.Method,

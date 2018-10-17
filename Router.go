@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gorilla/mux"
 	"net/http"
+	. "./Filters"
 )
 
 func NewRouter() *mux.Router {
@@ -12,6 +13,7 @@ func NewRouter() *mux.Router {
 		var handler http.Handler
 		handler = route.HandlerFunc
 		handler = Logger(handler, route.Name)
+		handler = Monitor(handler)
 
 		router.
 			Methods(route.Method).

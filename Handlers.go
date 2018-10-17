@@ -1,12 +1,11 @@
 package main
 
 import (
-	"./Integrations/BlizzardOauthAPI"
+	"./Guild"
 	"./Integrations/BlizzardOpenAPI"
 	"./Integrations/Raider.io"
 	"./Integrations/WarcraftLogs"
 	"./Personal"
-	"./Guild"
 	"./Redis"
 	"bytes"
 	log "github.com/sirupsen/logrus"
@@ -77,8 +76,10 @@ func SetupIndexPage()[]byte{
 var IndexPage []byte
 
 
-//TODO: Create require crendetials wrapper på functions.
 //TODO: Ordenlig error handling osv.
+//TODO: Prometheus benchmarking af integrationerne
+//TODO: Prometheus benchmarking af alt generelt.
+//TODO: Package som kan hente fra integrationer.
 
 func Index(w http.ResponseWriter, r *http.Request) {
 	var buffer bytes.Buffer
@@ -90,10 +91,8 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	w.Write(output)
 }
 
-func HandleGetPersonalFull(w http.ResponseWriter, r *http.Request) {
+func HandleGetPersonalFull(w http.ResponseWriter, r *http.Request, id int, region string) {
 
-	acces, id := BlizzardOauthAPI.DoesUserHaveAccess(w, r)
-	if acces {
 		var Profile Personal.PersonalProfile
 		key := "PERSONAL:"+strconv.Itoa(id)
 		var e error
@@ -125,17 +124,10 @@ func HandleGetPersonalFull(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(200)
 			w.Write(msg)
 		}
-	} else {
-		log.Info("User tried to get full personal, but was not autherized")
-		w.WriteHeader(http.StatusUnauthorized)
-		w.Write([]byte("Unfortunately it seemed like you didn't have access, try login with blizzard again"))
-	}
 
 }
 
-func HandleGetPersonalRaiderio(w http.ResponseWriter, r *http.Request){
-	acces, id := BlizzardOauthAPI.DoesUserHaveAccess(w, r)
-	if acces {
+func HandleGetPersonalRaiderio(w http.ResponseWriter, r *http.Request, id int, region string){
 
 		var RaiderioProfile Raider_io.CharacterProfile
 		key := "PERSONAL/RAIDERIO:"+strconv.Itoa(id)
@@ -168,18 +160,10 @@ func HandleGetPersonalRaiderio(w http.ResponseWriter, r *http.Request){
 			w.WriteHeader(200)
 			w.Write(msg)
 		}
-	} else {
-		log.Info("User tried to get personal raiderio, but was not autherized")
-		w.WriteHeader(http.StatusUnauthorized)
-		w.Write([]byte("Unfortunately it seemed like you didn't have access, try login with blizzard again"))
-	}
+
 }
 
-func HandleGetPersonalWarcraftLogs(w http.ResponseWriter, r *http.Request){
-	acces, id := BlizzardOauthAPI.DoesUserHaveAccess(w, r)
-	if acces {
-
-
+func HandleGetPersonalWarcraftLogs(w http.ResponseWriter, r *http.Request, id int, region string){
 
 
 		var logs []WarcraftLogs.Encounter
@@ -212,16 +196,9 @@ func HandleGetPersonalWarcraftLogs(w http.ResponseWriter, r *http.Request){
 			w.WriteHeader(200)
 			w.Write(msg)
 		}
-	} else {
-		log.Info("User tried to get personal warcraftlogs, but was not autherized")
-		w.WriteHeader(http.StatusUnauthorized)
-		w.Write([]byte("Unfortunately it seemed like you didn't have access, try login with blizzard again"))
-	}
 }
 
-func HandleGetPersonalBlizzardChar(w http.ResponseWriter, r *http.Request){
-	acces, id := BlizzardOauthAPI.DoesUserHaveAccess(w, r)
-	if acces {
+func HandleGetPersonalBlizzardChar(w http.ResponseWriter, r *http.Request, id int, region string){
 
 		var blizzProfile BlizzardOpenAPI.FullCharInfo
 		key := "PERSONAL/BLIZZARD:"+strconv.Itoa(id)
@@ -253,17 +230,9 @@ func HandleGetPersonalBlizzardChar(w http.ResponseWriter, r *http.Request){
 			w.WriteHeader(200)
 			w.Write(msg)
 		}
-	} else {
-		log.Info("User tried to get personal blizzard, but was not autherized")
-		w.WriteHeader(http.StatusUnauthorized)
-		w.Write([]byte("Unfortunately it seemed like you didn't have access, try login with blizzard again"))
-	}
 }
 
-func HandleGetPersonalImprovements(w http.ResponseWriter, r *http.Request){
-	acces, id := BlizzardOauthAPI.DoesUserHaveAccess(w, r)
-	if acces {
-
+func HandleGetPersonalImprovements(w http.ResponseWriter, r *http.Request, id int, region string){
 		var improvementsProfile Personal.PersonalImprovement
 		key := "PERSONAL/IMPROVEMENT:"+strconv.Itoa(id)
 		var e error
@@ -294,16 +263,10 @@ func HandleGetPersonalImprovements(w http.ResponseWriter, r *http.Request){
 			w.WriteHeader(200)
 			w.Write(msg)
 		}
-	} else {
-		log.Info("User tried to get personal improvements, but was not authorized")
-		w.WriteHeader(http.StatusUnauthorized)
-		w.Write([]byte("Unfortunately it seemed like you didn't have access, try login with blizzard again"))
-	}
+
 }
 
-func HandleGetGuildOverview(w http.ResponseWriter, r *http.Request){
-	acces, id := BlizzardOauthAPI.DoesUserHaveAccess(w, r)
-	if acces {
+func HandleGetGuildOverview(w http.ResponseWriter, r *http.Request, id int, region string){
 
 		var GuildProfile Guild.FullGuildOverviewInfo
 		key := "GUILD/OVERVIEW:"+strconv.Itoa(id)
@@ -335,9 +298,4 @@ func HandleGetGuildOverview(w http.ResponseWriter, r *http.Request){
 			w.WriteHeader(200)
 			w.Write(msg)
 		}
-	} else {
-		log.Info("User tried to get personal blizzard, but was not autherized")
-		w.WriteHeader(http.StatusUnauthorized)
-		w.Write([]byte("Unfortunately it seemed like you didn't have access, try login with blizzard again"))
-	}
 }

@@ -22,7 +22,7 @@ func Get(key string)string{
 	})
 	v, e := client.Get(key).Result()
 	if e != nil{
-		log.Error(e, " -> Occured in redis.get") // TODO: Do better error handling showing where it is.
+		log.Error(e, " -> Occured in redis.get")
 	}
 	return v
 }
