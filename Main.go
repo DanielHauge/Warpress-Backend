@@ -30,11 +30,9 @@ import (
 // go get -u github.com/kz/discordrus
 // go get github.com/jinzhu/copier
 
-
 // Unsure but might need:
 // go get golang.org/x/sys/windows/svc/eventlog
 // go get gopkg.in/alecthomas/kingpin.v2
-
 
 var DB *sql.DB
 var json = jsoniter.ConfigFastest
@@ -46,25 +44,21 @@ var json = jsoniter.ConfigFastest
 // 5. Public warcraftlogs
 // 6. private warcraftlogs
 
-
-func init(){
-
+func init() {
 
 	log.SetFormatter(&log.TextFormatter{
-		DisableColors: false,
+		DisableColors:   false,
 		TimestampFormat: time.RFC822,
 	})
 
 	log.SetOutput(os.Stderr)
-
-
 
 	log.AddHook(discordrus.NewHook(
 
 		os.Getenv("DISCORDRUS_WEBHOOK_URL"),
 		log.WarnLevel,
 		&discordrus.Opts{
-			Username: "Logrus",
+			Username:           "Logrus",
 			EnableCustomColors: true,
 			CustomLevelColors: &discordrus.LevelColors{
 				Debug: 10170623,
@@ -76,18 +70,17 @@ func init(){
 			},
 			DisableInlineFields: false,
 		},
-		))
+	))
 }
-
 
 func main() {
 
 	router := NewRouter()
 	handler := cors.New(cors.Options{
-		AllowedOrigins: []string{"http://localhost:8080",},
-			AllowCredentials: true,
-			Debug: true,
-		}).Handler(router)
+		AllowedOrigins:   []string{"http://localhost:8080"},
+		AllowCredentials: true,
+		Debug:            false,
+	}).Handler(router)
 	IndexPage = SetupIndexPage()
 
 	cfg := &tls.Config{
@@ -109,7 +102,7 @@ func main() {
 		TLSNextProto: make(map[string]func(*http.Server, *tls.Conn, http.Handler), 0),
 	}
 
-	if e := Redis.CanIConnect(); e != nil{
+	if e := Redis.CanIConnect(); e != nil {
 		log.Warn("Cannot connect to database. Make sure redis is running.")
 		log.Fatal(e)
 	}
@@ -117,6 +110,4 @@ func main() {
 	//Start Server
 	log.Fatal(srv.ListenAndServeTLS("server.crt", "server.key"))
 
-
 }
-

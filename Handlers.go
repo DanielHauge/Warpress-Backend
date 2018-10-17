@@ -15,15 +15,13 @@ import (
 	"strconv"
 )
 
-
-func SetupIndexPage()[]byte{
+func SetupIndexPage() []byte {
 	var buffer bytes.Buffer
 
 	for _, v := range routes {
-		buffer.WriteString("\n\n### "+v.Name+"\n")
-		buffer.WriteString("##### Route: "+v.Pattern+"\n")
-		buffer.WriteString("##### Method: "+v.Method+"\n")
-
+		buffer.WriteString("\n\n### " + v.Name + "\n")
+		buffer.WriteString("##### Route: " + v.Pattern + "\n")
+		buffer.WriteString("##### Method: " + v.Method + "\n")
 
 		if v.ExpectedInput != nil {
 			buffer.WriteString("##### Input: \n")
@@ -55,12 +53,12 @@ func SetupIndexPage()[]byte{
 		buffer.WriteString("\n##### Example:\n")
 		buffer.WriteString("- Input:\n")
 		var b []byte
-		if v.ExpectedInput != nil{
+		if v.ExpectedInput != nil {
 			b, _ = json.Marshal(v.ExpectedInput)
 		} else {
 			b = []byte("Nothing")
 		}
-		buffer.WriteString(string(b)+"\n")
+		buffer.WriteString(string(b) + "\n")
 
 		buffer.WriteString("\n- Output:\n")
 		if v.ExpectedOutput != nil {
@@ -68,18 +66,16 @@ func SetupIndexPage()[]byte{
 		} else {
 			b = []byte("Nothing")
 		}
-		buffer.WriteString(string(b)+"\n")
+		buffer.WriteString(string(b) + "\n")
 	}
 	return buffer.Bytes()
 }
 
 var IndexPage []byte
 
-
 //TODO: Ordenlig error handling osv.
-//TODO: Prometheus benchmarking af integrationerne
-//TODO: Prometheus benchmarking af alt generelt.
-//TODO: Package som kan hente fra integrationer.
+//TODO: Prometheus benchmarking af hver integration
+//TODO: Make code clean and sleak
 
 func Index(w http.ResponseWriter, r *http.Request) {
 	var buffer bytes.Buffer
@@ -93,209 +89,237 @@ func Index(w http.ResponseWriter, r *http.Request) {
 
 func HandleGetPersonalFull(w http.ResponseWriter, r *http.Request, id int, region string) {
 
-		var Profile Personal.PersonalProfile
-		key := "PERSONAL:"+strconv.Itoa(id)
-		var e error
-		if Redis.DoesKeyExist(key){
+	var Profile Personal.PersonalProfile
+	key := "PERSONAL:" + strconv.Itoa(id)
+	var e error
+	if Redis.DoesKeyExist(key) {
 
-			e = Redis.CacheGetResult(key, &Profile)
-			go func() {
-				var Caching Personal.PersonalProfile
-				Personal.FetchFullPersonal(id, &Caching)
-				Redis.CacheSetResult(key, Caching)
-			}()
+		e = Redis.CacheGetResult(key, &Profile)
+		go func() {
+			var Caching Personal.PersonalProfile
+			Personal.FetchFullPersonal(id, &Caching)
+			Redis.CacheSetResult(key, Caching)
+		}()
 
-		} else {
+	} else {
 
-			e = Personal.FetchFullPersonal(id, &Profile)
-			if e == nil {
-				go Redis.CacheSetResult(key, Profile)
-			}
-
+		e = Personal.FetchFullPersonal(id, &Profile)
+		if e == nil {
+			go Redis.CacheSetResult(key, Profile)
 		}
 
+	}
 
-		if e != nil{
-			w.WriteHeader(500)
-			w.Write([]byte(e.Error()))
-		} else {
-			msg, err := json.Marshal(Profile); if err != nil{ log.Error(e); w.Write([]byte(err.Error())); return}
-			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-			w.WriteHeader(200)
-			w.Write(msg)
+	if e != nil {
+		w.WriteHeader(500)
+		w.Write([]byte(e.Error()))
+	} else {
+		msg, err := json.Marshal(Profile)
+		if err != nil {
+			log.Error(e)
+			w.Write([]byte(err.Error()))
+			return
 		}
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+		w.WriteHeader(200)
+		w.Write(msg)
+	}
 
 }
 
-func HandleGetPersonalRaiderio(w http.ResponseWriter, r *http.Request, id int, region string){
+func HandleGetPersonalRaiderio(w http.ResponseWriter, r *http.Request, id int, region string) {
 
-		var RaiderioProfile Raider_io.CharacterProfile
-		key := "PERSONAL/RAIDERIO:"+strconv.Itoa(id)
-		var e error
-		if Redis.DoesKeyExist(key){
+	var RaiderioProfile Raider_io.CharacterProfile
+	key := "PERSONAL/RAIDERIO:" + strconv.Itoa(id)
+	var e error
+	if Redis.DoesKeyExist(key) {
 
-			e = Redis.CacheGetResult(key, &RaiderioProfile)
-			go func(){
-				var Caching Raider_io.CharacterProfile
-				Personal.FetchRaiderioPersonal(id, &Caching)
-				Redis.CacheSetResult(key, Caching)
-			}()
+		e = Redis.CacheGetResult(key, &RaiderioProfile)
+		go func() {
+			var Caching Raider_io.CharacterProfile
+			Personal.FetchRaiderioPersonal(id, &Caching)
+			Redis.CacheSetResult(key, Caching)
+		}()
 
-		} else {
+	} else {
 
-			e = Personal.FetchRaiderioPersonal(id, &RaiderioProfile)
-			if e == nil{
-				go Redis.CacheSetResult(key, RaiderioProfile)
-			}
-
+		e = Personal.FetchRaiderioPersonal(id, &RaiderioProfile)
+		if e == nil {
+			go Redis.CacheSetResult(key, RaiderioProfile)
 		}
 
-		if e != nil{
-			w.WriteHeader(500)
-			w.Write([]byte(e.Error()))
+	}
+
+	if e != nil {
+		w.WriteHeader(500)
+		w.Write([]byte(e.Error()))
+		log.Error(e)
+	} else {
+		msg, err := json.Marshal(RaiderioProfile)
+		if err != nil {
 			log.Error(e)
-		} else {
-			msg, err := json.Marshal(RaiderioProfile); if err != nil{ log.Error(e); w.Write([]byte(err.Error())); return}
-			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-			w.WriteHeader(200)
-			w.Write(msg)
+			w.Write([]byte(err.Error()))
+			return
 		}
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+		w.WriteHeader(200)
+		w.Write(msg)
+	}
 
 }
 
-func HandleGetPersonalWarcraftLogs(w http.ResponseWriter, r *http.Request, id int, region string){
+func HandleGetPersonalWarcraftLogs(w http.ResponseWriter, r *http.Request, id int, region string) {
 
+	var logs []WarcraftLogs.Encounter
+	key := "PERSONAL/LOGS:" + strconv.Itoa(id)
+	var e error
+	if Redis.DoesKeyExist(key) {
 
-		var logs []WarcraftLogs.Encounter
-		key := "PERSONAL/LOGS:"+strconv.Itoa(id)
-		var e error
-		if Redis.DoesKeyExist(key){
+		e = Redis.CacheGetResult(key, &logs)
+		go func() {
+			var Caching []WarcraftLogs.Encounter
+			Personal.FetchWarcraftlogsPersonal(id, &Caching)
+			Redis.CacheSetResult(key, Caching)
+		}()
 
-			e = Redis.CacheGetResult(key, &logs)
-			go func(){
-				var Caching []WarcraftLogs.Encounter
-				Personal.FetchWarcraftlogsPersonal(id, &Caching)
-				Redis.CacheSetResult(key, Caching)
-			}()
+	} else {
 
-		} else {
-
-			e = Personal.FetchWarcraftlogsPersonal(id, &logs)
-			if e == nil{
-				go Redis.CacheSetResult(key, logs)
-			}
+		e = Personal.FetchWarcraftlogsPersonal(id, &logs)
+		if e == nil {
+			go Redis.CacheSetResult(key, logs)
 		}
+	}
 
-		if e != nil{
-			w.WriteHeader(500)
-			w.Write([]byte(e.Error()))
+	if e != nil {
+		w.WriteHeader(500)
+		w.Write([]byte(e.Error()))
+		log.Error(e)
+	} else {
+		msg, err := json.Marshal(logs)
+		if err != nil {
 			log.Error(e)
-		} else {
-			msg, err := json.Marshal(logs); if err != nil{ log.Error(e); w.Write([]byte(err.Error())); return}
-			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-			w.WriteHeader(200)
-			w.Write(msg)
+			w.Write([]byte(err.Error()))
+			return
 		}
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+		w.WriteHeader(200)
+		w.Write(msg)
+	}
 }
 
-func HandleGetPersonalBlizzardChar(w http.ResponseWriter, r *http.Request, id int, region string){
+func HandleGetPersonalBlizzardChar(w http.ResponseWriter, r *http.Request, id int, region string) {
 
-		var blizzProfile BlizzardOpenAPI.FullCharInfo
-		key := "PERSONAL/BLIZZARD:"+strconv.Itoa(id)
-		var e error
-		if Redis.DoesKeyExist(key){
+	var blizzProfile BlizzardOpenAPI.FullCharInfo
+	key := "PERSONAL/BLIZZARD:" + strconv.Itoa(id)
+	var e error
+	if Redis.DoesKeyExist(key) {
 
-			e = Redis.CacheGetResult(key, &blizzProfile)
-			go func(){
-				var Caching BlizzardOpenAPI.FullCharInfo
-				Personal.FetchBlizzardPersonal(id, &Caching)
-				Redis.CacheSetResult(key, Caching)
-			}()
+		e = Redis.CacheGetResult(key, &blizzProfile)
+		go func() {
+			var Caching BlizzardOpenAPI.FullCharInfo
+			Personal.FetchBlizzardPersonal(id, &Caching)
+			Redis.CacheSetResult(key, Caching)
+		}()
 
-		} else {
+	} else {
 
-			e = Personal.FetchBlizzardPersonal(id, &blizzProfile)
-			if e == nil{
-				go Redis.CacheSetResult(key, blizzProfile)
-			}
+		e = Personal.FetchBlizzardPersonal(id, &blizzProfile)
+		if e == nil {
+			go Redis.CacheSetResult(key, blizzProfile)
 		}
+	}
 
-		if e != nil{
-			w.WriteHeader(500)
-			w.Write([]byte(e.Error()))
+	if e != nil {
+		w.WriteHeader(500)
+		w.Write([]byte(e.Error()))
+		log.Error(e)
+	} else {
+		msg, err := json.Marshal(blizzProfile)
+		if err != nil {
 			log.Error(e)
-		} else {
-			msg, err := json.Marshal(blizzProfile); if err != nil{ log.Error(e); w.Write([]byte(err.Error())); return}
-			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-			w.WriteHeader(200)
-			w.Write(msg)
+			w.Write([]byte(err.Error()))
+			return
 		}
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+		w.WriteHeader(200)
+		w.Write(msg)
+	}
 }
 
-func HandleGetPersonalImprovements(w http.ResponseWriter, r *http.Request, id int, region string){
-		var improvementsProfile Personal.PersonalImprovement
-		key := "PERSONAL/IMPROVEMENT:"+strconv.Itoa(id)
-		var e error
-		if Redis.DoesKeyExist(key){
+func HandleGetPersonalImprovements(w http.ResponseWriter, r *http.Request, id int, region string) {
+	var improvementsProfile Personal.PersonalImprovement
+	key := "PERSONAL/IMPROVEMENT:" + strconv.Itoa(id)
+	var e error
+	if Redis.DoesKeyExist(key) {
 
-			e = Redis.CacheGetResult(key, &improvementsProfile)
-			go func(){
-				var Caching Personal.PersonalImprovement
-				Personal.FetchPersonalImprovementsFull(id, &Caching)
-				Redis.CacheSetResult(key, Caching)
-			}()
+		e = Redis.CacheGetResult(key, &improvementsProfile)
+		go func() {
+			var Caching Personal.PersonalImprovement
+			Personal.FetchPersonalImprovementsFull(id, &Caching)
+			Redis.CacheSetResult(key, Caching)
+		}()
 
-		} else {
+	} else {
 
-			e = Personal.FetchPersonalImprovementsFull(id, &improvementsProfile)
-			if e == nil{
-				go Redis.CacheSetResult(key, improvementsProfile)
-			}
+		e = Personal.FetchPersonalImprovementsFull(id, &improvementsProfile)
+		if e == nil {
+			go Redis.CacheSetResult(key, improvementsProfile)
 		}
+	}
 
-		if e != nil{
-			w.WriteHeader(500)
-			w.Write([]byte(e.Error()))
+	if e != nil {
+		w.WriteHeader(500)
+		w.Write([]byte(e.Error()))
+		log.Error(e)
+	} else {
+		msg, err := json.Marshal(improvementsProfile)
+		if err != nil {
 			log.Error(e)
-		} else {
-			msg, err := json.Marshal(improvementsProfile); if err != nil{ log.Error(e); w.Write([]byte(err.Error())); return}
-			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-			w.WriteHeader(200)
-			w.Write(msg)
+			w.Write([]byte(err.Error()))
+			return
 		}
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+		w.WriteHeader(200)
+		w.Write(msg)
+	}
 
 }
 
-func HandleGetGuildOverview(w http.ResponseWriter, r *http.Request, id int, region string){
+func HandleGetGuildOverview(w http.ResponseWriter, r *http.Request, id int, region string) {
 
-		var GuildProfile Guild.FullGuildOverviewInfo
-		key := "GUILD/OVERVIEW:"+strconv.Itoa(id)
-		var e error
-		if Redis.DoesKeyExist(key){
+	var GuildProfile Guild.FullGuildOverviewInfo
+	key := "GUILD/OVERVIEW:" + strconv.Itoa(id)
+	var e error
+	if Redis.DoesKeyExist(key) {
 
-			e = Redis.CacheGetResult(key, &GuildProfile)
-			go func(){
-				var Caching Guild.FullGuildOverviewInfo
-				Guild.FetchFullGuildOverview(id, &Caching)
-				Redis.CacheSetResult(key, Caching)
-			}()
+		e = Redis.CacheGetResult(key, &GuildProfile)
+		go func() {
+			var Caching Guild.FullGuildOverviewInfo
+			Guild.FetchFullGuildOverview(id, &Caching)
+			Redis.CacheSetResult(key, Caching)
+		}()
 
-		} else {
+	} else {
 
-			e = Guild.FetchFullGuildOverview(id, &GuildProfile)
-			if e == nil{
-				go Redis.CacheSetResult(key, GuildProfile)
-			}
+		e = Guild.FetchFullGuildOverview(id, &GuildProfile)
+		if e == nil {
+			go Redis.CacheSetResult(key, GuildProfile)
 		}
+	}
 
-		if e != nil{
-			w.WriteHeader(500)
-			w.Write([]byte(e.Error()))
+	if e != nil {
+		w.WriteHeader(500)
+		w.Write([]byte(e.Error()))
+		log.Error(e)
+	} else {
+		msg, err := json.Marshal(GuildProfile)
+		if err != nil {
 			log.Error(e)
-		} else {
-			msg, err := json.Marshal(GuildProfile); if err != nil{ log.Error(e); w.Write([]byte(err.Error())); return}
-			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-			w.WriteHeader(200)
-			w.Write(msg)
+			w.Write([]byte(err.Error()))
+			return
 		}
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+		w.WriteHeader(200)
+		w.Write(msg)
+	}
 }
