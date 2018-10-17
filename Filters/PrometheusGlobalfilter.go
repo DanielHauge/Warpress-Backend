@@ -1,9 +1,9 @@
 package Filters
 
 import (
+	"../Prometheus"
 	"net/http"
 	"time"
-	"../Prometheus"
 )
 
 func Monitor(inner http.Handler) http.Handler {

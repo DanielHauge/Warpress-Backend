@@ -15,7 +15,6 @@ type ErrorResponse struct {
 	Scope       string `json:"scope"`
 }
 
-
 func (r *ErrorResponse) Error() string {
 	return fmt.Sprintf("%s: %s", r.Code, r.Description)
 }

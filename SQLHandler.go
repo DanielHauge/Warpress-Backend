@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-func SetupDB(){
+func SetupDB() {
 	db, err := sql.Open("mysql", os.Args[3])
 	if err != nil {
 		fmt.Print(err.Error())

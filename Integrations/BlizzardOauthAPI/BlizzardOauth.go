@@ -13,43 +13,33 @@ import (
 )
 
 var (
-
- OauthCfg = &oauth2.Config{
-	ClientID:     	os.Getenv("BNET_CLIENTID"),
-	ClientSecret: 	os.Getenv("BNET_SECRET"),
-	Scopes:   		[]string{"wow.profile"},
-	RedirectURL: 	"https://localhost:443/bnet/auth/callback",
-}
-
+	OauthCfg = &oauth2.Config{
+		ClientID:     os.Getenv("BNET_CLIENTID"),
+		ClientSecret: os.Getenv("BNET_SECRET"),
+		Scopes:       []string{"wow.profile"},
+		RedirectURL:  "https://localhost:443/bnet/auth/callback",
+	}
 )
 
-
-
-
-
-
-
-
-func HandleAuthenticate(w http.ResponseWriter, r *http.Request){
+func HandleAuthenticate(w http.ResponseWriter, r *http.Request) {
 
 	region := r.FormValue("region")
 	AuthenticationCFG := *OauthCfg
 	AuthenticationCFG.Endpoint = bnet.Endpoint(region)
 	oauthState := SetStateOauthCookie(w, region)
 	AuthUrl := AuthenticationCFG.AuthCodeURL(oauthState)
-	http.Redirect(w,r, AuthUrl, http.StatusTemporaryRedirect)
+	http.Redirect(w, r, AuthUrl, http.StatusTemporaryRedirect)
 }
 
-func HandleOauthCallback(w http.ResponseWriter, r *http.Request){
+func HandleOauthCallback(w http.ResponseWriter, r *http.Request) {
 
 	// Checks if oauthstate from blizzard is correct, in case of hacks and stuff.
 	oauthState, region := GetStateOauthCookie(r)
 	if r.FormValue("state") != oauthState {
 		log.Error("invalid oauth blizzard state")
-		http.Redirect(w, r, "/", http.StatusTemporaryRedirect) // TODO: redirect til error side eller sådan noget.
+		http.Redirect(w, r, "/hov", http.StatusTemporaryRedirect)
 		return
 	}
-
 
 	AuthenticationCFG := *OauthCfg
 	AuthenticationCFG.Endpoint = bnet.Endpoint(region)
@@ -63,8 +53,7 @@ func HandleOauthCallback(w http.ResponseWriter, r *http.Request){
 	authClient := AuthenticationCFG.Client(oauth2.NoContext, token)
 	client := bnet.NewClient(region, authClient)
 	user, _, e := client.Account().User()
-	log.Debug("TOKEN: " + strconv.Itoa(user.ID) ,token)
-
+	log.Debug("TOKEN: "+strconv.Itoa(user.ID), token)
 
 	Prometheus.LoginInc()
 
@@ -73,13 +62,12 @@ func HandleOauthCallback(w http.ResponseWriter, r *http.Request){
 
 	SetAccessTokenCookieOnClient(user.ID, region, token, w)
 
-
 	// If user.id exists in database, fetch data and redirect to login with that pass and accesstoken.
-	isRegistered := Redis.DoesKeyExist("MAIN:"+strconv.Itoa(user.ID))
+	isRegistered := Redis.DoesKeyExist("MAIN:" + strconv.Itoa(user.ID))
 	if isRegistered {
-		http.Redirect(w,r, "http://localhost:8080/#/Login", http.StatusPermanentRedirect)
+		http.Redirect(w, r, "http://localhost:8080/#/Login", http.StatusPermanentRedirect)
 	} else { // Redirect to register
-		http.Redirect(w,r, "http://localhost:8080/#/Register", http.StatusPermanentRedirect)
+		http.Redirect(w, r, "http://localhost:8080/#/Register", http.StatusPermanentRedirect)
 	}
 
 	if e != nil {
@@ -87,7 +75,7 @@ func HandleOauthCallback(w http.ResponseWriter, r *http.Request){
 	}
 }
 
-func AreAccessTokensSame(a oauth2.Token, b oauth2.Token)bool{
+func AreAccessTokensSame(a oauth2.Token, b oauth2.Token) bool {
 	at := a.AccessToken == b.AccessToken
 	rt := a.RefreshToken == b.RefreshToken
 	tt := a.TokenType == b.TokenType
@@ -96,16 +84,10 @@ func AreAccessTokensSame(a oauth2.Token, b oauth2.Token)bool{
 
 func DoesUserHaveAccess(w http.ResponseWriter, r *http.Request) (bool, int, string) {
 	acesToken, accountId, region, e := GetAccessTokenCookieFromClient(r)
-	if e != nil{
+	if e != nil {
 		log.Error(e)
-		return false,  0, ""
+		return false, 0, ""
 	}
-	cachedAccessToken, e := Redis.GetAccessToken("AT:"+strconv.Itoa(accountId))
-	return AreAccessTokensSame(acesToken, cachedAccessToken), accountId,  region
+	cachedAccessToken, e := Redis.GetAccessToken("AT:" + strconv.Itoa(accountId))
+	return AreAccessTokensSame(acesToken, cachedAccessToken), accountId, region
 }
-
-
-
-
-
-

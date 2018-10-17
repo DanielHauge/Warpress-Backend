@@ -14,10 +14,10 @@ import (
 	"sync"
 )
 
-func FetchFullPersonal(id int, Profile *PersonalProfile) error{
+func FetchFullPersonal(id int, Profile *PersonalProfile) error {
 
-	charMap, e := Redis.GetStruct("MAIN:"+strconv.Itoa(id))
-	if e != nil{
+	charMap, e := Redis.GetStruct("MAIN:" + strconv.Itoa(id))
+	if e != nil {
 		log.Error(e, " -> It seems there is no main registered to the requesting user")
 		return e
 	}
@@ -29,7 +29,7 @@ func FetchFullPersonal(id int, Profile *PersonalProfile) error{
 	wg.Add(4)
 
 	var blizzChar BlizzardOpenAPI.FullCharInfo
-	go func(){
+	go func() {
 		blizzChar, e = BlizzardOpenAPI.GetBlizzardChar(char.Realm, char.Name, char.Region)
 		go Redis.Set("GUILD:"+strconv.Itoa(id), blizzChar.Guild.Name+":"+blizzChar.Guild.Realm+":"+char.Region)
 		Profile.Character = blizzChar
@@ -39,15 +39,14 @@ func FetchFullPersonal(id int, Profile *PersonalProfile) error{
 
 	var raiderio Raider_io.CharacterProfile
 	go func() {
-		raiderio, e = Raider_io.GetRaiderIORank(Raider_io.CharInput{Name:char.Name, Realm:char.Realm, Region:char.Region})
+		raiderio, e = Raider_io.GetRaiderIORank(Raider_io.CharInput{Name: char.Name, Realm: char.Realm, Region: char.Region})
 		Profile.RaiderIOProfile = raiderio
 		wg.Done()
 	}()
 
-
 	var logs []WarcraftLogs.Encounter
 	go func() {
-		logs, e = WarcraftLogs.GetWarcraftLogsRanks(WarcraftLogs.CharInput{Name:char.Name, Realm:char.Realm, Region:char.Region})
+		logs, e = WarcraftLogs.GetWarcraftLogsRanks(WarcraftLogs.CharInput{Name: char.Name, Realm: char.Realm, Region: char.Region})
 		Profile.WarcraftLogsRanks = logs
 		wg.Done()
 	}()
@@ -64,36 +63,36 @@ func FetchFullPersonal(id int, Profile *PersonalProfile) error{
 	return e
 }
 
-func FetchRaiderioPersonal(id int, Profile *Raider_io.CharacterProfile) error{
+func FetchRaiderioPersonal(id int, Profile *Raider_io.CharacterProfile) error {
 
-	charMap, e := Redis.GetStruct("MAIN:"+strconv.Itoa(id))
-	if e != nil{
+	charMap, e := Redis.GetStruct("MAIN:" + strconv.Itoa(id))
+	if e != nil {
 		log.Error(e, " -> It seems there is no main registered to the requesting user")
 		return e
 	}
 	char := BlizzardOauthAPI.CharacterMinimalFromMap(charMap)
-	prof, e := Raider_io.GetRaiderIORank(Raider_io.CharInput{Name:char.Name, Realm:char.Realm, Region:char.Region})
+	prof, e := Raider_io.GetRaiderIORank(Raider_io.CharInput{Name: char.Name, Realm: char.Realm, Region: char.Region})
 	copier.Copy(Profile, &prof)
 	return e
 }
 
-func FetchWarcraftlogsPersonal(id int, Logs *[]WarcraftLogs.Encounter) error{
-	charMap, e := Redis.GetStruct("MAIN:"+strconv.Itoa(id))
-	if e != nil{
+func FetchWarcraftlogsPersonal(id int, Logs *[]WarcraftLogs.Encounter) error {
+	charMap, e := Redis.GetStruct("MAIN:" + strconv.Itoa(id))
+	if e != nil {
 		log.Error(e, " -> It seems there is no main registered to the requesting user")
 		return e
 	}
 	char := BlizzardOauthAPI.CharacterMinimalFromMap(charMap)
 
-	logs, e := WarcraftLogs.GetWarcraftLogsRanks(WarcraftLogs.CharInput{Name:char.Name, Realm:char.Realm, Region:char.Region})
+	logs, e := WarcraftLogs.GetWarcraftLogsRanks(WarcraftLogs.CharInput{Name: char.Name, Realm: char.Realm, Region: char.Region})
 	copier.Copy(Logs, &logs)
 	return e
 }
 
-func FetchBlizzardPersonal(id int, Profile *BlizzardOpenAPI.FullCharInfo) error{
+func FetchBlizzardPersonal(id int, Profile *BlizzardOpenAPI.FullCharInfo) error {
 
-	charMap, e := Redis.GetStruct("MAIN:"+strconv.Itoa(id))
-	if e != nil{
+	charMap, e := Redis.GetStruct("MAIN:" + strconv.Itoa(id))
+	if e != nil {
 		log.Error(e, " -> It seems there is no main registered to the requesting user")
 		return e
 	}

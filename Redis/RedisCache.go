@@ -8,48 +8,47 @@ import (
 	"time"
 )
 
-func CacheSetResult(key string, obj interface{}){
+func CacheSetResult(key string, obj interface{}) {
 	client := redis.NewClient(&redis.Options{
-		Addr: Addr+Port,
+		Addr:     Addr + Port,
 		Password: Password,
-		DB: DB,
+		DB:       DB,
 	})
 	codec := &cache.Codec{
 		Redis: client,
 
-		Marshal: func (v interface{}) ([]byte, error){
+		Marshal: func(v interface{}) ([]byte, error) {
 			return msgpack.Marshal(v)
 		},
-		Unmarshal: func (b []byte, v interface{}) error {
+		Unmarshal: func(b []byte, v interface{}) error {
 			return msgpack.Unmarshal(b, v)
 		},
 	}
 
 	err := codec.Set(&cache.Item{
-		Key: key,
-		Object: obj,
-		Expiration: time.Minute*10,
+		Key:        key,
+		Object:     obj,
+		Expiration: time.Minute * 10,
 	})
 	if err != nil {
 		log.Error(err, " -> Occured in redis.CacheSet!")
 	}
 }
 
-
-func CacheGetResult(Key string, obj interface{}) error{
+func CacheGetResult(Key string, obj interface{}) error {
 	client := redis.NewClient(&redis.Options{
-		Addr: Addr+Port,
+		Addr:     Addr + Port,
 		Password: Password,
-		DB: DB,
+		DB:       DB,
 	})
 
 	codec := &cache.Codec{
 		Redis: client,
 
-		Marshal: func (v interface{}) ([]byte, error){
+		Marshal: func(v interface{}) ([]byte, error) {
 			return msgpack.Marshal(v)
 		},
-		Unmarshal: func (b []byte, v interface{}) error {
+		Unmarshal: func(b []byte, v interface{}) error {
 			return msgpack.Unmarshal(b, v)
 		},
 	}

@@ -8,11 +8,11 @@ import (
 	"time"
 )
 
-func GetAccessToken(key string) (oauth2.Token, error){
+func GetAccessToken(key string) (oauth2.Token, error) {
 	client := redis.NewClient(&redis.Options{
-		Addr: Addr+Port,
+		Addr:     Addr + Port,
 		Password: Password,
-		DB: DB,
+		DB:       DB,
 	})
 	isRegistered, e := client.Exists(key).Result()
 	if isRegistered == 0 {
@@ -20,12 +20,12 @@ func GetAccessToken(key string) (oauth2.Token, error){
 		return oauth2.Token{}, errors.New("User does not have any accessToken stored in system")
 	}
 	value, e := client.HGetAll(key).Result()
-	time, e := time.Parse(time.RFC3339,value["expire"])
+	time, e := time.Parse(time.RFC3339, value["expire"])
 	accessToken := oauth2.Token{
-		Expiry: time,
-		TokenType: value["tokentype"],
+		Expiry:       time,
+		TokenType:    value["tokentype"],
 		RefreshToken: value["refreshtoken"],
-		AccessToken: value["accesstoken"],
+		AccessToken:  value["accesstoken"],
 	}
 	if e != nil {
 		log.Println(e.Error())
@@ -34,21 +34,20 @@ func GetAccessToken(key string) (oauth2.Token, error){
 	return accessToken, nil
 }
 
-func CacheAccesToken(key string,accessToken *oauth2.Token){
+func CacheAccesToken(key string, accessToken *oauth2.Token) {
 	client := redis.NewClient(&redis.Options{
-		Addr: Addr+Port,
+		Addr:     Addr + Port,
 		Password: Password,
-		DB: DB,
+		DB:       DB,
 	})
 
 	m := map[string]interface{}{
 		"accesstoken": accessToken.AccessToken,
-		"expire": accessToken.Expiry.Format(time.RFC3339),
-		"refresh": accessToken.RefreshToken,
-		"tokentype": accessToken.TokenType,
+		"expire":      accessToken.Expiry.Format(time.RFC3339),
+		"refresh":     accessToken.RefreshToken,
+		"tokentype":   accessToken.TokenType,
 	}
 	expireDuration := accessToken.Expiry.Sub(time.Now())
-	client.HMSet(key,m)
+	client.HMSet(key, m)
 	client.Expire(key, expireDuration)
 }
-

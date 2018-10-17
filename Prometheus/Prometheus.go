@@ -5,17 +5,17 @@ import (
 )
 
 var promRequests = prometheus.NewCounter(
-		prometheus.CounterOpts{
-			Name: "requests_total",
-			Help: "The ammount of requests that has occured since start",
-		},
+	prometheus.CounterOpts{
+		Name: "requests_total",
+		Help: "The ammount of requests that has occured since start",
+	},
 )
 
 var promLogins = prometheus.NewCounter(
-		prometheus.CounterOpts{
-			Name: "logins_total",
-			Help: "The ammount of logins that has occured since start",
-		},
+	prometheus.CounterOpts{
+		Name: "logins_total",
+		Help: "The ammount of logins that has occured since start",
+	},
 )
 
 var promRequestDuration = prometheus.NewHistogram(prometheus.HistogramOpts{
@@ -23,28 +23,21 @@ var promRequestDuration = prometheus.NewHistogram(prometheus.HistogramOpts{
 	Help: "The duration of the requests from any route",
 })
 
-
-
-func init(){
+func init() {
 	prometheus.MustRegister(promRequests)
 	prometheus.MustRegister(promLogins)
 	prometheus.MustRegister(promRequestDuration)
 
 }
 
-func LoginInc(){
+func LoginInc() {
 	promLogins.Inc()
 }
 
-func RequestInc(){
+func RequestInc() {
 	promRequests.Inc()
 }
 
-func ReqDurationObserve(dur float64){
+func ReqDurationObserve(dur float64) {
 	promRequestDuration.Observe(dur)
 }
-
-
-
-
-

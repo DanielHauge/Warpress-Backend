@@ -5,23 +5,23 @@ import (
 	"github.com/prometheus/common/log"
 )
 
-func Set(key string, value string){
+func Set(key string, value string) {
 	client := redis.NewClient(&redis.Options{
-		Addr: Addr+Port,
+		Addr:     Addr + Port,
 		Password: Password,
-		DB: DB,
+		DB:       DB,
 	})
 	client.Set(key, value, 0)
 }
 
-func Get(key string)string{
+func Get(key string) string {
 	client := redis.NewClient(&redis.Options{
-		Addr: Addr+Port,
+		Addr:     Addr + Port,
 		Password: Password,
-		DB: DB,
+		DB:       DB,
 	})
 	v, e := client.Get(key).Result()
-	if e != nil{
+	if e != nil {
 		log.Error(e, " -> Occured in redis.get")
 	}
 	return v

@@ -1,9 +1,9 @@
 package main
 
 import (
+	. "./Filters"
 	"github.com/gorilla/mux"
 	"net/http"
-	. "./Filters"
 )
 
 func NewRouter() *mux.Router {

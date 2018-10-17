@@ -1,24 +1,22 @@
 package main
 
 import (
-	"./Integrations/BlizzardOauthAPI"
 	. "./Filters"
+	"./Integrations/BlizzardOauthAPI"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
 )
 
 type Route struct {
-	Name        string
-	Method      string
-	Pattern     string
-	HandlerFunc http.HandlerFunc
-	ExpectedInput interface{}
+	Name           string
+	Method         string
+	Pattern        string
+	HandlerFunc    http.HandlerFunc
+	ExpectedInput  interface{}
 	ExpectedOutput interface{}
 }
 
 type Routes []Route
-
-
 
 var routes = Routes{
 	Route{
@@ -27,7 +25,7 @@ var routes = Routes{
 		"/",
 		Index,
 		ExampleInput{"hello", 5},
-		ExampleOutput{[]int{1,2,3,4,5,6}},
+		ExampleOutput{[]int{1, 2, 3, 4, 5, 6}},
 	},
 	Route{
 		"Get all character for requesting account",
@@ -43,9 +41,9 @@ var routes = Routes{
 		"/main",
 		RequireAuthentication(BlizzardOauthAPI.SetMainCharacter),
 		struct {
-			name string
+			name  string
 			realm string
-		}{ name: "Rakhoal", realm:"twisting-nether"},
+		}{name: "Rakhoal", realm: "twisting-nether"},
 		nil,
 	},
 	Route{
@@ -55,9 +53,9 @@ var routes = Routes{
 		RequireAuthentication(BlizzardOauthAPI.GetMainCharacter),
 		nil,
 		struct {
-			name string
+			name  string
 			realm string
-		}{ name: "Rakhoal", realm:"twisting-nether"},
+		}{name: "Rakhoal", realm: "twisting-nether"},
 	},
 	Route{
 		"Get Full Personal View, Includes: (BlizzardOpenAPI, Raider.io, warcraftlogs, wowprogress) profiles",
@@ -65,7 +63,7 @@ var routes = Routes{
 		"/personal",
 		RequireAuthentication(HandleGetPersonalFull),
 		nil,
-		ExamplePleaseTryIt{AlotOfJson:"Please Try It And see."},
+		ExamplePleaseTryIt{AlotOfJson: "Please Try It And see."},
 	},
 	Route{
 		"Get Blizzards character profile",
@@ -73,7 +71,7 @@ var routes = Routes{
 		"/personal/blizzard",
 		RequireAuthentication(HandleGetPersonalBlizzardChar),
 		nil,
-		ExamplePleaseTryIt{AlotOfJson:"Please Try It And see."},
+		ExamplePleaseTryIt{AlotOfJson: "Please Try It And see."},
 	},
 	Route{
 		"Get Raider.IO character profile",
@@ -81,7 +79,7 @@ var routes = Routes{
 		"/personal/raiderio",
 		RequireAuthentication(HandleGetPersonalRaiderio),
 		nil,
-		ExamplePleaseTryIt{AlotOfJson:"Please Try It And see."},
+		ExamplePleaseTryIt{AlotOfJson: "Please Try It And see."},
 	},
 	Route{
 		"Get Warcraftlogs character profile",
@@ -89,7 +87,7 @@ var routes = Routes{
 		"/personal/warcraftlogs",
 		RequireAuthentication(HandleGetPersonalWarcraftLogs),
 		nil,
-		ExamplePleaseTryIt{AlotOfJson:"Please Try It And see."},
+		ExamplePleaseTryIt{AlotOfJson: "Please Try It And see."},
 	},
 	Route{
 		"Get personal improvements",
@@ -97,7 +95,7 @@ var routes = Routes{
 		"/personal/improvements",
 		RequireAuthentication(HandleGetPersonalImprovements),
 		nil,
-		ExamplePleaseTryIt{AlotOfJson:"Please Try It And see"},
+		ExamplePleaseTryIt{AlotOfJson: "Please Try It And see"},
 	},
 	Route{
 		"Get Guild overview",
@@ -105,7 +103,7 @@ var routes = Routes{
 		"/guild",
 		RequireAuthentication(HandleGetGuildOverview),
 		nil,
-		ExamplePleaseTryIt{AlotOfJson:"Please Try It And see"},
+		ExamplePleaseTryIt{AlotOfJson: "Please Try It And see"},
 	},
 }
 
@@ -134,5 +132,4 @@ var restrictedRoutes = Routes{
 		nil,
 		nil,
 	},
-
 }
