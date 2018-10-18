@@ -1,36 +1,40 @@
 package BlizzardOpenAPI
 
 import (
+	log "../../Logrus"
+	"../../Prometheus"
 	"../Gojax"
 	"github.com/json-iterator/go"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"os"
 	"strings"
+	"time"
 )
 
 var json = jsoniter.ConfigFastest
 
 func GetBlizzardChar(realm string, name string, region string) (FullCharInfo, error) {
-
-	log.Infof("Fetching Blizzardchar for: {Realm: %s - Name: %s - Region: %s", realm, name, "en_GB")
+	log.WithFields(logrus.Fields{"Character":name,"Realm":realm,"Region":region}).Info("Gojaxing Blizzard Open for character")
 	url := "https://" + region + ".api.battle.net/wow/" + "character/" + realm + "/" + name + "?fields=guild+items&locale=en_GB&apikey=" + os.Getenv("BLIZZARD_APIKEY")
 
 	var fullChar FullCharInfo
+	now := time.Now()
 	e := Gojax.Get(url, &fullChar)
-
+	Prometheus.JaxObserveBlizzardOpen(time.Since(now).Seconds())
 	return fullChar, e
 }
 
 func GetBlizzardGuildMembers(guildname string, region string, realm string) (GuildWithMembers, error) {
+	log.WithFields(logrus.Fields{"Guild":guildname,"Realm":realm,"Region":region}).Info("Gojaxing Blizzard Open for guild members")
 	urlreadyGuildname := strings.Replace(guildname, " ", "%20", -1)
-
-	log.Infof("Fetching Blizzard Guild members for: {Guildname: %s - Region: %s - realm: %s", guildname, region, realm)
 	url := "https://" + region + ".api.battle.net/wow/" + "guild/" + realm + "/" + urlreadyGuildname + "?fields=members&locale=en_GB&apikey=" + os.Getenv("BLIZZARD_APIKEY")
 
 	var guild GuildWithMembers
 
-	e := Gojax.Get(url, &guild)
 
+	now := time.Now()
+	e := Gojax.Get(url, &guild)
+	Prometheus.JaxObserveBlizzardOpen(time.Since(now).Seconds())
 	return guild, e
 
 }

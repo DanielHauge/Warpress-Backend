@@ -5,10 +5,10 @@ import (
 	"./Integrations/BlizzardOpenAPI"
 	"./Integrations/Raider.io"
 	"./Integrations/WarcraftLogs"
+	log "./Logrus"
 	"./Personal"
 	"./Redis"
 	"bytes"
-	log "github.com/sirupsen/logrus"
 	"gopkg.in/russross/blackfriday.v2"
 	"net/http"
 	"reflect"
@@ -54,28 +54,29 @@ func SetupIndexPage() []byte {
 		buffer.WriteString("- Input:\n")
 		var b []byte
 		if v.ExpectedInput != nil {
-			b, _ = json.Marshal(v.ExpectedInput)
+			b, _ = json.MarshalIndent(v.ExpectedInput,"", "     ")
 		} else {
 			b = []byte("Nothing")
 		}
-		buffer.WriteString(string(b) + "\n")
+		buffer.WriteString("\n\n ``` ")
+		buffer.WriteString(string(b))
+		buffer.WriteString("\n ``` \n")
 
 		buffer.WriteString("\n- Output:\n")
 		if v.ExpectedOutput != nil {
-			b, _ = json.Marshal(v.ExpectedOutput)
+			b, _ = json.MarshalIndent(v.ExpectedOutput, "", "     ")
 		} else {
 			b = []byte("Nothing")
 		}
-		buffer.WriteString(string(b) + "\n")
+		buffer.WriteString("\n\n ``` ")
+		buffer.WriteString(string(b))
+		buffer.WriteString("\n ``` \n")
 	}
 	return buffer.Bytes()
 }
 
 var IndexPage []byte
 
-//TODO: Ordenlig error handling osv.
-//TODO: Prometheus benchmarking af hver integration
-//TODO: Make code clean and sleak
 
 func Index(w http.ResponseWriter, r *http.Request) {
 	var buffer bytes.Buffer
@@ -83,7 +84,8 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	buffer.WriteString("This is a api for the website of wowhub, this page is only available during development\n\n")
 	buffer.WriteString("## Api endpoints:\n\n")
 	buffer.Write(IndexPage)
-	output := blackfriday.Run([]byte(buffer.Bytes()))
+	output := blackfriday.Run([]byte(buffer.Bytes()), blackfriday.WithExtensions(blackfriday.FencedCode))
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.Write(output)
 }
 
@@ -107,7 +109,6 @@ func HandleGetPersonalFull(w http.ResponseWriter, r *http.Request, id int, regio
 		if e == nil {
 			go Redis.CacheSetResult(key, Profile)
 		}
-
 	}
 
 	if e != nil {
@@ -116,7 +117,7 @@ func HandleGetPersonalFull(w http.ResponseWriter, r *http.Request, id int, regio
 	} else {
 		msg, err := json.Marshal(Profile)
 		if err != nil {
-			log.Error(e)
+			log.WithLocation().WithError(e).Error("Was not able to marshal profile")
 			w.Write([]byte(err.Error()))
 			return
 		}
@@ -153,11 +154,11 @@ func HandleGetPersonalRaiderio(w http.ResponseWriter, r *http.Request, id int, r
 	if e != nil {
 		w.WriteHeader(500)
 		w.Write([]byte(e.Error()))
-		log.Error(e)
+		log.WithLocation().WithError(e).Error("How!")
 	} else {
 		msg, err := json.Marshal(RaiderioProfile)
 		if err != nil {
-			log.Error(e)
+			log.WithLocation().WithError(e).Error("Was not able to marshal raider.io profile")
 			w.Write([]byte(err.Error()))
 			return
 		}
@@ -193,11 +194,11 @@ func HandleGetPersonalWarcraftLogs(w http.ResponseWriter, r *http.Request, id in
 	if e != nil {
 		w.WriteHeader(500)
 		w.Write([]byte(e.Error()))
-		log.Error(e)
+		log.WithLocation().WithError(e).Error("Hov!")
 	} else {
 		msg, err := json.Marshal(logs)
 		if err != nil {
-			log.Error(e)
+			log.WithLocation().WithError(e).Error("Was not able to marshal logs")
 			w.Write([]byte(err.Error()))
 			return
 		}
@@ -232,11 +233,11 @@ func HandleGetPersonalBlizzardChar(w http.ResponseWriter, r *http.Request, id in
 	if e != nil {
 		w.WriteHeader(500)
 		w.Write([]byte(e.Error()))
-		log.Error(e)
+		log.WithLocation().WithError(e).Error("Hov!")
 	} else {
 		msg, err := json.Marshal(blizzProfile)
 		if err != nil {
-			log.Error(e)
+			log.WithLocation().WithError(e).Error("Was not able to marshal blizzard profile")
 			w.Write([]byte(err.Error()))
 			return
 		}
@@ -270,11 +271,11 @@ func HandleGetPersonalImprovements(w http.ResponseWriter, r *http.Request, id in
 	if e != nil {
 		w.WriteHeader(500)
 		w.Write([]byte(e.Error()))
-		log.Error(e)
+		log.WithLocation().WithError(e).Error("Woops - Something went wrong")
 	} else {
 		msg, err := json.Marshal(improvementsProfile)
 		if err != nil {
-			log.Error(e)
+			log.WithLocation().WithError(e).Error("Was not able to marshal improvement profile")
 			w.Write([]byte(err.Error()))
 			return
 		}
@@ -310,11 +311,11 @@ func HandleGetGuildOverview(w http.ResponseWriter, r *http.Request, id int, regi
 	if e != nil {
 		w.WriteHeader(500)
 		w.Write([]byte(e.Error()))
-		log.Error(e)
+		log.WithLocation().WithError(e).Error("Woops - Something went wrong")
 	} else {
 		msg, err := json.Marshal(GuildProfile)
 		if err != nil {
-			log.Error(e)
+			log.WithLocation().WithError(e).Error("Was not able to marshal guild profile")
 			w.Write([]byte(err.Error()))
 			return
 		}

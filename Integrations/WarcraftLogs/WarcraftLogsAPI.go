@@ -1,13 +1,16 @@
 package WarcraftLogs
 
 import (
+	log "../../Logrus"
+	"../../Prometheus"
 	"../Gojax"
 	"github.com/avelino/slugify"
 	"github.com/json-iterator/go"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 var json = jsoniter.ConfigFastest
@@ -15,34 +18,37 @@ var json = jsoniter.ConfigFastest
 var warcraftLogsAPIURL = "https://www.warcraftlogs.com:443/v1"
 
 func GetWarcraftLogsRanks(input CharInput) ([]Encounter, error) {
-	log.Info("Fetching warcraftlogs ranks for: ", input)
+	log.WithFields(logrus.Fields{"Character":input.Name,"Realm":input.Realm,"Region":input.Region}).Info("Gojaxing warcraftlogs ranks for character")
 	fullUrl := warcraftLogsAPIURL + "/rankings/character/" + input.Name + "/" + input.Realm + "/" + input.Region + "?api_key=" + os.Getenv("PUBLIC_LOGS")
 
 	var rankings []Encounter
 
+	now := time.Now()
 	e := Gojax.Get(fullUrl, &rankings)
-
+	Prometheus.JaxObserveWarcraftlogs(time.Since(now).Seconds())
 	return rankings, e
 }
 
 func GetWarcraftLogsReport(ReportId string) (Report, error) {
-	log.Info("Fetching warcraftlogs reports for " + ReportId)
+	log.WithField("ReportID", ReportId).Info("Gojaxing warcraftlogs report")
 	fullUrl := warcraftLogsAPIURL + "/report/fights/" + ReportId + "?api_key=" + os.Getenv("PUBLIC_LOGS")
 
 	var report Report
+	now := time.Now()
 	e := Gojax.Get(fullUrl, &report)
-
+	Prometheus.JaxObserveWarcraftlogs(time.Since(now).Seconds())
 	return report, e
 }
 
 func GetWarcraftGuildReports(guildname string, realm string, region string, startime int64, endtime int64) ([]GuildReports, error) {
-	log.Infof("Fetching warcraftlogs guild reports for {Guild: %s - Realm: %s - Region: %s - Starttime %s }", guildname, realm, region, startime)
+	log.WithFields(logrus.Fields{"Guild":guildname,"Realm":realm,"Region":region,"From":startime,"To":endtime}).Info("Gojaxing guild reports")
 	urlguildname := strings.Replace(guildname, " ", "%20", -1)
 	fullUrl := warcraftLogsAPIURL + "/reports/guild/" + urlguildname + "/" + slugify.Slugify(realm) + "/" + region + "?start=" + strconv.FormatInt(startime, 10) + "&end=" + strconv.FormatInt(endtime, 10) + "&api_key=" + os.Getenv("PUBLIC_LOGS")
 
 	var report []GuildReports
 
+	now := time.Now()
 	e := Gojax.Get(fullUrl, &report)
-
+	Prometheus.JaxObserveWarcraftlogs(time.Since(now).Seconds())
 	return report, e
 }

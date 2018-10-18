@@ -1,10 +1,10 @@
 package BlizzardOauthAPI
 
 import (
+	log "../../Logrus"
 	"crypto/rand"
 	"encoding/base64"
 	"github.com/gorilla/securecookie"
-	log "github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"
 	"net/http"
 	"strconv"
@@ -34,14 +34,14 @@ func SetAccessTokenCookieOnClient(accountId int, region string, token *oauth2.To
 			HttpOnly: true,
 			Secure:   true,
 		}
-		log.Debug("Setting AccessToken: " + strconv.Itoa(accountId))
+		log.WithField("User", accountId).Debug("Setting AccessToken")
 		http.SetCookie(w, cookie)
 	} else {
-		log.Error(err)
+		log.WithLocation().WithError(err).Error("Hov!")
 	}
 }
 
-func GetAccessTokenCookieFromClient(r *http.Request) (oauth2.Token, int, string, error) { // TODO: When application starts, new key is generated, and therefor needs to ask for new accessToken from blizzard.
+func GetAccessTokenCookieFromClient(r *http.Request) (oauth2.Token, int, string, error) {
 	cookie, err := r.Cookie("WowHubAccessToken")
 	if err == nil {
 		value := make(map[string]string)
@@ -53,7 +53,7 @@ func GetAccessTokenCookieFromClient(r *http.Request) (oauth2.Token, int, string,
 				RefreshToken: value["refreshtoken"],
 				AccessToken:  value["accesstoken"],
 			}
-			log.Debug("Getting AccessToken: " + value["accountId"])
+			log.WithField("User", value["accountId"]).Debug("Getting AccessToken")
 			aid, err := strconv.Atoi(value["accountId"])
 
 			return token, aid, value["region"], err
@@ -92,13 +92,13 @@ func GetStateOauthCookie(r *http.Request) (string, string) {
 	if err == nil {
 		value := make(map[string]string)
 		if err = s.Decode("oauthstate", cookie.Value, &value); err == nil {
-			log.Debug("Got OauthState cookie: ", value)
+			log.WithField("Map", value).Debug("Got OauthState cookie")
 			return value["oauthstate"], value["region"]
 		} else {
-			log.Error(err, " -> Occured in decoding stateOauth")
+			log.WithLocation().WithError(err).Error("Hov! Cannot decode Oauthstate cookie")
 		}
 	} else {
-		log.Error(err, " -> Occured in getting cookie")
+		log.WithLocation().WithError(err).Error("Hov! Cannot get Oauthstate cookie")
 		return "", ""
 	}
 	return "", ""

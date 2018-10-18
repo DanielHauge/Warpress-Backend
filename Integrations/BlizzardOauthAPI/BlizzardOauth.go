@@ -1,11 +1,11 @@
 package BlizzardOauthAPI
 
 import (
+	log "../../Logrus"
 	"../../Prometheus"
 	"../../Redis"
 	"./BattleNetOauth"
 	"context"
-	log "github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"
 	"net/http"
 	"os"
@@ -36,7 +36,7 @@ func HandleOauthCallback(w http.ResponseWriter, r *http.Request) {
 	// Checks if oauthstate from blizzard is correct, in case of hacks and stuff.
 	oauthState, region := GetStateOauthCookie(r)
 	if r.FormValue("state") != oauthState {
-		log.Error("invalid oauth blizzard state")
+		log.WithLocation().Error("Invalid Oauth blizzard state")
 		http.Redirect(w, r, "/hov", http.StatusTemporaryRedirect)
 		return
 	}
@@ -45,7 +45,7 @@ func HandleOauthCallback(w http.ResponseWriter, r *http.Request) {
 	AuthenticationCFG.Endpoint = bnet.Endpoint(region)
 	token, e := AuthenticationCFG.Exchange(context.Background(), r.FormValue("code"))
 	if e != nil {
-		log.Error(e)
+		log.WithLocation().WithError(e).Error("Hov!")
 		return
 	}
 
@@ -53,7 +53,7 @@ func HandleOauthCallback(w http.ResponseWriter, r *http.Request) {
 	authClient := AuthenticationCFG.Client(oauth2.NoContext, token)
 	client := bnet.NewClient(region, authClient)
 	user, _, e := client.Account().User()
-	log.Debug("TOKEN: "+strconv.Itoa(user.ID), token)
+	log.WithField("User", user.ID).WithField("Token", token).Debug("Token")
 
 	Prometheus.LoginInc()
 
@@ -71,7 +71,7 @@ func HandleOauthCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if e != nil {
-		log.Error(e)
+		log.WithLocation().WithError(e).Error("Hov!")
 	}
 }
 
@@ -85,7 +85,7 @@ func AreAccessTokensSame(a oauth2.Token, b oauth2.Token) bool {
 func DoesUserHaveAccess(w http.ResponseWriter, r *http.Request) (bool, int, string) {
 	acesToken, accountId, region, e := GetAccessTokenCookieFromClient(r)
 	if e != nil {
-		log.Error(e)
+		log.WithLocation().WithError(e).Warn("User does not have an acceptable cookie")
 		return false, 0, ""
 	}
 	cachedAccessToken, e := Redis.GetAccessToken("AT:" + strconv.Itoa(accountId))

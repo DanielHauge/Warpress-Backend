@@ -1,9 +1,9 @@
 package Redis
 
 import (
+	log "../Logrus"
 	"github.com/go-redis/cache"
 	"github.com/go-redis/redis"
-	log "github.com/sirupsen/logrus"
 	"github.com/vmihailenco/msgpack"
 	"time"
 )
@@ -14,7 +14,7 @@ func CacheSetResult(key string, obj interface{}) {
 		Password: Password,
 		DB:       DB,
 	})
-	codec := &cache.Codec{
+	codecs := &cache.Codec{
 		Redis: client,
 
 		Marshal: func(v interface{}) ([]byte, error) {
@@ -25,13 +25,13 @@ func CacheSetResult(key string, obj interface{}) {
 		},
 	}
 
-	err := codec.Set(&cache.Item{
+	err := codecs.Set(&cache.Item{
 		Key:        key,
 		Object:     obj,
 		Expiration: time.Minute * 10,
 	})
 	if err != nil {
-		log.Error(err, " -> Occured in redis.CacheSet!")
+		log.WithLocation().WithError(err).Error("Hov!")
 	}
 }
 
@@ -42,7 +42,7 @@ func CacheGetResult(Key string, obj interface{}) error {
 		DB:       DB,
 	})
 
-	codec := &cache.Codec{
+	codecs := &cache.Codec{
 		Redis: client,
 
 		Marshal: func(v interface{}) ([]byte, error) {
@@ -52,9 +52,9 @@ func CacheGetResult(Key string, obj interface{}) error {
 			return msgpack.Unmarshal(b, v)
 		},
 	}
-	err := codec.Get(Key, obj)
+	err := codecs.Get(Key, obj)
 	if err != nil {
-		log.Error(err, " -> Occured in redis.CacheGet!")
+		log.WithLocation().WithError(err).Error("Hov!")
 	}
 	return err
 }

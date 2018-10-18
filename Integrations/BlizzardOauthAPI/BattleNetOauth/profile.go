@@ -1,6 +1,6 @@
 package bnet
 
-import log "github.com/sirupsen/logrus"
+import "log"
 
 // ProfileService has OAuth Profile APIs. See Client.
 type ProfileService struct {
@@ -14,14 +14,14 @@ type WoWProfile struct {
 func (s *ProfileService) WOW() (*WoWProfile, *Response, error) {
 	req, err := s.client.NewRequest("GET", "wow/user/characters", nil)
 	if err != nil {
-		log.Error(err)
+		log.Println(err)
 		return nil, nil, err
 	}
 
 	var profile WoWProfile
 	resp, err := s.client.Do(req, &profile)
 	if err != nil {
-		log.Error(err)
+		log.Println(err)
 		return nil, resp, err
 	}
 

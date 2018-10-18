@@ -1,6 +1,14 @@
 package main
 
-import "./Integrations/BlizzardOpenAPI"
+import (
+	"./Guild"
+	"./Integrations/BlizzardOpenAPI"
+	"./Integrations/Raider.io"
+	"./Integrations/WarcraftLogs"
+	"./Personal"
+	"github.com/bxcodec/faker"
+	"log"
+)
 
 type ExampleInput struct {
 	ExampleString  string `json:"example_string"`
@@ -15,34 +23,31 @@ type ExamplePleaseTryIt struct {
 	AlotOfJson string `json:"alot_of_json"`
 }
 
-var ExampleFullBlizzChar = BlizzardOpenAPI.FullCharInfo{
-	LastModified:        23321321,
-	Name:                "Rakhoal",
-	Realm:               "Twisting-Nether",
-	Battlegroup:         "BattleWorld / Yoyoyo",
-	Class:               5,
-	Race:                9,
-	Gender:              0,
-	Level:               120,
-	AchievementPoints:   14090,
-	Thumbnail:           "SomeThumbNailString",
-	CalcClass:           "Some weird String -> Please go try the API, the items are long!",
-	Faction:             0,
-	TotalHonorableKills: 9001,
-	Guild: BlizzardOpenAPI.Guild{
-		Name:             "Time in Motion",
-		Realm:            "Twisting-Nether",
-		Battlegroup:      "BattleWorld / Yoyoyo",
-		Members:          502,
-		AchievementPoint: 9020,
-		Emblem: BlizzardOpenAPI.Emblem{
-			Icon:              5,
-			IconColor:         "Blue",
-			IconColorId:       5,
-			Border:            10,
-			BorderColor:       "Red",
-			BorderColorId:     13,
-			BackgroundColorId: 2,
-		},
-	},
+type ExampleChar struct {
+	Name  string `json:"name"`
+	Realm string `json:"realm"`
+}
+
+var ExampleFullBlizzChar = new(BlizzardOpenAPI.FullCharInfo)
+var ExamplePersonalProfile = new(Personal.PersonalProfile)
+var ExamplePersonalImprovement = new(Personal.PersonalImprovement)
+var ExampleRaiderioProfile = new(Raider_io.CharacterProfile)
+var ExampleWarcraftlogs = new([]WarcraftLogs.Encounter)
+var ExampleGuildOverviewInfo = new(Guild.FullGuildOverviewInfo)
+var ExampleCharVar = new(ExampleChar)
+
+func init() {
+	/*
+	e := faker.FakeData(ExampleFullBlizzChar)
+
+	e = faker.FakeData(ExamplePersonalProfile)
+	e = faker.FakeData(ExamplePersonalImprovement)
+	e = faker.FakeData(ExampleRaiderioProfile)
+	e = faker.FakeData(ExampleWarcraftlogs)
+	e = faker.FakeData(ExampleGuildOverviewInfo)
+	*/
+	e := faker.FakeData(ExampleCharVar)
+	if e != nil {
+		log.Println(e.Error())
+	}
 }

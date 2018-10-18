@@ -1,10 +1,13 @@
 package Wowprogress
 
 import (
+	log "../../Logrus"
+	"../../Prometheus"
 	"../Gojax"
 	"github.com/json-iterator/go"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"strings"
+	"time"
 )
 
 var json = jsoniter.ConfigFastest
@@ -23,12 +26,14 @@ type GuildRank struct {
 }
 
 func GetGuildRank(input Input) (GuildRank, error) {
-	log.Info("Fetching wowprogress Guildrank for: ", input)
+	log.WithFields(logrus.Fields{"Guild":input.Guild,"Realm":input.Realm,"Region":input.Region}).Info("Gojaxing wowprogress ranks")
 	fullUrl := "https://www.wowprogress.com/guild/" + input.Region + "/" + input.Realm + "/" + strings.Replace(input.Guild, " ", "+", -1) + "/json_rank"
 
 	var rankings GuildRank
 
+	now := time.Now()
 	e := Gojax.Get(fullUrl, &rankings)
+	Prometheus.JaxObserveWowprogress(time.Since(now).Seconds())
 
 	return rankings, e
 }

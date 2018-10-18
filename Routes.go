@@ -24,8 +24,8 @@ var routes = Routes{
 		"GET",
 		"/",
 		Index,
-		ExampleInput{"hello", 5},
-		ExampleOutput{[]int{1, 2, 3, 4, 5, 6}},
+		nil,
+		nil,
 	},
 	Route{
 		"Get all character for requesting account",
@@ -40,10 +40,7 @@ var routes = Routes{
 		"POST",
 		"/main",
 		RequireAuthentication(BlizzardOauthAPI.SetMainCharacter),
-		struct {
-			name  string
-			realm string
-		}{name: "Rakhoal", realm: "twisting-nether"},
+		ExampleCharVar,
 		nil,
 	},
 	Route{
@@ -52,10 +49,7 @@ var routes = Routes{
 		"/main",
 		RequireAuthentication(BlizzardOauthAPI.GetMainCharacter),
 		nil,
-		struct {
-			name  string
-			realm string
-		}{name: "Rakhoal", realm: "twisting-nether"},
+		ExampleCharVar,
 	},
 	Route{
 		"Get Full Personal View, Includes: (BlizzardOpenAPI, Raider.io, warcraftlogs, wowprogress) profiles",
@@ -63,7 +57,7 @@ var routes = Routes{
 		"/personal",
 		RequireAuthentication(HandleGetPersonalFull),
 		nil,
-		ExamplePleaseTryIt{AlotOfJson: "Please Try It And see."},
+		ExamplePersonalProfile,
 	},
 	Route{
 		"Get Blizzards character profile",
@@ -71,7 +65,7 @@ var routes = Routes{
 		"/personal/blizzard",
 		RequireAuthentication(HandleGetPersonalBlizzardChar),
 		nil,
-		ExamplePleaseTryIt{AlotOfJson: "Please Try It And see."},
+		ExampleFullBlizzChar,
 	},
 	Route{
 		"Get Raider.IO character profile",
@@ -79,7 +73,7 @@ var routes = Routes{
 		"/personal/raiderio",
 		RequireAuthentication(HandleGetPersonalRaiderio),
 		nil,
-		ExamplePleaseTryIt{AlotOfJson: "Please Try It And see."},
+		ExampleRaiderioProfile,
 	},
 	Route{
 		"Get Warcraftlogs character profile",
@@ -87,7 +81,7 @@ var routes = Routes{
 		"/personal/warcraftlogs",
 		RequireAuthentication(HandleGetPersonalWarcraftLogs),
 		nil,
-		ExamplePleaseTryIt{AlotOfJson: "Please Try It And see."},
+		nil,
 	},
 	Route{
 		"Get personal improvements",
@@ -95,7 +89,7 @@ var routes = Routes{
 		"/personal/improvements",
 		RequireAuthentication(HandleGetPersonalImprovements),
 		nil,
-		ExamplePleaseTryIt{AlotOfJson: "Please Try It And see"},
+		ExamplePersonalImprovement,
 	},
 	Route{
 		"Get Guild overview",
@@ -103,7 +97,7 @@ var routes = Routes{
 		"/guild",
 		RequireAuthentication(HandleGetGuildOverview),
 		nil,
-		ExamplePleaseTryIt{AlotOfJson: "Please Try It And see"},
+		ExampleGuildOverviewInfo,
 	},
 }
 
@@ -133,3 +127,7 @@ var restrictedRoutes = Routes{
 		nil,
 	},
 }
+
+
+
+

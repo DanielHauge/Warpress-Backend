@@ -1,8 +1,8 @@
 package Gojax
 
 import (
+	log "../../Logrus"
 	"encoding/json"
-	"github.com/prometheus/common/log"
 	"net/http"
 )
 
@@ -10,13 +10,13 @@ func Get(url string, obj interface{}) error {
 
 	resp, e := http.Get(url)
 	if e != nil {
-		log.Error(e, " -> Something went wrong in getting data from: ", url)
+		log.WithLocation().WithError(e).WithField("URL", url).Error("gojax failed")
 	}
 	defer resp.Body.Close()
 
 	e = json.NewDecoder(resp.Body).Decode(&obj)
 	if e != nil {
-		log.Error(e, "Something went wrong in decoding", obj)
+		log.WithLocation().WithError(e).WithField("Struct", obj).Error("json decoding failed")
 	}
 
 	return e

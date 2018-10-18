@@ -1,15 +1,15 @@
 package Redis
 
 import (
+	log "../Logrus"
 	"github.com/go-redis/redis"
-	log "github.com/sirupsen/logrus"
 	"os"
 )
 
-var Addr string = os.Getenv("CONNECTION_STRING")
-var Port string = ":6379"
-var Password string = ""
-var DB int = 0
+var Addr = os.Getenv("CONNECTION_STRING")
+var Port = ":6379"
+var Password = ""
+var DB = 0
 
 // TODO: If availability ever becomes a problem, look into ClusterClient.
 // TODO: If redis becomes cache only and availability becomes a problem, look into Ring for multiple redis servers.
@@ -33,7 +33,7 @@ func DoesKeyExist(key string) bool {
 	})
 	d, e := client.Exists(key).Result()
 	if e != nil {
-		log.Error(e)
+		log.WithLocation().WithError(e).Error("Hov!")
 	}
 
 	if d == 1 {

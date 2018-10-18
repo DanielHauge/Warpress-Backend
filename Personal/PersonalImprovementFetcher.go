@@ -3,8 +3,8 @@ package Personal
 import (
 	"../Integrations/BlizzardOauthAPI"
 	"../Integrations/WarcraftLogs"
+	log "../Logrus"
 	"../Redis"
-	log "github.com/sirupsen/logrus"
 	"strconv"
 )
 
@@ -13,8 +13,8 @@ var RaidBotUrl = "https://www.raidbots.com/simbot/"
 func FetchPersonalImprovementsFull(id int, improvements *PersonalImprovement) error {
 
 	improvements.SimulationURLS = MakeSimBotUrls(id)
-	bossimprov, e := GenerateWarcraftLogs(id)
-	improvements.BossImprovements = bossimprov
+	bossimprovements, e := GenerateWarcraftLogs(id)
+	improvements.BossImprovements = bossimprovements
 
 	return e
 }
@@ -24,7 +24,7 @@ func GenerateWarcraftLogs(id int) ([]BossImprovement, error) {
 	var improvements []BossImprovement
 	e := FetchWarcraftlogsPersonal(id, &logs)
 	if e != nil {
-		log.Error(e, " Something went wrong in Fetching warcraftlogs ranks")
+		log.WithLocation().WithError(e).Error("Hov!")
 	}
 
 	mapOfCharIds := map[string]int{}
@@ -59,17 +59,15 @@ func GenerateAnalyserLink(ReportID string, FightID int, Name string, mapOfCharId
 	url := "https://wowanalyzer.com/report/" + ReportID + "/" + fightId + "/" + GetCharId(ReportID, Name, mapOfCharIds)
 
 	return url
-
 }
 
 func GetCharId(ReportID string, Name string, ints map[string]int) string {
 	if ints[ReportID] != 0 {
-		log.Debug("Found id from existing search")
 		return strconv.Itoa(ints[ReportID])
 	} else {
-		log.Debug("Did not find char id, have to ask for reports on warcraftlogs")
 		reports, e := WarcraftLogs.GetWarcraftLogsReport(ReportID)
 		if e != nil {
+			log.WithLocation().WithError(e).Error("Hov!")
 			return ""
 		}
 		for _, value := range reports.Friendlies {
@@ -85,7 +83,7 @@ func GetCharId(ReportID string, Name string, ints map[string]int) string {
 func MakeSimBotUrls(id int) RaidBotSimulations {
 	charMap, e := Redis.GetStruct("MAIN:" + strconv.Itoa(id))
 	if e != nil {
-		log.Error(e, " -> It seems there is no main registered to the requesting user")
+		log.WithLocation().WithError(e).WithField("User", id).Error("There is no main registered to the user!")
 		return RaidBotSimulations{}
 	}
 	char := BlizzardOauthAPI.CharacterMinimalFromMap(charMap)

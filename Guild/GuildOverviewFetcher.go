@@ -12,6 +12,8 @@ import (
 
 func FetchFullGuildOverview(id int, FullGuildOverview *FullGuildOverviewInfo) error {
 
+	// TODO: Error handling??? Logging?
+
 	guildstring := Redis.Get("GUILD:" + strconv.Itoa(id))
 	split := strings.Split(guildstring, ":")
 	Guild := struct {

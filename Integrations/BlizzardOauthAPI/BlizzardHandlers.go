@@ -1,11 +1,11 @@
 package BlizzardOauthAPI
 
 import (
+	log "../../Logrus"
 	"../../Redis"
 	"./BattleNetOauth"
 	"github.com/avelino/slugify"
 	"github.com/json-iterator/go"
-	log "github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"
 	"io"
 	"io/ioutil"
@@ -28,7 +28,7 @@ func GetCharactersForRegistration(w http.ResponseWriter, r *http.Request, id int
 	client := bnet.NewClient(region, authClient)
 	WowProfile, _, e := client.Profile().WOW()
 	if e != nil {
-		log.Error(e)
+		log.WithLocation().WithError(e).Error("Hov!")
 	}
 	chars := WowProfile.Characters
 	sort.Sort(bnet.ByLevel(chars))
@@ -40,7 +40,7 @@ func GetCharactersForRegistration(w http.ResponseWriter, r *http.Request, id int
 
 	if e != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		log.Error(e)
+		log.WithLocation().WithError(e).Error("Hov!")
 		w.Write([]byte("Unable to parse to json"))
 	}
 }
@@ -52,18 +52,18 @@ func SetMainCharacter(w http.ResponseWriter, r *http.Request, id int, region str
 	var char CharacterMinimal
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 	if err != nil {
-		log.Error(err)
+		log.WithLocation().WithError(err).Error("Hov!")
 		w.WriteHeader(400)
 		w.Write([]byte("Could not read body"))
 		return
 	}
 	if err := r.Body.Close(); err != nil {
-		log.Error(err)
+		log.WithLocation().WithError(err).Error("Hov!")
 	}
 	if err := json.Unmarshal(body, &char); err != nil {
 		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 		if err := json.NewEncoder(w).Encode(err); err != nil {
-			log.Error(err)
+			log.WithLocation().WithError(err).Error("Hov!")
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
@@ -82,11 +82,11 @@ func GetMainCharacter(w http.ResponseWriter, r *http.Request, id int, region str
 	if e != nil {
 		w.WriteHeader(500)
 		w.Write([]byte(e.Error()))
-		log.Error(e)
+		log.WithLocation().WithError(e).Error("Hov!")
 	} else {
 		msg, err := json.Marshal(char)
 		if err != nil {
-			log.Error(err)
+			log.WithLocation().WithError(err).Error("Hov!")
 			w.Write([]byte(err.Error()))
 			return
 		}

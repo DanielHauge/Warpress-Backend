@@ -6,10 +6,10 @@ import (
 	"../Integrations/Raider.io"
 	"../Integrations/WarcraftLogs"
 	"../Integrations/Wowprogress"
+	log "../Logrus"
 	"../Redis"
 	"github.com/avelino/slugify"
 	"github.com/jinzhu/copier"
-	log "github.com/sirupsen/logrus"
 	"strconv"
 	"sync"
 )
@@ -18,7 +18,7 @@ func FetchFullPersonal(id int, Profile *PersonalProfile) error {
 
 	charMap, e := Redis.GetStruct("MAIN:" + strconv.Itoa(id))
 	if e != nil {
-		log.Error(e, " -> It seems there is no main registered to the requesting user")
+		log.WithLocation().WithError(e).WithField("User", id).Error("There is no main registered to the user!")
 		return e
 	}
 	char := BlizzardOauthAPI.CharacterMinimalFromMap(charMap)
@@ -67,7 +67,7 @@ func FetchRaiderioPersonal(id int, Profile *Raider_io.CharacterProfile) error {
 
 	charMap, e := Redis.GetStruct("MAIN:" + strconv.Itoa(id))
 	if e != nil {
-		log.Error(e, " -> It seems there is no main registered to the requesting user")
+		log.WithLocation().WithError(e).WithField("User", id).Error("There is no main registered to the user!")
 		return e
 	}
 	char := BlizzardOauthAPI.CharacterMinimalFromMap(charMap)
@@ -79,7 +79,7 @@ func FetchRaiderioPersonal(id int, Profile *Raider_io.CharacterProfile) error {
 func FetchWarcraftlogsPersonal(id int, Logs *[]WarcraftLogs.Encounter) error {
 	charMap, e := Redis.GetStruct("MAIN:" + strconv.Itoa(id))
 	if e != nil {
-		log.Error(e, " -> It seems there is no main registered to the requesting user")
+		log.WithLocation().WithError(e).WithField("User", id).Error("There is no main registered to the user!")
 		return e
 	}
 	char := BlizzardOauthAPI.CharacterMinimalFromMap(charMap)
@@ -93,7 +93,7 @@ func FetchBlizzardPersonal(id int, Profile *BlizzardOpenAPI.FullCharInfo) error 
 
 	charMap, e := Redis.GetStruct("MAIN:" + strconv.Itoa(id))
 	if e != nil {
-		log.Error(e, " -> It seems there is no main registered to the requesting user")
+		log.WithLocation().WithError(e).WithField("User", id).Error("There is no main registered to the user!")
 		return e
 	}
 	char := BlizzardOauthAPI.CharacterMinimalFromMap(charMap)

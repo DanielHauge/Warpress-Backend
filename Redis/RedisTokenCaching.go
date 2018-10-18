@@ -1,9 +1,9 @@
 package Redis
 
 import (
+	log "../Logrus"
 	"errors"
 	"github.com/go-redis/redis"
-	log "github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"
 	"time"
 )
@@ -16,7 +16,7 @@ func GetAccessToken(key string) (oauth2.Token, error) {
 	})
 	isRegistered, e := client.Exists(key).Result()
 	if isRegistered == 0 {
-		log.Println("User does not have any accessToken stored in the system.")
+		log.Warn("User does not have any accessToken stored in the system")
 		return oauth2.Token{}, errors.New("User does not have any accessToken stored in system")
 	}
 	value, e := client.HGetAll(key).Result()
@@ -28,7 +28,7 @@ func GetAccessToken(key string) (oauth2.Token, error) {
 		AccessToken:  value["accesstoken"],
 	}
 	if e != nil {
-		log.Println(e.Error())
+		log.WithLocation().WithError(e).Error("Hov!")
 		return oauth2.Token{}, e
 	}
 	return accessToken, nil
@@ -48,6 +48,9 @@ func CacheAccesToken(key string, accessToken *oauth2.Token) {
 		"tokentype":   accessToken.TokenType,
 	}
 	expireDuration := accessToken.Expiry.Sub(time.Now())
-	client.HMSet(key, m)
-	client.Expire(key, expireDuration)
+	e := client.HMSet(key, m).Err()
+	e = client.Expire(key, expireDuration).Err()
+	if e != nil{
+		log.WithLocation().WithError(e).Error("Hov!")
+	}
 }

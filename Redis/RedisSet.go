@@ -1,8 +1,8 @@
 package Redis
 
 import (
+	log "../Logrus"
 	"github.com/go-redis/redis"
-	"github.com/prometheus/common/log"
 )
 
 func Set(key string, value string) {
@@ -22,7 +22,7 @@ func Get(key string) string {
 	})
 	v, e := client.Get(key).Result()
 	if e != nil {
-		log.Error(e, " -> Occured in redis.get")
+		log.WithLocation().WithError(e).Error("Hov!")
 	}
 	return v
 }
