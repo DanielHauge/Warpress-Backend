@@ -11,8 +11,8 @@ var Port = ":6379"
 var Password = ""
 var DB = 0
 
-// TODO: If availability ever becomes a problem, look into ClusterClient.
-// TODO: If redis becomes cache only and availability becomes a problem, look into Ring for multiple redis servers.
+// If availability ever becomes a problem, look into ClusterClient.
+// If redis becomes cache only and availability becomes a problem, look into Ring for multiple redis servers.
 
 func CanIConnect() error {
 	client := redis.NewClient(&redis.Options{
