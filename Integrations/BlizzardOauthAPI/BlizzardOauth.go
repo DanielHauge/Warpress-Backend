@@ -17,7 +17,7 @@ var (
 		ClientID:     os.Getenv("BNET_CLIENTID"),
 		ClientSecret: os.Getenv("BNET_SECRET"),
 		Scopes:       []string{"wow.profile"},
-		RedirectURL:  "https://localhost:443/bnet/auth/callback",
+		RedirectURL:  os.Getenv("HOSTNAME")+"/bnet/auth/callback",
 	}
 )
 
@@ -65,9 +65,9 @@ func HandleOauthCallback(w http.ResponseWriter, r *http.Request) {
 	// If user.id exists in database, fetch data and redirect to login with that pass and accesstoken.
 	isRegistered := Redis.DoesKeyExist("MAIN:" + strconv.Itoa(user.ID))
 	if isRegistered {
-		http.Redirect(w, r, "http://localhost:8080/#/Login", http.StatusPermanentRedirect)
+		http.Redirect(w, r, "https://wowhub.io/#/Login", http.StatusPermanentRedirect)
 	} else { // Redirect to register
-		http.Redirect(w, r, "http://localhost:8080/#/Register", http.StatusPermanentRedirect)
+		http.Redirect(w, r, "https://wowhub.io/#/Register", http.StatusPermanentRedirect)
 	}
 
 	if e != nil {

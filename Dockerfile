@@ -17,11 +17,13 @@ RUN go get github.com/sirupsen/logrus
 RUN go get -u github.com/kz/discordrus
 RUN go get github.com/jinzhu/copier
 RUN go get gopkg.in/alecthomas/kingpin.v2
+RUN go get github.com/bxcodec/faker
 
 # Copy the server code into the container
 COPY . /go
 
 EXPOSE 443
+EXPOSE 80
 
 RUN go build
 ENTRYPOINt ["./go"]
