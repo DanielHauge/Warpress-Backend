@@ -1,8 +1,8 @@
 package WarcraftLogs
 
 import (
-	log "../../Logrus"
-	"../../Prometheus"
+	log "../../Utility/Logrus"
+	"../../Utility/Monitoring"
 	"../Gojax"
 	"github.com/avelino/slugify"
 	"github.com/json-iterator/go"
@@ -25,7 +25,7 @@ func GetWarcraftLogsRanks(input CharInput) ([]Encounter, error) {
 
 	now := time.Now()
 	e := Gojax.Get(fullUrl, &rankings)
-	Prometheus.JaxObserveWarcraftlogs(time.Since(now).Seconds())
+	Monitoring.JaxObserveWarcraftlogs(time.Since(now).Seconds())
 	return rankings, e
 }
 
@@ -36,7 +36,7 @@ func GetWarcraftLogsReport(ReportId string) (Report, error) {
 	var report Report
 	now := time.Now()
 	e := Gojax.Get(fullUrl, &report)
-	Prometheus.JaxObserveWarcraftlogs(time.Since(now).Seconds())
+	Monitoring.JaxObserveWarcraftlogs(time.Since(now).Seconds())
 	return report, e
 }
 
@@ -49,6 +49,6 @@ func GetWarcraftGuildReports(guildname string, realm string, region string, star
 
 	now := time.Now()
 	e := Gojax.Get(fullUrl, &report)
-	Prometheus.JaxObserveWarcraftlogs(time.Since(now).Seconds())
+	Monitoring.JaxObserveWarcraftlogs(time.Since(now).Seconds())
 	return report, e
 }

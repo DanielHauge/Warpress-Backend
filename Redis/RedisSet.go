@@ -1,7 +1,7 @@
 package Redis
 
 import (
-	log "../Logrus"
+	log "../Utility/Logrus"
 	"github.com/go-redis/redis"
 )
 

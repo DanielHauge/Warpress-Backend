@@ -1,7 +1,7 @@
 package Redis
 
 import (
-	log "../Logrus"
+	log "../Utility/Logrus"
 	"github.com/go-redis/cache"
 	"github.com/go-redis/redis"
 	"github.com/vmihailenco/msgpack"
@@ -57,4 +57,21 @@ func CacheGetResult(Key string, obj interface{}) error {
 		log.WithLocation().WithError(err).Error("Hov!")
 	}
 	return err
+}
+
+func CacheTimeout(key string) bool {
+	client := redis.NewClient(&redis.Options{
+		Addr:     Addr + Port,
+		Password: Password,
+		DB:       DB,
+	})
+	remaingDur, e := client.TTL(key).Result()
+	if e != nil{
+		log.WithLocation().WithError(e).Error("Hov!")
+	}
+	if remaingDur > time.Minute*10-time.Second*30{
+		return true
+	}
+	return false
+
 }

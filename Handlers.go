@@ -1,13 +1,10 @@
 package main
 
 import (
-	"./Guild"
-	"./Integrations/BlizzardOpenAPI"
-	"./Integrations/Raider.io"
-	"./Integrations/WarcraftLogs"
-	log "./Logrus"
-	"./Personal"
+	"./DataFormatters/Guild"
+	"./DataFormatters/Personal"
 	"./Redis"
+	log "./Utility/Logrus"
 	"bytes"
 	"gopkg.in/russross/blackfriday.v2"
 	"net/http"
@@ -77,6 +74,16 @@ func SetupIndexPage() []byte {
 
 var IndexPage []byte
 
+func SuccessHeader(w http.ResponseWriter, msg []byte){
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(200)
+	w.Write(msg)
+}
+
+func InterErrorHeader(w http.ResponseWriter, e error){
+	w.WriteHeader(500)
+	w.Write([]byte(e.Error()))
+}
 
 func Index(w http.ResponseWriter, r *http.Request) {
 	var buffer bytes.Buffer
@@ -91,236 +98,153 @@ func Index(w http.ResponseWriter, r *http.Request) {
 
 func HandleGetPersonalFull(w http.ResponseWriter, r *http.Request, id int, region string) {
 
-	var Profile Personal.PersonalProfile
-	key := "PERSONAL:" + strconv.Itoa(id)
-	var e error
-	if Redis.DoesKeyExist(key) {
 
-		e = Redis.CacheGetResult(key, &Profile)
-		go func() {
-			var Caching Personal.PersonalProfile
-			Personal.FetchFullPersonal(id, &Caching)
-			Redis.CacheSetResult(key, Caching)
-		}()
+	channel, error := Redis.ServeCacheAndUpdateBehind("PERSONAL:", id, Personal.FetchFullPersonal)
 
-	} else {
+	select {
 
-		e = Personal.FetchFullPersonal(id, &Profile)
-		if e == nil {
-			go Redis.CacheSetResult(key, Profile)
-		}
-	}
-
-	if e != nil {
-		w.WriteHeader(500)
-		w.Write([]byte(e.Error()))
-	} else {
-		msg, err := json.Marshal(Profile)
+	case result := <- channel:
+		msg, err := json.Marshal(result)
 		if err != nil {
-			log.WithLocation().WithError(e).Error("Was not able to marshal profile")
-			w.Write([]byte(err.Error()))
-			return
+			log.WithLocation().WithError(err).Error("Was not able to marshal raider.io profile")
+			InterErrorHeader(w, err)
+		} else {
+			SuccessHeader(w, msg)
 		}
-		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-		w.WriteHeader(200)
-		w.Write(msg)
+
+	case e := <- error:
+		log.WithLocation().WithError(e).Error("How!")
+		InterErrorHeader(w, e)
+
 	}
 
 }
 
 func HandleGetPersonalRaiderio(w http.ResponseWriter, r *http.Request, id int, region string) {
 
-	var RaiderioProfile Raider_io.CharacterProfile
-	key := "PERSONAL/RAIDERIO:" + strconv.Itoa(id)
-	var e error
-	if Redis.DoesKeyExist(key) {
 
-		e = Redis.CacheGetResult(key, &RaiderioProfile)
-		go func() {
-			var Caching Raider_io.CharacterProfile
-			Personal.FetchRaiderioPersonal(id, &Caching)
-			Redis.CacheSetResult(key, Caching)
-		}()
+	channel, error := Redis.ServeCacheAndUpdateBehind("PERSONAL/RAIDERIO:", id, Personal.FetchRaiderioPersonal)
 
-	} else {
+	select {
 
-		e = Personal.FetchRaiderioPersonal(id, &RaiderioProfile)
-		if e == nil {
-			go Redis.CacheSetResult(key, RaiderioProfile)
-		}
-
-	}
-
-	if e != nil {
-		w.WriteHeader(500)
-		w.Write([]byte(e.Error()))
-		log.WithLocation().WithError(e).Error("How!")
-	} else {
-		msg, err := json.Marshal(RaiderioProfile)
+	case result := <- channel:
+		msg, err := json.Marshal(result)
 		if err != nil {
-			log.WithLocation().WithError(e).Error("Was not able to marshal raider.io profile")
-			w.Write([]byte(err.Error()))
-			return
+			log.WithLocation().WithError(err).Error("Was not able to marshal raider.io profile")
+			InterErrorHeader(w, err)
+		} else {
+			SuccessHeader(w, msg)
 		}
-		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-		w.WriteHeader(200)
-		w.Write(msg)
+
+	case e := <- error:
+		log.WithLocation().WithError(e).Error("How!")
+		InterErrorHeader(w, e)
+
 	}
 
 }
 
 func HandleGetPersonalWarcraftLogs(w http.ResponseWriter, r *http.Request, id int, region string) {
 
-	var logs []WarcraftLogs.Encounter
-	key := "PERSONAL/LOGS:" + strconv.Itoa(id)
-	var e error
-	if Redis.DoesKeyExist(key) {
 
-		e = Redis.CacheGetResult(key, &logs)
-		go func() {
-			var Caching []WarcraftLogs.Encounter
-			Personal.FetchWarcraftlogsPersonal(id, &Caching)
-			Redis.CacheSetResult(key, Caching)
-		}()
+	channel, error := Redis.ServeCacheAndUpdateBehind("PERSONAL/LOGS:", id, Personal.FetchWarcraftlogsPersonal)
 
-	} else {
+	select {
 
-		e = Personal.FetchWarcraftlogsPersonal(id, &logs)
-		if e == nil {
-			go Redis.CacheSetResult(key, logs)
-		}
-	}
-
-	if e != nil {
-		w.WriteHeader(500)
-		w.Write([]byte(e.Error()))
-		log.WithLocation().WithError(e).Error("Hov!")
-	} else {
-		msg, err := json.Marshal(logs)
+	case result := <- channel:
+		msg, err := json.Marshal(result)
 		if err != nil {
-			log.WithLocation().WithError(e).Error("Was not able to marshal logs")
-			w.Write([]byte(err.Error()))
-			return
+			log.WithLocation().WithError(err).Error("Was not able to marshal raider.io profile")
+			InterErrorHeader(w, err)
+		} else {
+			SuccessHeader(w, msg)
 		}
-		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-		w.WriteHeader(200)
-		w.Write(msg)
+
+	case e := <- error:
+		log.WithLocation().WithError(e).Error("How!")
+		InterErrorHeader(w, e)
+
 	}
+
 }
 
 func HandleGetPersonalBlizzardChar(w http.ResponseWriter, r *http.Request, id int, region string) {
 
-	var blizzProfile BlizzardOpenAPI.FullCharInfo
-	key := "PERSONAL/BLIZZARD:" + strconv.Itoa(id)
-	var e error
-	if Redis.DoesKeyExist(key) {
 
-		e = Redis.CacheGetResult(key, &blizzProfile)
-		go func() {
-			var Caching BlizzardOpenAPI.FullCharInfo
-			Personal.FetchBlizzardPersonal(id, &Caching)
-			Redis.CacheSetResult(key, Caching)
-		}()
+	channel, error := Redis.ServeCacheAndUpdateBehind("PERSONAL/BLIZZARD:", id, Personal.FetchBlizzardPersonal)
 
-	} else {
+	select {
 
-		e = Personal.FetchBlizzardPersonal(id, &blizzProfile)
-		if e == nil {
-			go Redis.CacheSetResult(key, blizzProfile)
-		}
-	}
-
-	if e != nil {
-		w.WriteHeader(500)
-		w.Write([]byte(e.Error()))
-		log.WithLocation().WithError(e).Error("Hov!")
-	} else {
-		msg, err := json.Marshal(blizzProfile)
+	case result := <- channel:
+		msg, err := json.Marshal(result)
 		if err != nil {
-			log.WithLocation().WithError(e).Error("Was not able to marshal blizzard profile")
-			w.Write([]byte(err.Error()))
-			return
+			log.WithLocation().WithError(err).Error("Was not able to marshal raider.io profile")
+			InterErrorHeader(w, err)
+		} else {
+			SuccessHeader(w, msg)
 		}
-		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-		w.WriteHeader(200)
-		w.Write(msg)
+
+	case e := <- error:
+		log.WithLocation().WithError(e).Error("How!")
+		InterErrorHeader(w, e)
+
 	}
 }
 
 func HandleGetPersonalImprovements(w http.ResponseWriter, r *http.Request, id int, region string) {
-	var improvementsProfile Personal.PersonalImprovement
-	key := "PERSONAL/IMPROVEMENT:" + strconv.Itoa(id)
-	var e error
-	if Redis.DoesKeyExist(key) {
 
-		e = Redis.CacheGetResult(key, &improvementsProfile)
-		go func() {
-			var Caching Personal.PersonalImprovement
-			Personal.FetchPersonalImprovementsFull(id, &Caching)
-			Redis.CacheSetResult(key, Caching)
-		}()
+	channel, error := Redis.ServeCacheAndUpdateBehind("PERSONAL/IMPROVEMENT:", id, Personal.FetchPersonalImprovementsFull)
 
-	} else {
+	select {
 
-		e = Personal.FetchPersonalImprovementsFull(id, &improvementsProfile)
-		if e == nil {
-			go Redis.CacheSetResult(key, improvementsProfile)
-		}
-	}
-
-	if e != nil {
-		w.WriteHeader(500)
-		w.Write([]byte(e.Error()))
-		log.WithLocation().WithError(e).Error("Woops - Something went wrong")
-	} else {
-		msg, err := json.Marshal(improvementsProfile)
+	case result := <- channel:
+		msg, err := json.Marshal(result)
 		if err != nil {
-			log.WithLocation().WithError(e).Error("Was not able to marshal improvement profile")
-			w.Write([]byte(err.Error()))
-			return
+			log.WithLocation().WithError(err).Error("Was not able to marshal raider.io profile")
+			InterErrorHeader(w, err)
+		} else {
+			SuccessHeader(w, msg)
 		}
-		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-		w.WriteHeader(200)
-		w.Write(msg)
+
+	case e := <- error:
+		log.WithLocation().WithError(e).Error("How!")
+		InterErrorHeader(w, e)
+
 	}
 
 }
 
 func HandleGetGuildOverview(w http.ResponseWriter, r *http.Request, id int, region string) {
 
-	var GuildProfile Guild.FullGuildOverviewInfo
-	key := "GUILD/OVERVIEW:" + strconv.Itoa(id)
-	var e error
-	if Redis.DoesKeyExist(key) {
+	channel, error := Redis.ServeCacheAndUpdateBehind("GUILD/OVERVIEW:", id, Guild.FetchFullGuildOverview)
 
-		e = Redis.CacheGetResult(key, &GuildProfile)
-		go func() {
-			var Caching Guild.FullGuildOverviewInfo
-			Guild.FetchFullGuildOverview(id, &Caching)
-			Redis.CacheSetResult(key, Caching)
-		}()
+	select {
 
-	} else {
-
-		e = Guild.FetchFullGuildOverview(id, &GuildProfile)
-		if e == nil {
-			go Redis.CacheSetResult(key, GuildProfile)
-		}
-	}
-
-	if e != nil {
-		w.WriteHeader(500)
-		w.Write([]byte(e.Error()))
-		log.WithLocation().WithError(e).Error("Woops - Something went wrong")
-	} else {
-		msg, err := json.Marshal(GuildProfile)
+	case result := <- channel:
+		msg, err := json.Marshal(result)
 		if err != nil {
-			log.WithLocation().WithError(e).Error("Was not able to marshal guild profile")
-			w.Write([]byte(err.Error()))
-			return
+			log.WithLocation().WithError(err).Error("Was not able to marshal raider.io profile")
+			InterErrorHeader(w, err)
+		} else {
+			SuccessHeader(w, msg)
 		}
-		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-		w.WriteHeader(200)
-		w.Write(msg)
+
+	case e := <- error:
+		log.WithLocation().WithError(e).Error("How!")
+		InterErrorHeader(w, e)
+
 	}
+
+}
+
+func HandleLogout(w http.ResponseWriter, r *http.Request, id int, region string){
+
+	e := Redis.DeleteKey("AT:"+strconv.Itoa(id))
+	if e != nil{
+		InterErrorHeader(w, e)
+	} else {
+		w.WriteHeader(200)
+		w.Write([]byte("OK!"))
+	}
+
 }

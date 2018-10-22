@@ -1,8 +1,8 @@
 package BlizzardOauthAPI
 
 import (
-	log "../../Logrus"
-	"../../Prometheus"
+	log "../../Utility/Logrus"
+	"../../Utility/Monitoring"
 	"../../Redis"
 	"./BattleNetOauth"
 	"context"
@@ -55,7 +55,7 @@ func HandleOauthCallback(w http.ResponseWriter, r *http.Request) {
 	user, _, e := client.Account().User()
 	log.WithField("User", user.ID).WithField("Token", token).Debug("Token")
 
-	Prometheus.LoginInc()
+	Monitoring.LoginInc()
 
 	// Caches the AccessToken in redis for later validation.
 	Redis.CacheAccesToken("AT:"+strconv.Itoa(user.ID), token)
@@ -65,9 +65,9 @@ func HandleOauthCallback(w http.ResponseWriter, r *http.Request) {
 	// If user.id exists in database, fetch data and redirect to login with that pass and accesstoken.
 	isRegistered := Redis.DoesKeyExist("MAIN:" + strconv.Itoa(user.ID))
 	if isRegistered {
-		http.Redirect(w, r, "https://wowhub.io/#/Login", http.StatusPermanentRedirect)
+		http.Redirect(w, r, "https://wowhub.io/#/", http.StatusPermanentRedirect)
 	} else { // Redirect to register
-		http.Redirect(w, r, "https://wowhub.io/#/Register", http.StatusPermanentRedirect)
+		http.Redirect(w, r, "https://wowhub.io/#/register", http.StatusPermanentRedirect)
 	}
 
 	if e != nil {
@@ -91,3 +91,5 @@ func DoesUserHaveAccess(w http.ResponseWriter, r *http.Request) (bool, int, stri
 	cachedAccessToken, e := Redis.GetAccessToken("AT:" + strconv.Itoa(accountId))
 	return AreAccessTokensSame(acesToken, cachedAccessToken), accountId, region
 }
+
+

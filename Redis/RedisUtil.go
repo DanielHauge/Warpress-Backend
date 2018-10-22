@@ -1,7 +1,7 @@
 package Redis
 
 import (
-	log "../Logrus"
+	log "../Utility/Logrus"
 	"github.com/go-redis/redis"
 	"os"
 )
@@ -41,4 +41,23 @@ func DoesKeyExist(key string) bool {
 	} else {
 		return false
 	}
+}
+
+func DeleteKey(key ...string) error{
+	client := redis.NewClient(&redis.Options{
+		Addr:     Addr + Port,
+		Password: Password,
+		DB:       DB,
+	})
+	var e error
+	for _, v := range key{
+		_, e = client.Del(v).Result()
+		log.WithField("Key", v).Info("Redis Delete")
+		if e != nil{
+			log.WithLocation().WithError(e).Error("Hov!")
+		}
+	}
+
+
+	return e
 }

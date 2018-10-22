@@ -1,7 +1,7 @@
 package Gojax
 
 import (
-	log "../../Logrus"
+	log "../../Utility/Logrus"
 	"encoding/json"
 	"net/http"
 )

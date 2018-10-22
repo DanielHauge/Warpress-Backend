@@ -1,7 +1,7 @@
 package Redis
 
 import (
-	log "../Logrus"
+	log "../Utility/Logrus"
 	"errors"
 	"github.com/go-redis/redis"
 	"golang.org/x/oauth2"

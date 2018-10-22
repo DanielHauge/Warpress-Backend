@@ -1,7 +1,7 @@
 package main
 
 import (
-	. "./Filters"
+	. "./Utility/Filters"
 	"./Integrations/BlizzardOauthAPI"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
@@ -99,6 +99,14 @@ var routes = Routes{
 		nil,
 		ExampleGuildOverviewInfo,
 	},
+	Route{
+		"Log out",
+		"GET",
+		"/bnet/logout",
+		RequireAuthentication(HandleLogout),
+		nil,
+		nil,
+	},
 }
 
 var restrictedRoutes = Routes{
@@ -119,7 +127,7 @@ var restrictedRoutes = Routes{
 		nil,
 	},
 	Route{
-		"Prometheus Metrics",
+		"Monitoring Metrics",
 		"GET",
 		"/metrics",
 		promhttp.Handler().ServeHTTP,

@@ -1,8 +1,8 @@
 package Guild
 
 import (
-	"../Integrations/Raider.io"
-	"../Integrations/WarcraftLogs"
+	"../../Integrations/Raider.io"
+	"../../Integrations/WarcraftLogs"
 )
 
 type FullGuildOverviewInfo struct {

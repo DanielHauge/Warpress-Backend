@@ -1,8 +1,8 @@
 package Raider_io
 
 import (
-	log "../../Logrus"
-	"../../Prometheus"
+	log "../../Utility/Logrus"
+	"../../Utility/Monitoring"
 	"../Gojax"
 	"github.com/json-iterator/go"
 	"github.com/sirupsen/logrus"
@@ -19,7 +19,7 @@ func GetRaiderIORank(input CharInput) (CharacterProfile, error) {
 	var rankings CharacterProfile
 	now := time.Now()
 	e := Gojax.Get(url, &rankings)
-	Prometheus.JaxObserveRaiderio(time.Since(now).Seconds())
+	Monitoring.JaxObserveRaiderio(time.Since(now).Seconds())
 	return rankings, e
 }
 
@@ -32,7 +32,7 @@ func GetRaiderIOGuild(region string, realm string, guildname string) (GuildInfo,
 	var guildinfo GuildInfo
 	now := time.Now()
 	e := Gojax.Get(url, &guildinfo)
-	Prometheus.JaxObserveRaiderio(time.Since(now).Seconds())
+	Monitoring.JaxObserveRaiderio(time.Since(now).Seconds())
 	return guildinfo, e
 
 }

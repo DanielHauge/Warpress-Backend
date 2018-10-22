@@ -1,8 +1,8 @@
 package main
 
 import (
-	log "./Logrus"
 	"./Redis"
+	log "./Utility/Logrus"
 	"crypto/tls"
 	"github.com/json-iterator/go"
 	"github.com/rs/cors"
@@ -10,45 +10,13 @@ import (
 	"os"
 )
 
-// IMPORTS!
-/*
-// go get github.com/go-sql-driver/mysql
-// go get github.com/gorilla/mux
-// go get github.com/rs/cors
-// go get gopkg.in/russross/blackfriday.v2
-// go get -u github.com/go-redis/redis
-// go get github.com/gorilla/securecookie
-// go get golang.org/x/oauth2
-// go get github.com/avelino/slugify
-// go get github.com/brianvoe/gofakeit
-// go get github.com/json-iterator/go
-// go get -u github.com/go-redis/cache
-// go get github.com/vmihailenco/msgpack
-// go get github.com/prometheus/client_golang/prometheus
-// go get github.com/sirupsen/logrus
-// go get -u github.com/kz/discordrus
-// go get github.com/jinzhu/copier
-// go get github.com/wawandco/fako
-// go get golang.org/x/crypto/acme/autocert
-
-// go get github.com/swaggo/swag/cmd/swag
-// go get github.com/swaggo/http-swagger
-
-// Unsure but might need:
-// go get golang.org/x/sys/windows/svc/eventlog
-// go get gopkg.in/alecthomas/kingpin.v2
-*/
 
 var json = jsoniter.ConfigFastest
 
-// TODO: Setup nginx reverse proxy
-// TODO: Setup service for API and make that running
-
-// TODO: Logout
-
+// LatentTODO: Setup service for API and make that running
 // TODO: Make code clean and sleak
-// TODO: Use real structs in examples, but randomize it. Fake it, mock it -> pretty fucked up with to much data.
 // TODO: Make documentation for API better.
+// TODO: Sanitize data in dataformatters for frontend
 
 func main() {
 

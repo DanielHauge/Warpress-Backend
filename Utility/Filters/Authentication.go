@@ -1,7 +1,7 @@
 package Filters
 
 import (
-	"../Integrations/BlizzardOauthAPI"
+	"../../Integrations/BlizzardOauthAPI"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 )

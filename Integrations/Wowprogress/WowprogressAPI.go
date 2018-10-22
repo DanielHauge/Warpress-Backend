@@ -1,8 +1,8 @@
 package Wowprogress
 
 import (
-	log "../../Logrus"
-	"../../Prometheus"
+	log "../../Utility/Logrus"
+	"../../Utility/Monitoring"
 	"../Gojax"
 	"github.com/json-iterator/go"
 	"github.com/sirupsen/logrus"
@@ -33,7 +33,7 @@ func GetGuildRank(input Input) (GuildRank, error) {
 
 	now := time.Now()
 	e := Gojax.Get(fullUrl, &rankings)
-	Prometheus.JaxObserveWowprogress(time.Since(now).Seconds())
+	Monitoring.JaxObserveWowprogress(time.Since(now).Seconds())
 
 	return rankings, e
 }

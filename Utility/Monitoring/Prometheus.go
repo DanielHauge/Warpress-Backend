@@ -1,4 +1,4 @@
-package Prometheus
+package Monitoring
 
 import (
 	"github.com/prometheus/client_golang/prometheus"

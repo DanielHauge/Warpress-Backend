@@ -1,7 +1,7 @@
 package Filters
 
 import (
-	"../Prometheus"
+	"../Monitoring"
 	"net/http"
 	"time"
 )
@@ -13,8 +13,8 @@ func Monitor(inner http.Handler) http.Handler {
 		inner.ServeHTTP(w, r)
 
 		end := time.Since(start)
-		Prometheus.ReqDurationObserve(end.Seconds())
-		Prometheus.RequestInc()
+		Monitoring.ReqDurationObserve(end.Seconds())
+		Monitoring.RequestInc()
 
 	})
 }

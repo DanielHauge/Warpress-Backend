@@ -1,31 +1,36 @@
 package Personal
 
 import (
-	"../Integrations/BlizzardOauthAPI"
-	"../Integrations/WarcraftLogs"
-	log "../Logrus"
-	"../Redis"
+	"../../Integrations/BlizzardOauthAPI"
+	"../../Integrations/WarcraftLogs"
+	log "../../Utility/Logrus"
+	"../../Redis"
+	"github.com/jinzhu/copier"
 	"strconv"
 )
 
 var RaidBotUrl = "https://www.raidbots.com/simbot/"
 
-func FetchPersonalImprovementsFull(id int, improvements *PersonalImprovement) error {
+func FetchPersonalImprovementsFull(id int, improvements *interface{}) error {
 
-	improvements.SimulationURLS = MakeSimBotUrls(id)
+	var persImprov PersonalImprovement
+
+	persImprov.SimulationURLS = MakeSimBotUrls(id)
 	bossimprovements, e := GenerateWarcraftLogs(id)
-	improvements.BossImprovements = bossimprovements
-
+	persImprov.BossImprovements = bossimprovements
+	copier.Copy(improvements, persImprov)
 	return e
 }
 
 func GenerateWarcraftLogs(id int) ([]BossImprovement, error) {
 	var logs []WarcraftLogs.Encounter
+	var interfaceLogs interface{}
 	var improvements []BossImprovement
-	e := FetchWarcraftlogsPersonal(id, &logs)
+	e := FetchWarcraftlogsPersonal(id, &interfaceLogs)
 	if e != nil {
 		log.WithLocation().WithError(e).Error("Hov!")
 	}
+	copier.Copy(logs, interfaceLogs)
 
 	mapOfCharIds := map[string]int{}
 	for _, value := range logs {

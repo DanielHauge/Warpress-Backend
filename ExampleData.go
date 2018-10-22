@@ -1,11 +1,11 @@
 package main
 
 import (
-	"./Guild"
+	"./DataFormatters/Guild"
 	"./Integrations/BlizzardOpenAPI"
 	"./Integrations/Raider.io"
 	"./Integrations/WarcraftLogs"
-	"./Personal"
+	"./DataFormatters/Personal"
 	"github.com/bxcodec/faker"
 	"log"
 )

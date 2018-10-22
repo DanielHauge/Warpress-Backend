@@ -1,7 +1,7 @@
 package BlizzardOauthAPI
 
 import (
-	log "../../Logrus"
+	log "../../Utility/Logrus"
 	"crypto/rand"
 	"encoding/base64"
 	"github.com/gorilla/securecookie"

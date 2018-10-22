@@ -1,8 +1,8 @@
 package BlizzardOpenAPI
 
 import (
-	log "../../Logrus"
-	"../../Prometheus"
+	log "../../Utility/Logrus"
+	"../../Utility/Monitoring"
 	"../Gojax"
 	"github.com/json-iterator/go"
 	"github.com/sirupsen/logrus"
@@ -20,7 +20,7 @@ func GetBlizzardChar(realm string, name string, region string) (FullCharInfo, er
 	var fullChar FullCharInfo
 	now := time.Now()
 	e := Gojax.Get(url, &fullChar)
-	Prometheus.JaxObserveBlizzardOpen(time.Since(now).Seconds())
+	Monitoring.JaxObserveBlizzardOpen(time.Since(now).Seconds())
 	return fullChar, e
 }
 
@@ -34,7 +34,7 @@ func GetBlizzardGuildMembers(guildname string, region string, realm string) (Gui
 
 	now := time.Now()
 	e := Gojax.Get(url, &guild)
-	Prometheus.JaxObserveBlizzardOpen(time.Since(now).Seconds())
+	Monitoring.JaxObserveBlizzardOpen(time.Since(now).Seconds())
 	return guild, e
 
 }

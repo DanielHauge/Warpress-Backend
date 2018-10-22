@@ -1,7 +1,7 @@
 package main
 
 import (
-	. "./Filters"
+	. "./Utility/Filters"
 	"github.com/gorilla/mux"
 	"net/http"
 )

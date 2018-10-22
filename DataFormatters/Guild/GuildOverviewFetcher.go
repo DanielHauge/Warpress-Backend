@@ -1,19 +1,20 @@
 package Guild
 
 import (
-	"../Integrations/BlizzardOpenAPI"
-	"../Integrations/Raider.io"
-	"../Integrations/WarcraftLogs"
-	"../Redis"
+	"../../Integrations/BlizzardOpenAPI"
+	"../../Integrations/Raider.io"
+	"../../Integrations/WarcraftLogs"
+	"../../Redis"
+	"github.com/jinzhu/copier"
 	"strconv"
 	"strings"
 	"time"
 )
 
-func FetchFullGuildOverview(id int, FullGuildOverview *FullGuildOverviewInfo) error {
+func FetchFullGuildOverview(id int, result *interface{}) error {
 
 	// TODO: Error handling??? Logging?
-
+	var FullGuildOverview FullGuildOverviewInfo
 	guildstring := Redis.Get("GUILD:" + strconv.Itoa(id))
 	split := strings.Split(guildstring, ":")
 	Guild := struct {
@@ -48,7 +49,7 @@ func FetchFullGuildOverview(id int, FullGuildOverview *FullGuildOverviewInfo) er
 	FullGuildOverview.LastRaid = strconv.FormatInt(time.Now().Unix(), 10)
 	FullGuildOverview.NextRaid = strconv.FormatInt(time.Now().Add(time.Hour*24*3).Unix(), 10)
 	FullGuildOverview.RaidDays = []RaidNight{{DayOfTheWeek: 2, StartTime: "19:00", EndTime: "23:00"}, {DayOfTheWeek: 6, StartTime: "20:00", EndTime: "22:00"}}
-
+	copier.Copy(result, FullGuildOverview)
 	return e
 
 }

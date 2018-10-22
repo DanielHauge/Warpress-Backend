@@ -1,10 +1,10 @@
 package Personal
 
 import (
-	"../Integrations/BlizzardOpenAPI"
-	"../Integrations/Raider.io"
-	"../Integrations/WarcraftLogs"
-	"../Integrations/Wowprogress"
+	"../../Integrations/BlizzardOpenAPI"
+	"../../Integrations/Raider.io"
+	"../../Integrations/WarcraftLogs"
+	"../../Integrations/Wowprogress"
 )
 
 type PersonalProfile struct {

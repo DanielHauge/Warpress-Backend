@@ -1,20 +1,23 @@
 package Personal
 
 import (
-	"../Integrations/BlizzardOauthAPI"
-	"../Integrations/BlizzardOpenAPI"
-	"../Integrations/Raider.io"
-	"../Integrations/WarcraftLogs"
-	"../Integrations/Wowprogress"
-	log "../Logrus"
-	"../Redis"
+	"../../Integrations/BlizzardOauthAPI"
+	"../../Integrations/BlizzardOpenAPI"
+	"../../Integrations/Raider.io"
+	"../../Integrations/WarcraftLogs"
+	"../../Integrations/Wowprogress"
+	log "../../Utility/Logrus"
+	"../../Redis"
 	"github.com/avelino/slugify"
 	"github.com/jinzhu/copier"
 	"strconv"
 	"sync"
 )
 
-func FetchFullPersonal(id int, Profile *PersonalProfile) error {
+func FetchFullPersonal(id int, profile *interface{}) error {
+
+
+	var Profile PersonalProfile
 
 	charMap, e := Redis.GetStruct("MAIN:" + strconv.Itoa(id))
 	if e != nil {
@@ -60,10 +63,13 @@ func FetchFullPersonal(id int, Profile *PersonalProfile) error {
 	}()
 
 	wg.Wait()
+
+	copier.Copy(profile, Profile)
+
 	return e
 }
 
-func FetchRaiderioPersonal(id int, Profile *Raider_io.CharacterProfile) error {
+func FetchRaiderioPersonal(id int, Profile *interface{}) error {
 
 	charMap, e := Redis.GetStruct("MAIN:" + strconv.Itoa(id))
 	if e != nil {
@@ -76,7 +82,7 @@ func FetchRaiderioPersonal(id int, Profile *Raider_io.CharacterProfile) error {
 	return e
 }
 
-func FetchWarcraftlogsPersonal(id int, Logs *[]WarcraftLogs.Encounter) error {
+func FetchWarcraftlogsPersonal(id int, Logs *interface{}) error {
 	charMap, e := Redis.GetStruct("MAIN:" + strconv.Itoa(id))
 	if e != nil {
 		log.WithLocation().WithError(e).WithField("User", id).Error("There is no main registered to the user!")
@@ -89,7 +95,7 @@ func FetchWarcraftlogsPersonal(id int, Logs *[]WarcraftLogs.Encounter) error {
 	return e
 }
 
-func FetchBlizzardPersonal(id int, Profile *BlizzardOpenAPI.FullCharInfo) error {
+func FetchBlizzardPersonal(id int, Profile *interface{}) error {
 
 	charMap, e := Redis.GetStruct("MAIN:" + strconv.Itoa(id))
 	if e != nil {
