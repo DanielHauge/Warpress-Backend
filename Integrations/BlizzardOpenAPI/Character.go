@@ -46,11 +46,11 @@ type Item struct {
 	Quality              int             `json:"quality"`
 	ItemLevel            int             `json:"itemLevel"`
 	ToolTipParams        ToolTipParams   `json:"tooltipParams"`
-	stats                []Stat          `json:"stats"`
+	Stats                []Stat          `json:"stats"`
 	Armor                int             `json:"armor"`
 	WeaponInfo           WeaponInfo      `json:"weaponInfo"`
 	Context              string          `json:"context"`
-	bonusLists           []int           `json:"bonusLists"`
+	BonusLists           []int           `json:"bonusLists"`
 	ArtifactId           int             `json:"artifactId"`
 	DisplayInfoId        int             `json:"displayInfoId"`
 	ArtifactAppearanceId int             `json:"artifactAppearanceId"`

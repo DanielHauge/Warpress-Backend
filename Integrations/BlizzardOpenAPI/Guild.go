@@ -16,6 +16,6 @@ type Emblem struct {
 	Border            int    `json:"border"`
 	BorderColor       string `json:"borderColor"`
 	BorderColorId     int    `json:"borderColorId"`
-	backgroundColor   string `json:"backgroundColor"`
+	BackgroundColor   string `json:"backgroundColor"`
 	BackgroundColorId int    `json:"backgroundColorId"`
 }

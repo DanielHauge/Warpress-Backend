@@ -4,6 +4,7 @@ import (
 	"./DataFormatters/Guild"
 	"./DataFormatters/Personal"
 	"./Redis"
+	. "./Utility/HttpHelper"
 	log "./Utility/Logrus"
 	"bytes"
 	"gopkg.in/russross/blackfriday.v2"
@@ -47,43 +48,12 @@ func SetupIndexPage() []byte {
 			}
 		}
 
-		buffer.WriteString("\n##### Example:\n")
-		buffer.WriteString("- Input:\n")
-		var b []byte
-		if v.ExpectedInput != nil {
-			b, _ = json.MarshalIndent(v.ExpectedInput, "", "     ")
-		} else {
-			b = []byte("Nothing")
-		}
-		buffer.WriteString("\n\n ``` ")
-		buffer.WriteString(string(b))
-		buffer.WriteString("\n ``` \n")
-
-		buffer.WriteString("\n- Output:\n")
-		if v.ExpectedOutput != nil {
-			b, _ = json.MarshalIndent(v.ExpectedOutput, "", "     ")
-		} else {
-			b = []byte("Nothing")
-		}
-		buffer.WriteString("\n\n ``` ")
-		buffer.WriteString(string(b))
-		buffer.WriteString("\n ``` \n")
 	}
 	return buffer.Bytes()
 }
 
 var IndexPage []byte
 
-func SuccessHeader(w http.ResponseWriter, msg []byte) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(200)
-	w.Write(msg)
-}
-
-func InterErrorHeader(w http.ResponseWriter, e error) {
-	w.WriteHeader(500)
-	w.Write([]byte(e.Error()))
-}
 
 func Index(w http.ResponseWriter, r *http.Request) {
 	var buffer bytes.Buffer

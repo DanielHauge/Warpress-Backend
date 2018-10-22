@@ -1,7 +1,12 @@
 package main
 
 import (
+	"./DataFormatters/Guild"
+	"./DataFormatters/Personal"
 	"./Integrations/BlizzardOauthAPI"
+	"./Integrations/BlizzardOpenAPI"
+	"./Integrations/Raider.io"
+	"./Integrations/WarcraftLogs"
 	. "./Utility/Filters"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
@@ -40,7 +45,7 @@ var routes = Routes{
 		"POST",
 		"/main",
 		RequireAuthentication(BlizzardOauthAPI.SetMainCharacter),
-		ExampleCharVar,
+		struct {Name string; Reealm string }{},
 		nil,
 	},
 	Route{
@@ -49,7 +54,7 @@ var routes = Routes{
 		"/main",
 		RequireAuthentication(BlizzardOauthAPI.GetMainCharacter),
 		nil,
-		ExampleCharVar,
+		struct {Name string; Reealm string; Region string }{},
 	},
 	Route{
 		"Get Full Personal View, Includes: (BlizzardOpenAPI, Raider.io, warcraftlogs, wowprogress) profiles",
@@ -57,7 +62,7 @@ var routes = Routes{
 		"/personal",
 		RequireAuthentication(HandleGetPersonalFull),
 		nil,
-		ExamplePersonalProfile,
+		Personal.PersonalProfile{},
 	},
 	Route{
 		"Get Blizzards character profile",
@@ -65,7 +70,7 @@ var routes = Routes{
 		"/personal/blizzard",
 		RequireAuthentication(HandleGetPersonalBlizzardChar),
 		nil,
-		ExampleFullBlizzChar,
+		BlizzardOpenAPI.FullCharInfo{},
 	},
 	Route{
 		"Get Raider.IO character profile",
@@ -73,7 +78,7 @@ var routes = Routes{
 		"/personal/raiderio",
 		RequireAuthentication(HandleGetPersonalRaiderio),
 		nil,
-		ExampleRaiderioProfile,
+		Raider_io.CharacterProfile{},
 	},
 	Route{
 		"Get Warcraftlogs character profile",
@@ -81,7 +86,7 @@ var routes = Routes{
 		"/personal/warcraftlogs",
 		RequireAuthentication(HandleGetPersonalWarcraftLogs),
 		nil,
-		nil,
+		WarcraftLogs.Encounter{},
 	},
 	Route{
 		"Get personal improvements",
@@ -89,7 +94,7 @@ var routes = Routes{
 		"/personal/improvements",
 		RequireAuthentication(HandleGetPersonalImprovements),
 		nil,
-		ExamplePersonalImprovement,
+		Personal.PersonalImprovement{},
 	},
 	Route{
 		"Get Guild overview",
@@ -97,7 +102,7 @@ var routes = Routes{
 		"/guild",
 		RequireAuthentication(HandleGetGuildOverview),
 		nil,
-		ExampleGuildOverviewInfo,
+		Guild.FullGuildOverviewInfo{},
 	},
 	Route{
 		"Log out",

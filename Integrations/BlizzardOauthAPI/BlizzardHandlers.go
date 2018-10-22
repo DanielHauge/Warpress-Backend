@@ -2,14 +2,13 @@ package BlizzardOauthAPI
 
 import (
 	"../../Redis"
+	"../../Utility/HttpHelper"
 	log "../../Utility/Logrus"
 	"./BattleNetOauth"
 	"github.com/avelino/slugify"
 	"github.com/jinzhu/copier"
 	"github.com/json-iterator/go"
 	"golang.org/x/oauth2"
-	"io"
-	"io/ioutil"
 	"net/http"
 	"sort"
 	"strconv"
@@ -81,32 +80,16 @@ func MakeFetcherFunction(region string, fetcher func(id int, region string) ([]b
 
 func SetMainCharacter(w http.ResponseWriter, r *http.Request, id int, region string) {
 
-	//TODO: FY FOR DEN LEDE!. lav noget ordenligt til at læse fra bodien.
 	ids := strconv.Itoa(id)
+	w.WriteHeader(201)
 	Redis.DeleteKey("MAIN:"+ids, "PERSONAL:"+ids, "PERSONAL/RAIDERIO:"+ids, "PERSONAL/LOGS:"+ids, "PERSONAL/BLIZZARD:"+ids, "PERSONAL/IMPROVEMENT:"+ids, "GUILD/OVERVIEW:"+ids, "GUILD:"+ids)
 
 	var char CharacterMinimal
-	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
-	if err != nil {
-		log.WithLocation().WithError(err).Error("Hov!")
-		w.WriteHeader(400)
-		w.Write([]byte("Could not read body"))
-		return
-	}
-	if err := r.Body.Close(); err != nil {
-		log.WithLocation().WithError(err).Error("Hov!")
-	}
-	if err := json.Unmarshal(body, &char); err != nil {
-		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-		if err := json.NewEncoder(w).Encode(err); err != nil {
-			log.WithLocation().WithError(err).Error("Hov!")
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-	}
+	HttpHelper.ReadFromRequest(w, r, &char)
+
 	char.Realm = slugify.Slugify(char.Realm)
 	char.Region = region
-	w.WriteHeader(201)
+
 	Redis.SetStruct("MAIN:"+strconv.Itoa(id), char.ToMap())
 
 }

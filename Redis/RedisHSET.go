@@ -40,7 +40,6 @@ func GetStruct(key string) (map[string]string, error) {
 		}
 		return value, e
 	} else {
-		return map[string]string{}, errors.New("The key did not exist")
+		return map[string]string{}, errors.New("the key did not exist")
 	}
-
 }

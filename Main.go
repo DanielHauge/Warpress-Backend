@@ -13,8 +13,6 @@ import (
 var json = jsoniter.ConfigFastest
 
 // LatentTODO: Setup service for API and make that running
-// TODO: Make code clean and sleak
-// TODO: Make documentation for API better.
 // TODO: Sanitize data in dataformatters for frontend
 
 func main() {

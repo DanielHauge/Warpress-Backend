@@ -15,14 +15,14 @@ func FetchPersonalImprovementsFull(id int, improvements *interface{}) error {
 
 	var persImprov PersonalImprovement
 
-	persImprov.SimulationURLS = MakeSimBotUrls(id)
-	bossimprovements, e := GenerateWarcraftLogs(id)
+	persImprov.SimulationURLS = makeSimBotUrls(id)
+	bossimprovements, e := generateWarcraftLogs(id)
 	persImprov.BossImprovements = bossimprovements
 	copier.Copy(improvements, persImprov)
 	return e
 }
 
-func GenerateWarcraftLogs(id int) ([]BossImprovement, error) {
+func generateWarcraftLogs(id int) ([]BossImprovement, error) {
 	var logs []WarcraftLogs.Encounter
 	var interfaceLogs interface{}
 	var improvements []BossImprovement
@@ -35,8 +35,8 @@ func GenerateWarcraftLogs(id int) ([]BossImprovement, error) {
 	mapOfCharIds := map[string]int{}
 	for _, value := range logs {
 
-		comparelink := GenerateCompareLink(value.ReportID, value.FightID, value.CharacterName, mapOfCharIds)
-		analyselink := GenerateAnalyserLink(value.ReportID, value.FightID, value.CharacterName, mapOfCharIds)
+		comparelink := generateCompareLink(value.ReportID, value.FightID, value.CharacterName, mapOfCharIds)
+		analyselink := generateAnalyserLink(value.ReportID, value.FightID, value.CharacterName, mapOfCharIds)
 
 		improvements = append(improvements, BossImprovement{
 			value.EncounterName,
@@ -52,21 +52,21 @@ func GenerateWarcraftLogs(id int) ([]BossImprovement, error) {
 	return improvements, e
 }
 
-func GenerateCompareLink(ReportID string, FightID int, Name string, mapOfCharIds map[string]int) string {
+func generateCompareLink(ReportID string, FightID int, Name string, mapOfCharIds map[string]int) string {
 	fightId := strconv.Itoa(FightID)
-	url := "https://www.warcraftlogs.com/reports/" + ReportID + "#fight=" + fightId + "&type=damage-done&comparesearchplayer=" + GetCharId(ReportID, Name, mapOfCharIds) + "&comparesearch=2.10.2.28"
+	url := "https://www.warcraftlogs.com/reports/" + ReportID + "#fight=" + fightId + "&type=damage-done&comparesearchplayer=" + getCharId(ReportID, Name, mapOfCharIds) + "&comparesearch=2.10.2.28"
 
 	return url
 }
 
-func GenerateAnalyserLink(ReportID string, FightID int, Name string, mapOfCharIds map[string]int) string {
+func generateAnalyserLink(ReportID string, FightID int, Name string, mapOfCharIds map[string]int) string {
 	fightId := strconv.Itoa(FightID)
-	url := "https://wowanalyzer.com/report/" + ReportID + "/" + fightId + "/" + GetCharId(ReportID, Name, mapOfCharIds)
+	url := "https://wowanalyzer.com/report/" + ReportID + "/" + fightId + "/" + getCharId(ReportID, Name, mapOfCharIds)
 
 	return url
 }
 
-func GetCharId(ReportID string, Name string, ints map[string]int) string {
+func getCharId(ReportID string, Name string, ints map[string]int) string {
 	if ints[ReportID] != 0 {
 		return strconv.Itoa(ints[ReportID])
 	} else {
@@ -85,7 +85,7 @@ func GetCharId(ReportID string, Name string, ints map[string]int) string {
 	return ""
 }
 
-func MakeSimBotUrls(id int) RaidBotSimulations {
+func makeSimBotUrls(id int) RaidBotSimulations {
 	charMap, e := Redis.GetStruct("MAIN:" + strconv.Itoa(id))
 	if e != nil {
 		log.WithLocation().WithError(e).WithField("User", id).Error("There is no main registered to the user!")

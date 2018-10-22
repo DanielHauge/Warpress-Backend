@@ -12,7 +12,7 @@ type Encounter struct {
 	Class              string      `json:"class"`
 	Spec               string      `json:"spec"`
 	Rank               int         `json:"rank"`
-	outOf              int         `json:"outOf"`
+	OutOf              int         `json:"outOf"`
 	Duration           int         `json:"duration"`
 	ReportID           string      `json:"reportID"`
 	FightID            int         `json:"fightID"`
