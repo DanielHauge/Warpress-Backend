@@ -2,10 +2,10 @@ package main
 
 import (
 	"./DataFormatters/Guild"
+	"./DataFormatters/Personal"
 	"./Integrations/BlizzardOpenAPI"
 	"./Integrations/Raider.io"
 	"./Integrations/WarcraftLogs"
-	"./DataFormatters/Personal"
 	"github.com/bxcodec/faker"
 	"log"
 )
@@ -38,13 +38,13 @@ var ExampleCharVar = new(ExampleChar)
 
 func init() {
 	/*
-	e := faker.FakeData(ExampleFullBlizzChar)
+		e := faker.FakeData(ExampleFullBlizzChar)
 
-	e = faker.FakeData(ExamplePersonalProfile)
-	e = faker.FakeData(ExamplePersonalImprovement)
-	e = faker.FakeData(ExampleRaiderioProfile)
-	e = faker.FakeData(ExampleWarcraftlogs)
-	e = faker.FakeData(ExampleGuildOverviewInfo)
+		e = faker.FakeData(ExamplePersonalProfile)
+		e = faker.FakeData(ExamplePersonalImprovement)
+		e = faker.FakeData(ExampleRaiderioProfile)
+		e = faker.FakeData(ExampleWarcraftlogs)
+		e = faker.FakeData(ExampleGuildOverviewInfo)
 	*/
 	e := faker.FakeData(ExampleCharVar)
 	if e != nil {

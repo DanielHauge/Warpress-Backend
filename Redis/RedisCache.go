@@ -66,10 +66,10 @@ func CacheTimeout(key string) bool {
 		DB:       DB,
 	})
 	remaingDur, e := client.TTL(key).Result()
-	if e != nil{
+	if e != nil {
 		log.WithLocation().WithError(e).Error("Hov!")
 	}
-	if remaingDur > time.Minute*10-time.Second*30{
+	if remaingDur > time.Minute*10-time.Second*30 {
 		return true
 	}
 	return false

@@ -1,9 +1,9 @@
 package BlizzardOauthAPI
 
 import (
+	"../../Redis"
 	log "../../Utility/Logrus"
 	"../../Utility/Monitoring"
-	"../../Redis"
 	"./BattleNetOauth"
 	"context"
 	"golang.org/x/oauth2"
@@ -17,7 +17,7 @@ var (
 		ClientID:     os.Getenv("BNET_CLIENTID"),
 		ClientSecret: os.Getenv("BNET_SECRET"),
 		Scopes:       []string{"wow.profile"},
-		RedirectURL:  os.Getenv("HOSTNAME")+"/bnet/auth/callback",
+		RedirectURL:  os.Getenv("HOSTNAME") + "/bnet/auth/callback",
 	}
 )
 
@@ -91,5 +91,3 @@ func DoesUserHaveAccess(w http.ResponseWriter, r *http.Request) (bool, int, stri
 	cachedAccessToken, e := Redis.GetAccessToken("AT:" + strconv.Itoa(accountId))
 	return AreAccessTokensSame(acesToken, cachedAccessToken), accountId, region
 }
-
-

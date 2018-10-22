@@ -1,16 +1,15 @@
 package Redis
 
-
-func ServeCacheAndUpdateBehind(key string, id int, fetcher func(id int, obj *interface{})error) (chan interface{}, chan error){
+func ServeCacheAndUpdateBehind(key string, id int, fetcher func(id int, obj *interface{}) error) (chan interface{}, chan error) {
 	channel := make(chan interface{})
 	errorcheck := make(chan error)
 
-	go func(){
+	go func() {
 		var result interface{}
 		var e error
 		if DoesKeyExist(key) {
 			e = CacheGetResult(key, &result)
-			if !CacheTimeout(key){ // If key is not in timeout, update cache.
+			if !CacheTimeout(key) { // If key is not in timeout, update cache.
 				go func() {
 					var Caching interface{}
 					e = fetcher(id, &Caching)
@@ -23,7 +22,7 @@ func ServeCacheAndUpdateBehind(key string, id int, fetcher func(id int, obj *int
 				go CacheSetResult(key, result)
 			}
 		}
-		if e != nil{
+		if e != nil {
 			errorcheck <- e
 		} else {
 			channel <- result

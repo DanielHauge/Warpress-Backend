@@ -5,18 +5,17 @@ import (
 )
 
 var (
-
 	promRequests = prometheus.NewCounter(
-	prometheus.CounterOpts{
-		Name: "requests_total",
-		Help: "The ammount of requests that has occured since start",
-	})
+		prometheus.CounterOpts{
+			Name: "requests_total",
+			Help: "The ammount of requests that has occured since start",
+		})
 
 	promLogins = prometheus.NewCounter(
-	prometheus.CounterOpts{
-		Name: "logins_total",
-		Help: "The ammount of logins that has occured since start",
-	})
+		prometheus.CounterOpts{
+			Name: "logins_total",
+			Help: "The ammount of logins that has occured since start",
+		})
 
 	promRequestDuration = prometheus.NewHistogram(prometheus.HistogramOpts{
 		Name: "request_duration_all",
@@ -42,7 +41,6 @@ var (
 		Name: "gojax_duration_wowprogress",
 		Help: "The duration of the gojax request to wowprogress api",
 	})
-
 )
 
 func init() {
@@ -64,18 +62,18 @@ func ReqDurationObserve(dur float64) {
 	promRequestDuration.Observe(dur)
 }
 
-func JaxObserveBlizzardOpen(dur float64){
+func JaxObserveBlizzardOpen(dur float64) {
 	promJaxDurationBlizOpen.Observe(dur)
 }
 
-func JaxObserveRaiderio(dur float64){
+func JaxObserveRaiderio(dur float64) {
 	promJaxDurationRaiderIO.Observe(dur)
 }
 
-func JaxObserveWarcraftlogs(dur float64){
+func JaxObserveWarcraftlogs(dur float64) {
 	promJaxDurationWarcraftLogs.Observe(dur)
 }
 
-func JaxObserveWowprogress(dur float64){
+func JaxObserveWowprogress(dur float64) {
 	promJaxDurationWowprogress.Observe(dur)
 }

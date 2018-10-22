@@ -1,8 +1,8 @@
 package main
 
 import (
-	. "./Utility/Filters"
 	"./Integrations/BlizzardOauthAPI"
+	. "./Utility/Filters"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
 )
@@ -135,7 +135,3 @@ var restrictedRoutes = Routes{
 		nil,
 	},
 }
-
-
-
-

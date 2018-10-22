@@ -18,7 +18,7 @@ var json = jsoniter.ConfigFastest
 var warcraftLogsAPIURL = "https://www.warcraftlogs.com:443/v1"
 
 func GetWarcraftLogsRanks(input CharInput) ([]Encounter, error) {
-	log.WithFields(logrus.Fields{"Character":input.Name,"Realm":input.Realm,"Region":input.Region}).Info("Gojaxing warcraftlogs ranks for character")
+	log.WithFields(logrus.Fields{"Character": input.Name, "Realm": input.Realm, "Region": input.Region}).Info("Gojaxing warcraftlogs ranks for character")
 	fullUrl := warcraftLogsAPIURL + "/rankings/character/" + input.Name + "/" + input.Realm + "/" + input.Region + "?api_key=" + os.Getenv("PUBLIC_LOGS")
 
 	var rankings []Encounter
@@ -41,7 +41,7 @@ func GetWarcraftLogsReport(ReportId string) (Report, error) {
 }
 
 func GetWarcraftGuildReports(guildname string, realm string, region string, startime int64, endtime int64) ([]GuildReports, error) {
-	log.WithFields(logrus.Fields{"Guild":guildname,"Realm":realm,"Region":region,"From":startime,"To":endtime}).Info("Gojaxing guild reports")
+	log.WithFields(logrus.Fields{"Guild": guildname, "Realm": realm, "Region": region, "From": startime, "To": endtime}).Info("Gojaxing guild reports")
 	urlguildname := strings.Replace(guildname, " ", "%20", -1)
 	fullUrl := warcraftLogsAPIURL + "/reports/guild/" + urlguildname + "/" + slugify.Slugify(realm) + "/" + region + "?start=" + strconv.FormatInt(startime, 10) + "&end=" + strconv.FormatInt(endtime, 10) + "&api_key=" + os.Getenv("PUBLIC_LOGS")
 

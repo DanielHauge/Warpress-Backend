@@ -43,21 +43,20 @@ func DoesKeyExist(key string) bool {
 	}
 }
 
-func DeleteKey(key ...string) error{
+func DeleteKey(key ...string) error {
 	client := redis.NewClient(&redis.Options{
 		Addr:     Addr + Port,
 		Password: Password,
 		DB:       DB,
 	})
 	var e error
-	for _, v := range key{
+	for _, v := range key {
 		_, e = client.Del(v).Result()
 		log.WithField("Key", v).Info("Redis Delete")
-		if e != nil{
+		if e != nil {
 			log.WithLocation().WithError(e).Error("Hov!")
 		}
 	}
-
 
 	return e
 }

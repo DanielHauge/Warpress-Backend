@@ -9,8 +9,6 @@ import (
 	"time"
 )
 
-
-
 func init() {
 
 	logger.SetFormatter(&logrus.TextFormatter{
@@ -39,22 +37,19 @@ func init() {
 		},
 	))
 
-
 }
-
-
 
 var logger = logrus.New()
 
-func WithFields(fields logrus.Fields) *logrus.Entry{
+func WithFields(fields logrus.Fields) *logrus.Entry {
 	return logger.WithFields(fields)
 }
 
-func WithField(key string, value interface{}) *logrus.Entry{
+func WithField(key string, value interface{}) *logrus.Entry {
 	return logger.WithField(key, value)
 }
 
-func WithLocation() *logrus.Entry{
+func WithLocation() *logrus.Entry {
 
 	fpcs := make([]uintptr, 1)
 	n := runtime.Callers(2, fpcs)
@@ -62,31 +57,31 @@ func WithLocation() *logrus.Entry{
 		fmt.Println("MSG: NO CALLER")
 	}
 
-	caller := runtime.FuncForPC(fpcs[0]-1)
+	caller := runtime.FuncForPC(fpcs[0] - 1)
 	if caller == nil {
 		fmt.Println("MSG CALLER WAS NIL")
 	}
 
-	file, line := caller.FileLine(fpcs[0]-1)
+	file, line := caller.FileLine(fpcs[0] - 1)
 	return logger.WithField("Function", caller.Name()).WithField("File", file).WithField("Line", line)
 }
 
-func Info(args ...interface{}){
+func Info(args ...interface{}) {
 	logger.Info(args)
 }
 
-func Error(args ...interface{}){
+func Error(args ...interface{}) {
 	logger.Error(args)
 }
 
-func Debug(args ...interface{}){
+func Debug(args ...interface{}) {
 	logger.Debug(args)
 }
 
-func Warn(args ...interface{}){
+func Warn(args ...interface{}) {
 	logger.Warn(args)
 }
 
-func Fatal(args ...interface{}){
+func Fatal(args ...interface{}) {
 	logger.Fatal(args)
 }

@@ -51,7 +51,7 @@ func SetupIndexPage() []byte {
 		buffer.WriteString("- Input:\n")
 		var b []byte
 		if v.ExpectedInput != nil {
-			b, _ = json.MarshalIndent(v.ExpectedInput,"", "     ")
+			b, _ = json.MarshalIndent(v.ExpectedInput, "", "     ")
 		} else {
 			b = []byte("Nothing")
 		}
@@ -74,13 +74,13 @@ func SetupIndexPage() []byte {
 
 var IndexPage []byte
 
-func SuccessHeader(w http.ResponseWriter, msg []byte){
+func SuccessHeader(w http.ResponseWriter, msg []byte) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(200)
 	w.Write(msg)
 }
 
-func InterErrorHeader(w http.ResponseWriter, e error){
+func InterErrorHeader(w http.ResponseWriter, e error) {
 	w.WriteHeader(500)
 	w.Write([]byte(e.Error()))
 }
@@ -98,12 +98,11 @@ func Index(w http.ResponseWriter, r *http.Request) {
 
 func HandleGetPersonalFull(w http.ResponseWriter, r *http.Request, id int, region string) {
 
-
 	channel, error := Redis.ServeCacheAndUpdateBehind("PERSONAL:", id, Personal.FetchFullPersonal)
 
 	select {
 
-	case result := <- channel:
+	case result := <-channel:
 		msg, err := json.Marshal(result)
 		if err != nil {
 			log.WithLocation().WithError(err).Error("Was not able to marshal raider.io profile")
@@ -112,7 +111,7 @@ func HandleGetPersonalFull(w http.ResponseWriter, r *http.Request, id int, regio
 			SuccessHeader(w, msg)
 		}
 
-	case e := <- error:
+	case e := <-error:
 		log.WithLocation().WithError(e).Error("How!")
 		InterErrorHeader(w, e)
 
@@ -122,12 +121,11 @@ func HandleGetPersonalFull(w http.ResponseWriter, r *http.Request, id int, regio
 
 func HandleGetPersonalRaiderio(w http.ResponseWriter, r *http.Request, id int, region string) {
 
-
 	channel, error := Redis.ServeCacheAndUpdateBehind("PERSONAL/RAIDERIO:", id, Personal.FetchRaiderioPersonal)
 
 	select {
 
-	case result := <- channel:
+	case result := <-channel:
 		msg, err := json.Marshal(result)
 		if err != nil {
 			log.WithLocation().WithError(err).Error("Was not able to marshal raider.io profile")
@@ -136,7 +134,7 @@ func HandleGetPersonalRaiderio(w http.ResponseWriter, r *http.Request, id int, r
 			SuccessHeader(w, msg)
 		}
 
-	case e := <- error:
+	case e := <-error:
 		log.WithLocation().WithError(e).Error("How!")
 		InterErrorHeader(w, e)
 
@@ -146,12 +144,11 @@ func HandleGetPersonalRaiderio(w http.ResponseWriter, r *http.Request, id int, r
 
 func HandleGetPersonalWarcraftLogs(w http.ResponseWriter, r *http.Request, id int, region string) {
 
-
 	channel, error := Redis.ServeCacheAndUpdateBehind("PERSONAL/LOGS:", id, Personal.FetchWarcraftlogsPersonal)
 
 	select {
 
-	case result := <- channel:
+	case result := <-channel:
 		msg, err := json.Marshal(result)
 		if err != nil {
 			log.WithLocation().WithError(err).Error("Was not able to marshal raider.io profile")
@@ -160,7 +157,7 @@ func HandleGetPersonalWarcraftLogs(w http.ResponseWriter, r *http.Request, id in
 			SuccessHeader(w, msg)
 		}
 
-	case e := <- error:
+	case e := <-error:
 		log.WithLocation().WithError(e).Error("How!")
 		InterErrorHeader(w, e)
 
@@ -170,12 +167,11 @@ func HandleGetPersonalWarcraftLogs(w http.ResponseWriter, r *http.Request, id in
 
 func HandleGetPersonalBlizzardChar(w http.ResponseWriter, r *http.Request, id int, region string) {
 
-
 	channel, error := Redis.ServeCacheAndUpdateBehind("PERSONAL/BLIZZARD:", id, Personal.FetchBlizzardPersonal)
 
 	select {
 
-	case result := <- channel:
+	case result := <-channel:
 		msg, err := json.Marshal(result)
 		if err != nil {
 			log.WithLocation().WithError(err).Error("Was not able to marshal raider.io profile")
@@ -184,7 +180,7 @@ func HandleGetPersonalBlizzardChar(w http.ResponseWriter, r *http.Request, id in
 			SuccessHeader(w, msg)
 		}
 
-	case e := <- error:
+	case e := <-error:
 		log.WithLocation().WithError(e).Error("How!")
 		InterErrorHeader(w, e)
 
@@ -197,7 +193,7 @@ func HandleGetPersonalImprovements(w http.ResponseWriter, r *http.Request, id in
 
 	select {
 
-	case result := <- channel:
+	case result := <-channel:
 		msg, err := json.Marshal(result)
 		if err != nil {
 			log.WithLocation().WithError(err).Error("Was not able to marshal raider.io profile")
@@ -206,7 +202,7 @@ func HandleGetPersonalImprovements(w http.ResponseWriter, r *http.Request, id in
 			SuccessHeader(w, msg)
 		}
 
-	case e := <- error:
+	case e := <-error:
 		log.WithLocation().WithError(e).Error("How!")
 		InterErrorHeader(w, e)
 
@@ -220,7 +216,7 @@ func HandleGetGuildOverview(w http.ResponseWriter, r *http.Request, id int, regi
 
 	select {
 
-	case result := <- channel:
+	case result := <-channel:
 		msg, err := json.Marshal(result)
 		if err != nil {
 			log.WithLocation().WithError(err).Error("Was not able to marshal raider.io profile")
@@ -229,7 +225,7 @@ func HandleGetGuildOverview(w http.ResponseWriter, r *http.Request, id int, regi
 			SuccessHeader(w, msg)
 		}
 
-	case e := <- error:
+	case e := <-error:
 		log.WithLocation().WithError(e).Error("How!")
 		InterErrorHeader(w, e)
 
@@ -237,10 +233,10 @@ func HandleGetGuildOverview(w http.ResponseWriter, r *http.Request, id int, regi
 
 }
 
-func HandleLogout(w http.ResponseWriter, r *http.Request, id int, region string){
+func HandleLogout(w http.ResponseWriter, r *http.Request, id int, region string) {
 
-	e := Redis.DeleteKey("AT:"+strconv.Itoa(id))
-	if e != nil{
+	e := Redis.DeleteKey("AT:" + strconv.Itoa(id))
+	if e != nil {
 		InterErrorHeader(w, e)
 	} else {
 		w.WriteHeader(200)

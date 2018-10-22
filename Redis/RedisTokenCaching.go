@@ -50,7 +50,7 @@ func CacheAccesToken(key string, accessToken *oauth2.Token) {
 	expireDuration := accessToken.Expiry.Sub(time.Now())
 	e := client.HMSet(key, m).Err()
 	e = client.Expire(key, expireDuration).Err()
-	if e != nil{
+	if e != nil {
 		log.WithLocation().WithError(e).Error("Hov!")
 	}
 }

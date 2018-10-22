@@ -10,7 +10,6 @@ import (
 	"os"
 )
 
-
 var json = jsoniter.ConfigFastest
 
 // LatentTODO: Setup service for API and make that running

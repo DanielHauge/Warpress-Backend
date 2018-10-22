@@ -19,12 +19,11 @@ var json = jsoniter.ConfigFastest
 
 func GetCharactersForRegistration(w http.ResponseWriter, r *http.Request, id int, region string) {
 
-
 	channel, error := Redis.ServeCacheAndUpdateBehind("PERSONAL:", id, MakeFetcherFunction(region, WowCharacters))
 
 	select {
 
-	case result := <- channel:
+	case result := <-channel:
 		msg, err := json.Marshal(result)
 		if err != nil {
 			log.WithLocation().WithError(err).Error("was not able to marshal chars")
@@ -36,12 +35,11 @@ func GetCharactersForRegistration(w http.ResponseWriter, r *http.Request, id int
 			w.Write(msg)
 		}
 
-	case e := <- error:
+	case e := <-error:
 		log.WithLocation().WithError(e).Error("How!")
 		w.WriteHeader(500)
 		w.Write([]byte(e.Error()))
 	}
-
 
 }
 
@@ -72,7 +70,7 @@ func WowCharacters(id int, region string) ([]bnet.WOWCharacter, error) {
 
 }
 
-func MakeFetcherFunction(region string, fetcher func(id int, region string) ([]bnet.WOWCharacter, error)) func(id int, obj *interface{})error{
+func MakeFetcherFunction(region string, fetcher func(id int, region string) ([]bnet.WOWCharacter, error)) func(id int, obj *interface{}) error {
 	return func(id int, obj *interface{}) error {
 		log.Info("")
 		wowchars, e := fetcher(id, region)

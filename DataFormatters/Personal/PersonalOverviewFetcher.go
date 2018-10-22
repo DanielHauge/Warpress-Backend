@@ -6,8 +6,8 @@ import (
 	"../../Integrations/Raider.io"
 	"../../Integrations/WarcraftLogs"
 	"../../Integrations/Wowprogress"
-	log "../../Utility/Logrus"
 	"../../Redis"
+	log "../../Utility/Logrus"
 	"github.com/avelino/slugify"
 	"github.com/jinzhu/copier"
 	"strconv"
@@ -15,7 +15,6 @@ import (
 )
 
 func FetchFullPersonal(id int, profile *interface{}) error {
-
 
 	var Profile PersonalProfile
 

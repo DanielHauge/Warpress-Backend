@@ -3,8 +3,8 @@ package Personal
 import (
 	"../../Integrations/BlizzardOauthAPI"
 	"../../Integrations/WarcraftLogs"
-	log "../../Utility/Logrus"
 	"../../Redis"
+	log "../../Utility/Logrus"
 	"github.com/jinzhu/copier"
 	"strconv"
 )
