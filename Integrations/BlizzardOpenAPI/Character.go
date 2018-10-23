@@ -28,8 +28,8 @@ type Specialization struct{
 }
 
 type TalentTier struct {
-	tier int `json:"tier"`
-	column int `json:"column"`
+	Tier int `json:"tier"`
+	Column int `json:"column"`
 	Spec SpecInfo `json:"spec"`
 	Spell Spell `json:"spell"`
 }

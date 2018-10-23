@@ -71,7 +71,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 
 func HandleGetPersonalFull(w http.ResponseWriter, r *http.Request, id int, region string) {
 
-	channel, error := Redis.ServeCacheAndUpdateBehind("PERSONAL:", id,Personal.PersonalProfile{}, Personal.FetchFullPersonal)
+	channel, error := Redis.ServeCacheAndUpdateBehind("PERSONAL:", id, Personal.PersonalProfile{}, Personal.FetchFullPersonal)
 
 	select {
 
