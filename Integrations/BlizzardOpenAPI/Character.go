@@ -15,8 +15,45 @@ type FullCharInfo struct {
 	Faction             int    `json:"faction"`
 	TotalHonorableKills int    `json:"totalHonorableKills"`
 	Guild               Guild  `json:"guild"`
+	Talents 			[]Specialization `json:"talents"`
 	Items               Items  `json:"items"`
 }
+
+type Specialization struct{
+	Selected bool `json:"selected"`
+	Talents []TalentTier `json:"talents"`
+	Spec SpecInfo `json:"spec"`
+	CalcTalent string `json:"calcTalent"`
+	CalcSpec string `json:"calcSpec"`
+}
+
+type TalentTier struct {
+	tier int `json:"tier"`
+	column int `json:"column"`
+	Spec SpecInfo `json:"spec"`
+	Spell Spell `json:"spell"`
+}
+
+type Spell struct {
+	Id int `json:"id"`
+	Name string `json:"name"`
+	Icon string `json:"icon"`
+	Description string `json:"description"`
+	CastTime string `json:"castTime"`
+	Cooldown string `json:"cooldown"`
+}
+
+type SpecInfo struct {
+	Name string `json:"name"`
+	Role string `json:"role"`
+	BackgroundImage string `json:"backgroundImage"`
+	Icon string `json:"icon"`
+	Description string `json:"description"`
+	Order int `json:"order"`
+
+}
+
+
 
 type Items struct {
 	AverageItemLevel      int  `json:"averageItemLevel"`
@@ -114,3 +151,4 @@ type Stat struct {
 	Stat   int `json:"stat"`
 	Amount int `json:"amount"`
 }
+
