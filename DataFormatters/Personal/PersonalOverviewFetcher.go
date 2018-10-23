@@ -46,10 +46,10 @@ func FetchFullPersonal(id int, profile *interface{}) error {
 		wg.Done()
 	}()
 
-	var logs []WarcraftLogs.Encounter
+	var logs WarcraftLogs.Encounters
 	go func() {
 		logs, e = WarcraftLogs.GetWarcraftLogsRanks(WarcraftLogs.CharInput{Name: char.Name, Realm: char.Realm, Region: char.Region})
-		Profile.WarcraftLogsRanks = logs
+		Profile.WarcraftLogsRanks = logs.Encounters
 		wg.Done()
 	}()
 

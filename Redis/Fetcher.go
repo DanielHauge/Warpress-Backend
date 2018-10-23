@@ -1,11 +1,13 @@
 package Redis
 
-func ServeCacheAndUpdateBehind(key string, id int, fetcher func(id int, obj *interface{}) error) (chan interface{}, chan error) {
+import "reflect"
+
+func ServeCacheAndUpdateBehind(key string, id int, expectedType interface{},fetcher func(id int, obj *interface{}) error) (chan interface{}, chan error) {
 	channel := make(chan interface{})
 	errorcheck := make(chan error)
 
 	go func() {
-		var result interface{}
+		result := reflect.New(reflect.TypeOf(expectedType)).Interface()
 		var e error
 		if DoesKeyExist(key) {
 			e = CacheGetResult(key, &result)

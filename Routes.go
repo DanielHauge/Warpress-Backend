@@ -86,7 +86,7 @@ var routes = Routes{
 		"/personal/warcraftlogs",
 		RequireAuthentication(HandleGetPersonalWarcraftLogs),
 		nil,
-		WarcraftLogs.Encounter{},
+		WarcraftLogs.Encounters{},
 	},
 	Route{
 		"Get personal improvements",

@@ -17,7 +17,7 @@ var json = jsoniter.ConfigFastest
 
 var warcraftLogsAPIURL = "https://www.warcraftlogs.com:443/v1"
 
-func GetWarcraftLogsRanks(input CharInput) ([]Encounter, error) {
+func GetWarcraftLogsRanks(input CharInput) (Encounters, error) {
 	log.WithFields(logrus.Fields{"Character": input.Name, "Realm": input.Realm, "Region": input.Region}).Info("Gojaxing warcraftlogs ranks for character")
 	fullUrl := warcraftLogsAPIURL + "/rankings/character/" + input.Name + "/" + input.Realm + "/" + input.Region + "?api_key=" + os.Getenv("PUBLIC_LOGS")
 
@@ -26,7 +26,7 @@ func GetWarcraftLogsRanks(input CharInput) ([]Encounter, error) {
 	now := time.Now()
 	e := Gojax.Get(fullUrl, &rankings)
 	Monitoring.JaxObserveWarcraftlogs(time.Since(now).Seconds())
-	return rankings, e
+	return Encounters{Encounters:rankings}, e
 }
 
 func GetWarcraftLogsReport(ReportId string) (Report, error) {

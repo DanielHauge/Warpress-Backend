@@ -6,6 +6,10 @@ type CharInput struct {
 	Region string
 }
 
+type Encounters struct {
+	Encounters []Encounter `json:"encounters"`
+}
+
 type Encounter struct {
 	EncounterID        int         `json:"encounterID"`
 	EncounterName      string      `json:"encounterName"`

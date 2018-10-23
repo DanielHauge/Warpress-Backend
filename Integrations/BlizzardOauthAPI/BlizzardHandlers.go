@@ -18,7 +18,7 @@ var json = jsoniter.ConfigFastest
 
 func GetCharactersForRegistration(w http.ResponseWriter, r *http.Request, id int, region string) {
 
-	channel, error := Redis.ServeCacheAndUpdateBehind("PERSONAL:", id, MakeFetcherFunction(region, WowCharacters))
+	channel, error := Redis.ServeCacheAndUpdateBehind("CHARS:", id, wowCharacters{},MakeFetcherFunction(region, WowCharacters))
 
 	select {
 
@@ -42,7 +42,11 @@ func GetCharactersForRegistration(w http.ResponseWriter, r *http.Request, id int
 
 }
 
-func WowCharacters(id int, region string) ([]bnet.WOWCharacter, error) {
+type wowCharacters struct {
+	Chars []bnet.WOWCharacter `json:"chars"`
+}
+
+func WowCharacters(id int, region string) (wowCharacters, error) {
 
 	log.WithField("ID", id).WithField("Region", region).Info("BlizzardOauth2 Fetching account characters")
 	accesToken, e := Redis.GetAccessToken("AT:" + strconv.Itoa(id))
@@ -61,15 +65,15 @@ func WowCharacters(id int, region string) ([]bnet.WOWCharacter, error) {
 	chars := WowProfile.Characters
 	sort.Sort(bnet.ByLevel(chars))
 	if len(chars) > 4 {
-		return chars[0:5], e
+		return wowCharacters{chars[0:5]}, e
 	} else {
-		return chars[0:], e
+		return wowCharacters{chars[0:]}, e
 	}
-	return WowProfile.Characters, e
+	return wowCharacters{WowProfile.Characters}, e
 
 }
 
-func MakeFetcherFunction(region string, fetcher func(id int, region string) ([]bnet.WOWCharacter, error)) func(id int, obj *interface{}) error {
+func MakeFetcherFunction(region string, fetcher func(id int, region string) (wowCharacters, error)) func(id int, obj *interface{}) error {
 	return func(id int, obj *interface{}) error {
 		log.Info("")
 		wowchars, e := fetcher(id, region)
