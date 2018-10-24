@@ -45,7 +45,10 @@ var routes = Routes{
 		"POST",
 		"/main",
 		RequireAuthentication(BlizzardOauthAPI.SetMainCharacter),
-		struct {Name string; Reealm string }{},
+		struct {
+			Name   string
+			Reealm string
+		}{},
 		nil,
 	},
 	Route{
@@ -54,7 +57,11 @@ var routes = Routes{
 		"/main",
 		RequireAuthentication(BlizzardOauthAPI.GetMainCharacter),
 		nil,
-		struct {Name string; Reealm string; Region string }{},
+		struct {
+			Name   string
+			Reealm string
+			Region string
+		}{},
 	},
 	Route{
 		"Get Full Personal View, Includes: (BlizzardOpenAPI, Raider.io, warcraftlogs, wowprogress) profiles",
@@ -62,7 +69,7 @@ var routes = Routes{
 		"/personal",
 		RequireAuthentication(HandleGetPersonalFull),
 		nil,
-		Personal.PersonalProfile{},
+		Personal.Overview{},
 	},
 	Route{
 		"Get Blizzards character profile",
@@ -94,15 +101,15 @@ var routes = Routes{
 		"/personal/improvements",
 		RequireAuthentication(HandleGetPersonalImprovements),
 		nil,
-		Personal.PersonalImprovement{},
+		Personal.Improvements{},
 	},
 	Route{
-		"Get Guild overview",
+		"Get guild overview",
 		"GET",
 		"/guild",
 		RequireAuthentication(HandleGetGuildOverview),
 		nil,
-		Guild.FullGuildOverviewInfo{},
+		Guild.Overview{},
 	},
 	Route{
 		"Log out",

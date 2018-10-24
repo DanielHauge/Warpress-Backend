@@ -1,6 +1,6 @@
 package Personal
 
-type PersonalImprovement struct {
+type Improvements struct {
 	SimulationURLS   RaidBotSimulations `json:"simulation_urls"`
 	BossImprovements []BossImprovement  `json:"boss_improvements"`
 }

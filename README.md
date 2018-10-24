@@ -21,6 +21,7 @@
 - go get github.com/jinzhu/copier
 - go get github.com/wawandco/fako
 - go get golang.org/x/crypto/acme/autocert
+- go get go get github.com/lib/pq
 
 
 // Unsure but might need:

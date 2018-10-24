@@ -2,7 +2,7 @@ package main
 
 import (
 	"./DataFormatters/Guild"
-	"./DataFormatters/Personal"
+	"./DataFormatters/Personal/"
 	"./Integrations/BlizzardOpenAPI"
 	"./Integrations/Raider.io"
 	"./Integrations/WarcraftLogs"
@@ -50,13 +50,11 @@ func SetupIndexPage() []byte {
 				buffer.WriteString(outputFields.Type().Field(i).Type.Kind().String() + "\n")
 			}
 		}
-
 	}
 	return buffer.Bytes()
 }
 
 var IndexPage []byte
-
 
 func Index(w http.ResponseWriter, r *http.Request) {
 	var buffer bytes.Buffer
@@ -71,7 +69,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 
 func HandleGetPersonalFull(w http.ResponseWriter, r *http.Request, id int, region string) {
 
-	channel, error := Redis.ServeCacheAndUpdateBehind("PERSONAL:", id, Personal.PersonalProfile{}, Personal.FetchFullPersonal)
+	channel, error := Redis.ServeCacheAndUpdateBehind("PERSONAL:", id, Personal.Overview{}, Personal.FetchFullPersonal)
 
 	select {
 
@@ -117,7 +115,7 @@ func HandleGetPersonalRaiderio(w http.ResponseWriter, r *http.Request, id int, r
 
 func HandleGetPersonalWarcraftLogs(w http.ResponseWriter, r *http.Request, id int, region string) {
 
-	channel, error := Redis.ServeCacheAndUpdateBehind("PERSONAL/LOGS:", id, WarcraftLogs.Encounter{},Personal.FetchWarcraftlogsPersonal)
+	channel, error := Redis.ServeCacheAndUpdateBehind("PERSONAL/LOGS:", id, WarcraftLogs.Encounter{}, Personal.FetchWarcraftlogsPersonal)
 
 	select {
 
@@ -140,7 +138,7 @@ func HandleGetPersonalWarcraftLogs(w http.ResponseWriter, r *http.Request, id in
 
 func HandleGetPersonalBlizzardChar(w http.ResponseWriter, r *http.Request, id int, region string) {
 
-	channel, error := Redis.ServeCacheAndUpdateBehind("PERSONAL/BLIZZARD:", id, BlizzardOpenAPI.FullCharInfo{} ,Personal.FetchBlizzardPersonal)
+	channel, error := Redis.ServeCacheAndUpdateBehind("PERSONAL/BLIZZARD:", id, BlizzardOpenAPI.FullCharInfo{}, Personal.FetchBlizzardPersonal)
 
 	select {
 
@@ -162,7 +160,7 @@ func HandleGetPersonalBlizzardChar(w http.ResponseWriter, r *http.Request, id in
 
 func HandleGetPersonalImprovements(w http.ResponseWriter, r *http.Request, id int, region string) {
 
-	channel, error := Redis.ServeCacheAndUpdateBehind("PERSONAL/IMPROVEMENT:", id, Personal.PersonalImprovement{}, Personal.FetchPersonalImprovementsFull)
+	channel, error := Redis.ServeCacheAndUpdateBehind("PERSONAL/IMPROVEMENT:", id, Personal.Improvements{}, Personal.FetchPersonalImprovementsFull)
 
 	select {
 
@@ -185,7 +183,7 @@ func HandleGetPersonalImprovements(w http.ResponseWriter, r *http.Request, id in
 
 func HandleGetGuildOverview(w http.ResponseWriter, r *http.Request, id int, region string) {
 
-	channel, error := Redis.ServeCacheAndUpdateBehind("GUILD/OVERVIEW:", id, Guild.FullGuildOverviewInfo{}, Guild.FetchFullGuildOverview)
+	channel, error := Redis.ServeCacheAndUpdateBehind("GUILD/OVERVIEW:", id, Guild.Overview{}, Guild.FetchFullGuildOverview)
 
 	select {
 

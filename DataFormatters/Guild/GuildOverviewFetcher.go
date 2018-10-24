@@ -14,7 +14,7 @@ import (
 func FetchFullGuildOverview(id int, result *interface{}) error {
 
 	// TODO: Error handling??? Logging?
-	var FullGuildOverview FullGuildOverviewInfo
+	var FullGuildOverview Overview
 	guildstring := Redis.Get("GUILD:" + strconv.Itoa(id))
 	split := strings.Split(guildstring, ":")
 	Guild := struct {
@@ -24,6 +24,7 @@ func FetchFullGuildOverview(id int, result *interface{}) error {
 	}{Name: split[0], Realm: split[1], Region: split[2]}
 
 	FullGuildOverview.Name = Guild.Name
+	FullGuildOverview.Realm = Guild.Realm
 	Progression, e := Raider_io.GetRaiderIOGuild(Guild.Region, Guild.Realm, Guild.Name)
 
 	FullGuildOverview.Progress = Progression.RaidProgression
@@ -36,10 +37,10 @@ func FetchFullGuildOverview(id int, result *interface{}) error {
 
 	Roster, e := BlizzardOpenAPI.GetBlizzardGuildMembers(Guild.Name, Guild.Region, Guild.Realm)
 
-	var guildmembers []GuildMember
+	var guildmembers []Member
 	for _, v := range Roster.Members {
 		if v.Rank < 5 {
-			guildmembers = append(guildmembers, GuildMember{Name: v.Character.Name, Rank: v.Rank, Role: v.Character.Spec.Role, Class: v.Character.Class})
+			guildmembers = append(guildmembers, Member{Name: v.Character.Name, Rank: v.Rank, Role: v.Character.Spec.Role, Class: v.Character.Class})
 		}
 	}
 

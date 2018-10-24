@@ -13,7 +13,7 @@ var RaidBotUrl = "https://www.raidbots.com/simbot/"
 
 func FetchPersonalImprovementsFull(id int, improvements *interface{}) error {
 
-	var persImprov PersonalImprovement
+	var persImprov Improvements
 
 	persImprov.SimulationURLS = makeSimBotUrls(id)
 	bossimprovements, e := generateWarcraftLogs(id)

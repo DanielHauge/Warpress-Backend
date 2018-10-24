@@ -5,18 +5,19 @@ import (
 	"../../Integrations/WarcraftLogs"
 )
 
-type FullGuildOverviewInfo struct {
+type Overview struct {
 	Name               string                      `json:"name"`
+	Realm              string                      `json:"realm"`
 	LastRaid           string                      `json:"last_raid"`
 	NextRaid           string                      `json:"next_raid"`
 	TimeUntilNextRaid  string                      `json:"time_until_next_raid"`
-	Roster             []GuildMember               `json:"roster"`
+	Roster             []Member                    `json:"roster"`
 	Progress           Raider_io.RaidProgression   `json:"progress"`
 	WarcraftlogReports []WarcraftLogs.GuildReports `json:"warcraftlog_reports"`
 	RaidDays           []RaidNight                 `json:"raid_days"`
 }
 
-type GuildMember struct {
+type Member struct {
 	Name  string `json:"name"`
 	Rank  int    `json:"rank"`
 	Role  string `json:"role"`

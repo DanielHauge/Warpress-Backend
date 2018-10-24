@@ -18,20 +18,21 @@ var json = jsoniter.ConfigFastest
 var warcraftLogsAPIURL = "https://www.warcraftlogs.com:443/v1"
 
 func GetWarcraftLogsRanks(input CharInput) (Encounters, error) {
-	log.WithFields(logrus.Fields{"Character": input.Name, "Realm": input.Realm, "Region": input.Region}).Info("Gojaxing warcraftlogs ranks for character")
-	fullUrl := warcraftLogsAPIURL + "/rankings/character/" + input.Name + "/" + input.Realm + "/" + input.Region + "?api_key=" + os.Getenv("PUBLIC_LOGS")
 
+	fullUrl := warcraftLogsAPIURL + "/rankings/character/" + input.Name + "/" + input.Realm + "/" + input.Region + "?api_key=" + os.Getenv("PUBLIC_LOGS")
+	log.WithFields(logrus.Fields{"Character": input.Name, "Realm": input.Realm, "Region": input.Region, "Url": fullUrl}).Info("Gojaxing warcraftlogs ranks for character")
 	var rankings []Encounter
 
 	now := time.Now()
 	e := Gojax.Get(fullUrl, &rankings)
 	Monitoring.JaxObserveWarcraftlogs(time.Since(now).Seconds())
-	return Encounters{Encounters:rankings}, e
+	return Encounters{Encounters: rankings}, e
 }
 
 func GetWarcraftLogsReport(ReportId string) (Report, error) {
-	log.WithField("ReportID", ReportId).Info("Gojaxing warcraftlogs report")
+
 	fullUrl := warcraftLogsAPIURL + "/report/fights/" + ReportId + "?api_key=" + os.Getenv("PUBLIC_LOGS")
+	log.WithField("ReportID", ReportId).WithField("Url", fullUrl).Info("Gojaxing warcraftlogs report")
 
 	var report Report
 	now := time.Now()
@@ -41,10 +42,10 @@ func GetWarcraftLogsReport(ReportId string) (Report, error) {
 }
 
 func GetWarcraftGuildReports(guildname string, realm string, region string, startime int64, endtime int64) ([]GuildReports, error) {
-	log.WithFields(logrus.Fields{"Guild": guildname, "Realm": realm, "Region": region, "From": startime, "To": endtime}).Info("Gojaxing guild reports")
+
 	urlguildname := strings.Replace(guildname, " ", "%20", -1)
 	fullUrl := warcraftLogsAPIURL + "/reports/guild/" + urlguildname + "/" + slugify.Slugify(realm) + "/" + region + "?start=" + strconv.FormatInt(startime, 10) + "&end=" + strconv.FormatInt(endtime, 10) + "&api_key=" + os.Getenv("PUBLIC_LOGS")
-
+	log.WithFields(logrus.Fields{"Guild": guildname, "Realm": realm, "Region": region, "From": startime, "To": endtime, "Url": fullUrl}).Info("Gojaxing guild reports")
 	var report []GuildReports
 
 	now := time.Now()

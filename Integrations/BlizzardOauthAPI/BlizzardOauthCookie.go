@@ -15,7 +15,7 @@ var hashKey = []byte(securecookie.GenerateRandomKey(32))
 var blockKey = []byte(securecookie.GenerateRandomKey(32))
 var s = securecookie.New(hashKey, blockKey)
 
-func SetAccessTokenCookieOnClient(accountId int, region string, token *oauth2.Token, w http.ResponseWriter) {
+func setAccessTokenCookieOnClient(accountId int, region string, token *oauth2.Token, w http.ResponseWriter) {
 	tokenAsMap := map[string]string{
 		"region":       region,
 		"accountId":    strconv.Itoa(accountId),
@@ -41,7 +41,7 @@ func SetAccessTokenCookieOnClient(accountId int, region string, token *oauth2.To
 	}
 }
 
-func GetAccessTokenCookieFromClient(r *http.Request) (oauth2.Token, int, string, error) {
+func getAccessTokenCookieFromClient(r *http.Request) (oauth2.Token, int, string, error) {
 	cookie, err := r.Cookie("WowHubAccessToken")
 	if err == nil {
 		value := make(map[string]string)
@@ -62,7 +62,7 @@ func GetAccessTokenCookieFromClient(r *http.Request) (oauth2.Token, int, string,
 	return oauth2.Token{}, 0, "", err
 }
 
-func SetStateOauthCookie(w http.ResponseWriter, region string) string {
+func setStateOauthCookie(w http.ResponseWriter, region string) string {
 	var expiration = time.Now().Add(30 * 24 * time.Hour)
 	b := make([]byte, 16)
 	rand.Read(b)
@@ -87,7 +87,7 @@ func SetStateOauthCookie(w http.ResponseWriter, region string) string {
 	return state
 }
 
-func GetStateOauthCookie(r *http.Request) (string, string) {
+func getStateOauthCookie(r *http.Request) (string, string) {
 	cookie, err := r.Cookie("oauthstate")
 	if err == nil {
 		value := make(map[string]string)

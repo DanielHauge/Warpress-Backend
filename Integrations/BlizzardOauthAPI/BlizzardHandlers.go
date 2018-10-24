@@ -18,7 +18,7 @@ var json = jsoniter.ConfigFastest
 
 func GetCharactersForRegistration(w http.ResponseWriter, r *http.Request, id int, region string) {
 
-	channel, error := Redis.ServeCacheAndUpdateBehind("CHARS:", id, wowCharacters{},MakeFetcherFunction(region, WowCharacters))
+	channel, error := Redis.ServeCacheAndUpdateBehind("CHARS:", id, wowCharacters{}, MakeFetcherFunction(region, WowCharacters))
 
 	select {
 

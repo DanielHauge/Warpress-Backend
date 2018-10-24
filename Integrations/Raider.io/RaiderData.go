@@ -7,18 +7,18 @@ type CharInput struct {
 }
 
 type CharacterProfile struct {
-	Name                             string       `json:"name"`
-	Race                             string       `json:"race"`
-	Class                            string       `json:"class"`
-	Spec                             string       `json:"active_spec_name"`
-	Role                             string       `json:"active_spec_role"`
-	Gender                           string       `json:"gender"`
-	Faction                          string       `json:"faction"`
-	AchievementPoints                int          `json:"achievement_points"`
-	HonorableKills                   int          `json:"honorable_kills"`
-	ThumbnailUrl                     string       `json:"thumbnail_url"`
-	Region                           string       `json:"region"`
-	Realm                            string       `json:"realm"`
+	Name                             string       `json:"name"`               //*
+	Race                             string       `json:"race"`               // *
+	Class                            string       `json:"class"`              // *
+	Spec                             string       `json:"active_spec_name"`   // '
+	Role                             string       `json:"active_spec_role"`   // *
+	Gender                           string       `json:"gender"`             // *
+	Faction                          string       `json:"faction"`            // *
+	AchievementPoints                int          `json:"achievement_points"` // *
+	HonorableKills                   int          `json:"honorable_kills"`    // *
+	ThumbnailUrl                     string       `json:"thumbnail_url"`      // '
+	Region                           string       `json:"region"`             // *
+	Realm                            string       `json:"realm"`              // '
 	ProfileUrl                       string       `json:"profile_url"`
 	MythicPlusRanks                  MythicRanks  `json:"mythic_plus_ranks"`
 	MythicPlusRecentRuns             []DungeonRun `json:"mythic_plus_recent_runs"`
@@ -50,7 +50,7 @@ type DungeonRun struct {
 	CompletedAt        string  `json:"completed_at"`
 	ClearTimeMs        int     `json:"clear_time_ms"`
 	NumKeystoneUpgrade int     `json:"num_keystone_upgrade"`
-	MapChallengeModeId int     `json:"map_challenge_mode_id"`
+	MapChallengeModeId int     `json:"map_challenge_mode_id"` // '
 	Score              float32 `json:"score"`
 	Affixes            []Affix `json:"affixes"`
 	Url                string  `json:"url"`

@@ -8,8 +8,7 @@ import (
 	"net/http"
 )
 
-func ReadFromRequest(w http.ResponseWriter, r *http.Request, obj interface{}){
-
+func ReadFromRequest(w http.ResponseWriter, r *http.Request, obj interface{}) {
 
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 	if err != nil {
@@ -29,6 +28,5 @@ func ReadFromRequest(w http.ResponseWriter, r *http.Request, obj interface{}){
 			return
 		}
 	}
-
 
 }

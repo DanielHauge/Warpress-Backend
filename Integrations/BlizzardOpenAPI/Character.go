@@ -1,59 +1,56 @@
 package BlizzardOpenAPI
 
 type FullCharInfo struct {
-	LastModified        int    `json:"lastModified"`
-	Name                string `json:"name"`
-	Realm               string `json:"realm"`
-	Battlegroup         string `json:"battlegroup"`
-	Class               int    `json:"class"`
-	Race                int    `json:"race"`
-	Gender              int    `json:"gender"`
-	Level               int    `json:"level"`
-	AchievementPoints   int    `json:"achievementPoints"`
-	Thumbnail           string `json:"thumbnail"`
-	CalcClass           string `json:"calcClass"`
-	Faction             int    `json:"faction"`
-	TotalHonorableKills int    `json:"totalHonorableKills"`
-	Guild               Guild  `json:"guild"`
-	Talents 			[]Specialization `json:"talents"`
-	Items               Items  `json:"items"`
+	LastModified        int              `json:"lastModified"`
+	Name                string           `json:"name"`
+	Realm               string           `json:"realm"`
+	Battlegroup         string           `json:"battlegroup"`
+	Class               int              `json:"class"`
+	Race                int              `json:"race"`
+	Gender              int              `json:"gender"`
+	Level               int              `json:"level"`
+	AchievementPoints   int              `json:"achievementPoints"`
+	Thumbnail           string           `json:"thumbnail"`
+	CalcClass           string           `json:"calcClass"`
+	Faction             int              `json:"faction"`
+	TotalHonorableKills int              `json:"totalHonorableKills"`
+	Guild               Guild            `json:"guild"`
+	Talents             []Specialization `json:"talents"`
+	Items               Items            `json:"items"`
 }
 
-type Specialization struct{
-	Selected bool `json:"selected"`
-	Talents []TalentTier `json:"talents"`
-	Spec SpecInfo `json:"spec"`
-	CalcTalent string `json:"calcTalent"`
-	CalcSpec string `json:"calcSpec"`
+type Specialization struct {
+	Selected   bool         `json:"selected"`
+	Talents    []TalentTier `json:"talents"`
+	Spec       SpecInfo     `json:"spec"`
+	CalcTalent string       `json:"calcTalent"`
+	CalcSpec   string       `json:"calcSpec"`
 }
 
 type TalentTier struct {
-	Tier int `json:"tier"`
-	Column int `json:"column"`
-	Spec SpecInfo `json:"spec"`
-	Spell Spell `json:"spell"`
+	Tier   int      `json:"tier"`
+	Column int      `json:"column"`
+	Spec   SpecInfo `json:"spec"`
+	Spell  Spell    `json:"spell"`
 }
 
 type Spell struct {
-	Id int `json:"id"`
-	Name string `json:"name"`
-	Icon string `json:"icon"`
+	Id          int    `json:"id"`
+	Name        string `json:"name"`
+	Icon        string `json:"icon"`
 	Description string `json:"description"`
-	CastTime string `json:"castTime"`
-	Cooldown string `json:"cooldown"`
+	CastTime    string `json:"castTime"`
+	Cooldown    string `json:"cooldown"`
 }
 
 type SpecInfo struct {
-	Name string `json:"name"`
-	Role string `json:"role"`
+	Name            string `json:"name"`
+	Role            string `json:"role"`
 	BackgroundImage string `json:"backgroundImage"`
-	Icon string `json:"icon"`
-	Description string `json:"description"`
-	Order int `json:"order"`
-
+	Icon            string `json:"icon"`
+	Description     string `json:"description"`
+	Order           int    `json:"order"`
 }
-
-
 
 type Items struct {
 	AverageItemLevel      int  `json:"averageItemLevel"`
@@ -140,6 +137,7 @@ type Relic struct {
 
 type ToolTipParams struct {
 	Gem0              int `json:"gem0"`
+	Enchant 		  int `json:"enchant"`
 	AzeritePower0     int `json:"azeritePower0"`
 	AzeritePower1     int `json:"azeritePower1"`
 	AzeritePower2     int `json:"azeritePower2"`
@@ -151,4 +149,3 @@ type Stat struct {
 	Stat   int `json:"stat"`
 	Amount int `json:"amount"`
 }
-

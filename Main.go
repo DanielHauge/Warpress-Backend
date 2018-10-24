@@ -14,13 +14,14 @@ var json = jsoniter.ConfigFastest
 
 // LatentTODO: Setup service for API and make that running
 
+// TODO: Fanger ikke warcraft reports
+
 // TODO: Solve, Guild registration
 // TODO: Solve, Guild addons & Weakauras
 // TODO: Solve, Guild Rekrutment
 // TODO: Solve, Guild attendence
 // TODO: Solve, Guild run Evaluation
 // TODO: Solve, Monitor raiders performance.
-
 
 // TODO: Sanitize data in dataformatters for frontend
 

@@ -26,9 +26,9 @@ type GuildRank struct {
 }
 
 func GetGuildRank(input Input) (GuildRank, error) {
-	log.WithFields(logrus.Fields{"Guild": input.Guild, "Realm": input.Realm, "Region": input.Region}).Info("Gojaxing wowprogress ranks")
-	fullUrl := "https://www.wowprogress.com/guild/" + input.Region + "/" + input.Realm + "/" + strings.Replace(input.Guild, " ", "+", -1) + "/json_rank"
 
+	fullUrl := "https://www.wowprogress.com/guild/" + input.Region + "/" + input.Realm + "/" + strings.Replace(input.Guild, " ", "+", -1) + "/json_rank"
+	log.WithFields(logrus.Fields{"Guild": input.Guild, "Realm": input.Realm, "Region": input.Region, "Url": fullUrl}).Info("Gojaxing wowprogress ranks")
 	var rankings GuildRank
 
 	now := time.Now()

@@ -26,7 +26,7 @@ func HandleAuthenticate(w http.ResponseWriter, r *http.Request) {
 	region := r.FormValue("region")
 	AuthenticationCFG := *OauthCfg
 	AuthenticationCFG.Endpoint = bnet.Endpoint(region)
-	oauthState := SetStateOauthCookie(w, region)
+	oauthState := setStateOauthCookie(w, region)
 	AuthUrl := AuthenticationCFG.AuthCodeURL(oauthState)
 	http.Redirect(w, r, AuthUrl, http.StatusTemporaryRedirect)
 }
@@ -34,7 +34,7 @@ func HandleAuthenticate(w http.ResponseWriter, r *http.Request) {
 func HandleOauthCallback(w http.ResponseWriter, r *http.Request) {
 
 	// Checks if oauthstate from blizzard is correct, in case of hacks and stuff.
-	oauthState, region := GetStateOauthCookie(r)
+	oauthState, region := getStateOauthCookie(r)
 	if r.FormValue("state") != oauthState {
 		log.WithLocation().Error("Invalid Oauth blizzard state")
 		http.Redirect(w, r, "/hov", http.StatusTemporaryRedirect)
@@ -60,7 +60,7 @@ func HandleOauthCallback(w http.ResponseWriter, r *http.Request) {
 	// Caches the AccessToken in redis for later validation.
 	Redis.CacheAccesToken("AT:"+strconv.Itoa(user.ID), token)
 
-	SetAccessTokenCookieOnClient(user.ID, region, token, w)
+	setAccessTokenCookieOnClient(user.ID, region, token, w)
 
 	// If user.id exists in database, fetch data and redirect to login with that pass and accesstoken.
 	isRegistered := Redis.DoesKeyExist("MAIN:" + strconv.Itoa(user.ID))
@@ -75,7 +75,7 @@ func HandleOauthCallback(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func AreAccessTokensSame(a oauth2.Token, b oauth2.Token) bool {
+func areAccessTokensSame(a oauth2.Token, b oauth2.Token) bool {
 	at := a.AccessToken == b.AccessToken
 	rt := a.RefreshToken == b.RefreshToken
 	tt := a.TokenType == b.TokenType
@@ -83,11 +83,11 @@ func AreAccessTokensSame(a oauth2.Token, b oauth2.Token) bool {
 }
 
 func DoesUserHaveAccess(w http.ResponseWriter, r *http.Request) (bool, int, string) {
-	acesToken, accountId, region, e := GetAccessTokenCookieFromClient(r)
+	acesToken, accountId, region, e := getAccessTokenCookieFromClient(r)
 	if e != nil {
 		log.WithLocation().WithError(e).Warn("User does not have an acceptable cookie")
 		return false, 0, ""
 	}
 	cachedAccessToken, e := Redis.GetAccessToken("AT:" + strconv.Itoa(accountId))
-	return AreAccessTokensSame(acesToken, cachedAccessToken), accountId, region
+	return areAccessTokensSame(acesToken, cachedAccessToken), accountId, region
 }
