@@ -18,6 +18,8 @@ RUN go get -u github.com/kz/discordrus
 RUN go get github.com/jinzhu/copier
 RUN go get gopkg.in/alecthomas/kingpin.v2
 RUN go get github.com/bxcodec/faker
+RUN go get golang.org/x/crypto/acme/autocert
+RUN go get github.com/lib/pq
 
 # Copy the server code into the container
 COPY . /go

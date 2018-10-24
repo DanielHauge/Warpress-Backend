@@ -1,6 +1,7 @@
 package BlizzardOauthAPI
 
 import (
+	"../../Postgres"
 	"../../Redis"
 	"../../Utility/HttpHelper"
 	log "../../Utility/Logrus"
@@ -94,19 +95,21 @@ func SetMainCharacter(w http.ResponseWriter, r *http.Request, id int, region str
 	char.Realm = slugify.Slugify(char.Realm)
 	char.Region = region
 
-	Redis.SetStruct("MAIN:"+strconv.Itoa(id), char.ToMap())
-
+	Postgres.SetMain(id, char.Name, char.Realm, char.Region)
 }
 
 func GetMainCharacter(w http.ResponseWriter, r *http.Request, id int, region string) {
 
-	d, e := Redis.GetStruct("MAIN:" + strconv.Itoa(id))
-	char := CharacterMinimalFromMap(d)
+	nam, real, regio, e := Postgres.GetMain(id)
+	log.Info(nam, real, regio, "This is the values")
 	if e != nil {
+		log.WithLocation().WithError(e).WithField("User", id).Error("There is no main registered to the user!")
 		w.WriteHeader(500)
-		w.Write([]byte(e.Error()))
-		log.WithLocation().WithError(e).Error("Hov!")
+		w.Write([]byte("Hov!, there was not main detected!"))
 	} else {
+
+		char := CharacterMinimal{nam,real,regio}
+
 		msg, err := json.Marshal(char)
 		if err != nil {
 			log.WithLocation().WithError(err).Error("Hov!")

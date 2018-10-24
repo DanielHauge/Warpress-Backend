@@ -72,7 +72,7 @@ var routes = Routes{
 		Personal.Overview{},
 	},
 	Route{
-		"Get Blizzards character profile",
+		"Get Blizzards character profile unsanitized",
 		"GET",
 		"/personal/blizzard",
 		RequireAuthentication(HandleGetPersonalBlizzardChar),
@@ -80,7 +80,7 @@ var routes = Routes{
 		BlizzardOpenAPI.FullCharInfo{},
 	},
 	Route{
-		"Get Raider.IO character profile",
+		"Get Raider.IO character profile unsanitized",
 		"GET",
 		"/personal/raiderio",
 		RequireAuthentication(HandleGetPersonalRaiderio),
@@ -88,7 +88,7 @@ var routes = Routes{
 		Raider_io.CharacterProfile{},
 	},
 	Route{
-		"Get Warcraftlogs character profile",
+		"Get Warcraftlogs character profile unsanitized",
 		"GET",
 		"/personal/warcraftlogs",
 		RequireAuthentication(HandleGetPersonalWarcraftLogs),

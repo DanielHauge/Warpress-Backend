@@ -1,9 +1,8 @@
 package Personal
 
 import (
-	"../../Integrations/BlizzardOauthAPI"
 	"../../Integrations/WarcraftLogs"
-	"../../Redis"
+	"../../Postgres"
 	log "../../Utility/Logrus"
 	"github.com/jinzhu/copier"
 	"strconv"
@@ -14,7 +13,6 @@ var RaidBotUrl = "https://www.raidbots.com/simbot/"
 func FetchPersonalImprovementsFull(id int, improvements *interface{}) error {
 
 	var persImprov Improvements
-
 	persImprov.SimulationURLS = makeSimBotUrls(id)
 	bossimprovements, e := generateWarcraftLogs(id)
 	persImprov.BossImprovements = bossimprovements
@@ -23,7 +21,7 @@ func FetchPersonalImprovementsFull(id int, improvements *interface{}) error {
 }
 
 func generateWarcraftLogs(id int) ([]BossImprovement, error) {
-	var logs []WarcraftLogs.Encounter
+	var logs WarcraftLogs.Encounters
 	var interfaceLogs interface{}
 	var improvements []BossImprovement
 	e := FetchWarcraftlogsPersonal(id, &interfaceLogs)
@@ -33,7 +31,7 @@ func generateWarcraftLogs(id int) ([]BossImprovement, error) {
 	copier.Copy(logs, interfaceLogs)
 
 	mapOfCharIds := map[string]int{}
-	for _, value := range logs {
+	for _, value := range logs.Encounters {
 
 		comparelink := generateCompareLink(value.ReportID, value.FightID, value.CharacterName, mapOfCharIds)
 		analyselink := generateAnalyserLink(value.ReportID, value.FightID, value.CharacterName, mapOfCharIds)
@@ -86,14 +84,13 @@ func getCharId(ReportID string, Name string, ints map[string]int) string {
 }
 
 func makeSimBotUrls(id int) RaidBotSimulations {
-	charMap, e := Redis.GetStruct("MAIN:" + strconv.Itoa(id))
+	name, realm, region, e := Postgres.GetMain(id)
 	if e != nil {
 		log.WithLocation().WithError(e).WithField("User", id).Error("There is no main registered to the user!")
 		return RaidBotSimulations{}
 	}
-	char := BlizzardOauthAPI.CharacterMinimalFromMap(charMap)
 
-	rest := "?region=" + char.Region + "&realm=" + char.Realm + "&name=" + char.Name
+	rest := "?region=" + region + "&realm=" + realm + "&name=" + name
 	return RaidBotSimulations{
 		GearSim:   RaidBotUrl + "gear" + rest,
 		TalentSim: RaidBotUrl + "talent" + rest,

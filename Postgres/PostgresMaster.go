@@ -3,12 +3,14 @@ package Postgres
 import (
 	log "../Utility/Logrus"
 	"database/sql"
+	_ "github.com/lib/pq"
+	"os"
 )
 
 var db *sql.DB
 
 func init() {
-	connectionPool, err := sql.Open("postgres", "postgres://user:pass@localhost/db")
+	connectionPool, err := sql.Open("postgres", "postgres://"+os.Getenv("DBPASS")+"@localhost/postgres?sslmode=disable")
 	if err != nil {
 		log.WithLocation().WithError(err).Fatal("Could not establish connection pool for postgres")
 	}
