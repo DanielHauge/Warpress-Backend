@@ -2,11 +2,13 @@ package main
 
 import (
 	"./DataFormatters/Guild"
-	"./DataFormatters/Personal/"
+	"./DataFormatters/Personal"
 	"./Integrations/BlizzardOpenAPI"
 	"./Integrations/Raider.io"
 	"./Integrations/WarcraftLogs"
+	"./Postgres"
 	"./Redis"
+	"./Utility/HttpHelper"
 	. "./Utility/HttpHelper"
 	log "./Utility/Logrus"
 	"bytes"
@@ -14,6 +16,8 @@ import (
 	"net/http"
 	"reflect"
 	"strconv"
+	"strings"
+	"time"
 )
 
 func SetupIndexPage() []byte {
@@ -212,6 +216,100 @@ func HandleLogout(w http.ResponseWriter, r *http.Request, id int, region string)
 	} else {
 		w.WriteHeader(200)
 		w.Write([]byte("OK!"))
+	}
+
+}
+
+func HandleGuildRegistration(w http.ResponseWriter, r *http.Request, id int, region string, guildstring string){
+	/*
+	Checks:
+	- Does guild allready exists?
+	- Permissions wrapper.
+	 */
+
+	split := strings.Split(guildstring, ":")
+	GuildFromRedis := struct {
+		Name   string
+		Realm  string
+		Region string
+	}{Name: split[0], Realm: split[1], Region: split[2]}
+
+	 var Guild struct{
+	 	Officerrank int `json:"officerrank"`
+	 	Raiderrank int `json:"raiderrank"`
+	 	Trialrank int `json:"trialrank"`
+	 }
+	 HttpHelper.ReadFromRequest(w,r, &Guild)
+
+	 if e := Postgres.RegisterGuild(GuildFromRedis.Name, GuildFromRedis.Realm, GuildFromRedis.Region, Guild.Officerrank, Guild.Raiderrank, Guild.Trialrank); e != nil{
+	 	InterErrorHeader(w, e)
+	 	return
+	 }
+
+	 SuccessHeader(w, []byte("Succes"))
+
+}
+
+func HandleAddRaidNight(w http.ResponseWriter, r *http.Request, guildid int){
+
+	var Raidnight struct{
+		Duration time.Duration `json:"duration"`
+		Start time.Time `json:"start"`
+		Day int `json:"day"`
+	}
+	ReadFromRequest(w,r, &Raidnight)
+
+	if e := Postgres.AddRaidNight(Raidnight.Duration, Raidnight.Start, Raidnight.Day, guildid); e != nil{
+		InterErrorHeader(w, e)
+		return
+	}
+
+	HttpHelper.SuccessHeader(w, []byte("Succes"))
+
+}
+
+func HandleEditRaidNight(w http.ResponseWriter, r *http.Request, guildid int){
+
+	var Raidnight struct{
+		Duration time.Duration `json:"duration"`
+		Start time.Time `json:"start"`
+		Day int `json:"day"`
+		RaidnightId int `json:"raidnight_id"`
+	}
+	ReadFromRequest(w,r, &Raidnight)
+
+	if e := Postgres.EditRaidNight(Raidnight.Duration, Raidnight.Start, Raidnight.Day, Raidnight.RaidnightId, guildid); e != nil{
+		InterErrorHeader(w, e)
+		return
+	}
+
+	HttpHelper.SuccessHeader(w, []byte("Succes"))
+
+}
+
+func HandleDeleteRaidNight(w http.ResponseWriter, r *http.Request, guildid int){
+	raidnightid := r.FormValue("id")
+	id, err := strconv.Atoi(raidnightid)
+	if err != nil{
+		log.WithLocation().WithError(err).Error("Was not an integer?")
+	}
+	if e := Postgres.DeleteRaidNight(id, guildid); e != nil{
+		InterErrorHeader(w, e)
+		return
+	}
+
+	SuccessHeader(w, []byte("Succes"))
+
+}
+
+func HandleGetRaidNights(w http.ResponseWriter, r *http.Request, guildid int){
+
+	nights, e := Postgres.GetRaidNights(guildid)
+	msg, e := json.Marshal(&nights)
+	if e != nil{
+		HttpHelper.InterErrorHeader(w, e)
+	} else {
+		HttpHelper.SuccessHeader(w, msg)
 	}
 
 }

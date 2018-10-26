@@ -10,6 +10,7 @@ import (
 	. "./Utility/Filters"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
+	"time"
 )
 
 type Route struct {
@@ -116,6 +117,61 @@ var routes = Routes{
 		"GET",
 		"/bnet/logout",
 		RequireAuthentication(HandleLogout),
+		nil,
+		nil,
+	},
+	Route{
+		"Registrer guild",
+		"POST",
+		"/guild",
+		RequireAuthentication(RequireGuildMaster(HandleGuildRegistration)),
+		struct{
+			Officerrank int `json:"officerrank"`
+			Raiderrank int `json:"raiderrank"`
+			Trialrank int `json:"trialrank"`
+		}{},
+		nil,
+	},
+	Route{
+		"Add Raidnight",
+		"POST",
+		"/guild/raids",
+		RequireAuthentication(RequireOfficer(HandleAddRaidNight)),
+		struct{
+			Duration time.Duration `json:"duration"`
+			Start time.Time `json:"start"`
+			Day int `json:"day"`
+		}{},
+		nil,
+	},
+	Route{
+		"Edit Raidnight",
+		"PUT",
+		"/guild/raids",
+		RequireAuthentication(RequireOfficer(HandleEditRaidNight)),
+		struct{
+			Duration time.Duration `json:"duration"`
+			Start time.Time `json:"start"`
+			Day int `json:"day"`
+			RaidnightId int `json:"raidnight_id"`
+		}{},
+		nil,
+	},
+	Route{
+		"Delete Raidnight",
+		"DELETE",
+		"/guild/raids",
+		RequireAuthentication(RequireOfficer(HandleDeleteRaidNight)),
+		struct {
+			URLParameter string
+		}{URLParameter: "id"},
+		nil,
+	},
+	Route{
+		"Get Raidnights",
+		"GET",
+		"/guild/raids",
+		RequireAuthentication(RequireTrial(HandleGetRaidNights)),
 		nil,
 		nil,
 	},
