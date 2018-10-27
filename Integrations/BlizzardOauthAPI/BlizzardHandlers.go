@@ -19,11 +19,11 @@ var json = jsoniter.ConfigFastest
 
 func GetCharactersForRegistration(w http.ResponseWriter, r *http.Request, id int, region string) {
 
-	channel, error := Redis.ServeCacheAndUpdateBehind("CHARS:", id, wowCharacters{}, MakeFetcherFunction(region, WowCharacters))
+	channel := Redis.ServeCacheAndUpdateBehind("CHARS:", id, wowCharacters{}, MakeFetcherFunction(region, WowCharacters))
 
-	select {
+	result := <- channel
 
-	case result := <-channel:
+	if result.Error == nil{
 		msg, err := json.Marshal(result)
 		if err != nil {
 			log.WithLocation().WithError(err).Error("was not able to marshal chars")
@@ -34,12 +34,12 @@ func GetCharactersForRegistration(w http.ResponseWriter, r *http.Request, id int
 			w.WriteHeader(200)
 			w.Write(msg)
 		}
-
-	case e := <-error:
-		log.WithLocation().WithError(e).Error("How!")
+	} else {
+		log.WithLocation().WithError(result.Error).Error("How!")
 		w.WriteHeader(500)
-		w.Write([]byte(e.Error()))
+		w.Write([]byte(result.Error.Error()))
 	}
+
 
 }
 
@@ -108,7 +108,7 @@ func GetMainCharacter(w http.ResponseWriter, r *http.Request, id int, region str
 		w.Write([]byte("Hov!, there was not main detected!"))
 	} else {
 
-		char := CharacterMinimal{nam,real,regio}
+		char := CharacterMinimal{nam, real, regio}
 
 		msg, err := json.Marshal(char)
 		if err != nil {

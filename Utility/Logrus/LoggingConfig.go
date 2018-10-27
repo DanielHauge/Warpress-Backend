@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/kz/discordrus"
 	"github.com/sirupsen/logrus"
+	"io/ioutil"
 	"os"
 	"runtime"
 	"time"
@@ -16,8 +17,7 @@ func init() {
 		TimestampFormat: time.ANSIC,
 	})
 
-	logger.SetOutput(os.Stderr)
-
+	logger.SetOutput(ioutil.Discard)
 	logger.AddHook(discordrus.NewHook(
 
 		os.Getenv("DISCORDRUS_WEBHOOK_URL"),
@@ -36,6 +36,22 @@ func init() {
 			DisableInlineFields: false,
 		},
 	))
+	logger.AddHook(&WriterHook{
+		Writer: os.Stderr,
+		LogLevels: []logrus.Level{
+			logrus.PanicLevel,
+			logrus.FatalLevel,
+			logrus.ErrorLevel,
+		},
+	})
+	logger.AddHook(&WriterHook{
+		Writer: os.Stdout,
+		LogLevels: []logrus.Level{
+			logrus.InfoLevel,
+			logrus.DebugLevel,
+			logrus.WarnLevel,
+		},
+	})
 
 }
 

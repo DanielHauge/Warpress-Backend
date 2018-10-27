@@ -4,10 +4,9 @@ import (
 	"../../Integrations/BlizzardOpenAPI"
 	"../../Integrations/Raider.io"
 	"../../Integrations/WarcraftLogs"
-	"../../Redis"
+	"../../Postgres"
 	"github.com/jinzhu/copier"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -15,13 +14,11 @@ func FetchFullGuildOverview(id int, result *interface{}) error {
 
 	// TODO: Error handling??? Logging?
 	var FullGuildOverview Overview
-	guildstring := Redis.Get("GUILD:" + strconv.Itoa(id))
-	split := strings.Split(guildstring, ":")
-	Guild := struct {
-		Name   string
-		Realm  string
-		Region string
-	}{Name: split[0], Realm: split[1], Region: split[2]}
+
+	Guild, e := Postgres.GetGuildByID(id)
+	if e != nil{
+		return e
+	}
 
 	FullGuildOverview.Name = Guild.Name
 	FullGuildOverview.Realm = Guild.Realm
@@ -35,11 +32,11 @@ func FetchFullGuildOverview(id int, result *interface{}) error {
 	WarcraftlogsReports, e := WarcraftLogs.GetWarcraftGuildReports(Guild.Name, Guild.Realm, Guild.Region, t1.Unix(), t2.Unix())
 	FullGuildOverview.WarcraftlogReports = WarcraftlogsReports
 
-	Roster, e := BlizzardOpenAPI.GetBlizzardGuildMembers(Guild.Name, Guild.Region, Guild.Realm)
+	Roster, e := BlizzardOpenAPI.GetBlizzardGuildMembers(Guild.Name, Guild.Realm, Guild.Region)
 
 	var guildmembers []Member
 	for _, v := range Roster.Members {
-		if v.Rank < 5 {
+		if v.Rank == Guild.Trial || v.Rank == Guild.Raider || v.Rank == Guild.Officer || v.Rank == 0 {
 			guildmembers = append(guildmembers, Member{Name: v.Character.Name, Rank: v.Rank, Role: v.Character.Spec.Role, Class: v.Character.Class})
 		}
 	}

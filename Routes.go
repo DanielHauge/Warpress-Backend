@@ -7,6 +7,7 @@ import (
 	"./Integrations/BlizzardOpenAPI"
 	"./Integrations/Raider.io"
 	"./Integrations/WarcraftLogs"
+	"./Postgres/DataModel"
 	. "./Utility/Filters"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
@@ -108,7 +109,7 @@ var routes = Routes{
 		"Get guild overview",
 		"GET",
 		"/guild",
-		RequireAuthentication(HandleGetGuildOverview),
+		RequireAuthentication(RequireTrial(HandleGetGuildOverview)),
 		nil,
 		Guild.Overview{},
 	},
@@ -125,10 +126,10 @@ var routes = Routes{
 		"POST",
 		"/guild",
 		RequireAuthentication(RequireGuildMaster(HandleGuildRegistration)),
-		struct{
+		struct {
 			Officerrank int `json:"officerrank"`
-			Raiderrank int `json:"raiderrank"`
-			Trialrank int `json:"trialrank"`
+			Raiderrank  int `json:"raiderrank"`
+			Trialrank   int `json:"trialrank"`
 		}{},
 		nil,
 	},
@@ -137,10 +138,10 @@ var routes = Routes{
 		"POST",
 		"/guild/raids",
 		RequireAuthentication(RequireOfficer(HandleAddRaidNight)),
-		struct{
+		struct {
 			Duration time.Duration `json:"duration"`
-			Start time.Time `json:"start"`
-			Day int `json:"day"`
+			Start    time.Duration     `json:"start"`
+			Day      int           `json:"day"`
 		}{},
 		nil,
 	},
@@ -149,11 +150,11 @@ var routes = Routes{
 		"PUT",
 		"/guild/raids",
 		RequireAuthentication(RequireOfficer(HandleEditRaidNight)),
-		struct{
-			Duration time.Duration `json:"duration"`
-			Start time.Time `json:"start"`
-			Day int `json:"day"`
-			RaidnightId int `json:"raidnight_id"`
+		struct {
+			Duration    time.Duration `json:"duration"`
+			Start       time.Duration     `json:"start"`
+			Day         int           `json:"day"`
+			RaidnightId int           `json:"raidnight_id"`
 		}{},
 		nil,
 	},
@@ -173,7 +174,7 @@ var routes = Routes{
 		"/guild/raids",
 		RequireAuthentication(RequireTrial(HandleGetRaidNights)),
 		nil,
-		nil,
+		DataModel.RaidNight{},
 	},
 }
 

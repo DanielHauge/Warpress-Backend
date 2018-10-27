@@ -137,7 +137,7 @@ type Relic struct {
 
 type ToolTipParams struct {
 	Gem0              int `json:"gem0"`
-	Enchant 		  int `json:"enchant"`
+	Enchant           int `json:"enchant"`
 	AzeritePower0     int `json:"azeritePower0"`
 	AzeritePower1     int `json:"azeritePower1"`
 	AzeritePower2     int `json:"azeritePower2"`

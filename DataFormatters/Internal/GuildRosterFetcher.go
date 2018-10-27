@@ -9,7 +9,10 @@ import (
 )
 
 func FetchGuildRooster(id int, Guild *interface{}) error {
-	guildstring := Redis.Get("GUILD:" + strconv.Itoa(id))
+	guildstring, e := Redis.Get("GUILD:" + strconv.Itoa(id))
+	if e != nil{
+		return e
+	}
 	split := strings.Split(guildstring, ":")
 	guild := struct {
 		Name   string

@@ -5,9 +5,13 @@ import (
 	"strconv"
 )
 
-func ServeCacheAndUpdateBehind(key string, id int, expectedType interface{}, fetcher func(id int, obj *interface{}) error) (chan interface{}, chan error) {
-	channel := make(chan interface{})
-	errorcheck := make(chan error)
+type ChannelResult struct {
+	Obj interface{}
+	Error error
+}
+
+func ServeCacheAndUpdateBehind(key string, id int, expectedType interface{}, fetcher func(id int, obj *interface{}) error) (chan ChannelResult) {
+	channel := make(chan ChannelResult)
 	rediskey := key + strconv.Itoa(id)
 
 	go func() {
@@ -17,7 +21,7 @@ func ServeCacheAndUpdateBehind(key string, id int, expectedType interface{}, fet
 			e = CacheGetResult(rediskey, &result)
 			if !CacheTimeout(rediskey) { // If key is not in timeout, update cache.
 				go func() {
-					var Caching interface{}
+					Caching := reflect.New(reflect.TypeOf(expectedType)).Interface()
 					e = fetcher(id, &Caching)
 					CacheSetResult(rediskey, Caching)
 				}()
@@ -28,14 +32,11 @@ func ServeCacheAndUpdateBehind(key string, id int, expectedType interface{}, fet
 				go CacheSetResult(rediskey, result)
 			}
 		}
-		if e != nil {
-			errorcheck <- e
-		} else {
-			channel <- result
-		}
+		channel <- ChannelResult{result, e}
+
 
 	}()
 
-	return channel, errorcheck
+	return channel
 
 }

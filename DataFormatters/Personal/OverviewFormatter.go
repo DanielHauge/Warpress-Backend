@@ -19,7 +19,6 @@ func FetchFullPersonal(id int, profile *interface{}) error {
 
 	var Profile Overview
 
-
 	name, realm, region, e := Postgres.GetMain(id)
 	if e != nil {
 		log.WithLocation().WithError(e).WithField("User", id).Error("There is no main registered to the user!")
@@ -236,7 +235,7 @@ func fetchAll(id int, name string, realm string, region string) (BlizzardOpenAPI
 	var blizzChar BlizzardOpenAPI.FullCharInfo
 	go func() {
 		blizzChar, e = BlizzardOpenAPI.GetBlizzardChar(realm, name, region)
-		go Redis.Set("GUILD:"+strconv.Itoa(id), blizzChar.Guild.Name+":"+blizzChar.Guild.Realm+":"+region)
+		go Redis.Set("GUILD:"+strconv.Itoa(id), blizzChar.Guild.Name+":"+slugify.Slugify(blizzChar.Guild.Realm)+":"+region)
 		wg.Done()
 		blizzwait.Done()
 	}()
@@ -265,7 +264,6 @@ func fetchAll(id int, name string, realm string, region string) (BlizzardOpenAPI
 	return blizzChar, raiderio, logs, wowprog, e
 
 }
-
 
 func FetchRaiderioPersonal(id int, Profile *interface{}) error {
 
@@ -300,7 +298,7 @@ func FetchBlizzardPersonal(id int, Profile *interface{}) error {
 	}
 
 	blizzChar, e := BlizzardOpenAPI.GetBlizzardChar(realm, name, region)
-	go Redis.Set("GUILD:"+strconv.Itoa(id), blizzChar.Guild.Name+":"+blizzChar.Guild.Realm+":"+region)
+	go Redis.Set("GUILD:"+strconv.Itoa(id), blizzChar.Guild.Name+":"+slugify.Slugify(blizzChar.Guild.Realm)+":"+region)
 	copier.Copy(Profile, &blizzChar)
 	return e
 }

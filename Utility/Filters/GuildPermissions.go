@@ -5,8 +5,8 @@ import (
 	"../../Integrations/BlizzardOpenAPI"
 	"../../Postgres"
 	"../../Redis"
+	. "../../Utility/HttpHelper"
 	log "../Logrus"
-	"github.com/jinzhu/copier"
 	"net/http"
 	"strconv"
 	"strings"
@@ -15,15 +15,20 @@ import (
 func RequireGuildMaster(HandleFunction func(w http.ResponseWriter, r *http.Request, id int, region string, guildstring string)) func(w http.ResponseWriter, r *http.Request, id int, region string) {
 	return func(w http.ResponseWriter, r *http.Request, id int, region string) {
 		charactername, _, _, e := Postgres.GetMain(id)
-		if e == nil{
+		if e == nil {
 
-			guildstring := Redis.Get("GUILD:" + strconv.Itoa(id))
-			var guildwithmembers BlizzardOpenAPI.GuildWithMembers
-			GuildRosterChannel, errorChannel := Redis.ServeCacheAndUpdateBehind(guildstring, id, BlizzardOpenAPI.GuildWithMembers{}, Internal.FetchGuildRooster)
-			select {
+			guildstring, e := Redis.Get("GUILD:" + strconv.Itoa(id))
+			if e != nil{
+				InterErrorHeader(w, e)
+				return
+			}
 
-			case GuildRoster := <- GuildRosterChannel:
-				copier.Copy(guildwithmembers, GuildRoster)
+			GuildRosterChannel := Redis.ServeCacheAndUpdateBehind(guildstring, id, BlizzardOpenAPI.GuildWithMembers{}, Internal.FetchGuildRooster)
+			Result := <- GuildRosterChannel
+
+			if Result.Error == nil{
+
+				guildwithmembers, _ := Result.Obj.(*BlizzardOpenAPI.GuildWithMembers)
 				isGM := false
 				for _, member := range guildwithmembers.Members {
 					if member.Rank == 0 && member.Character.Name == charactername {
@@ -31,21 +36,21 @@ func RequireGuildMaster(HandleFunction func(w http.ResponseWriter, r *http.Reque
 						break
 					}
 				}
-				if isGM{
-					HandleFunction(w,r,id,region,guildstring)
+				if isGM {
+					HandleFunction(w, r, id, region, guildstring)
 				} else {
 					log.Info("User was not guildmaster of guild")
 					w.WriteHeader(http.StatusBadRequest)
 					w.Write([]byte("User was not guildmaster, which this operation requires"))
 				}
 
-			case e := <- errorChannel:
+			} else {
+
 				log.Info("User is not in a detectable guild")
 				w.WriteHeader(http.StatusBadRequest)
-				w.Write([]byte(e.Error()))
+				w.Write([]byte(Result.Error.Error()))
 
 			}
-
 
 		} else {
 			log.Info("User did not have a main")
@@ -53,16 +58,19 @@ func RequireGuildMaster(HandleFunction func(w http.ResponseWriter, r *http.Reque
 			w.Write([]byte("User did not have a main"))
 		}
 
-
 	}
 }
 
-func RequireOfficer(HandleFunction func(w http.ResponseWriter, r *http.Request, guildid int)) func(w http.ResponseWriter, r *http.Request, id int, region string){
+func RequireOfficer(HandleFunction func(w http.ResponseWriter, r *http.Request, guildid int)) func(w http.ResponseWriter, r *http.Request, id int, region string) {
 	return func(w http.ResponseWriter, r *http.Request, id int, region string) {
 		charactername, _, _, e := Postgres.GetMain(id)
-		if e == nil{
+		if e == nil {
 
-			guildstring := Redis.Get("GUILD:" + strconv.Itoa(id))
+			guildstring, e := Redis.Get("GUILD:" + strconv.Itoa(id))
+			if e != nil{
+				InterErrorHeader(w, e)
+				return
+			}
 			split := strings.Split(guildstring, ":")
 			guild := struct {
 				Name   string
@@ -70,19 +78,16 @@ func RequireOfficer(HandleFunction func(w http.ResponseWriter, r *http.Request, 
 				Region string
 			}{Name: split[0], Realm: split[1], Region: split[2]}
 			GuildStruct, e := Postgres.GetGuildByComposite(guild.Name, guild.Realm, guild.Region)
-			if e != nil{
+			if e != nil {
 				log.WithLocation().WithError(e).Error("Could not get guild, might not be registered")
 				w.WriteHeader(http.StatusBadRequest)
-				w.Write([]byte(e.Error()+" --- Guild might not be registered"))
+				w.Write([]byte(e.Error() + " --- Guild might not be registered"))
 			}
 
-
-			var guildwithmembers BlizzardOpenAPI.GuildWithMembers
-			GuildRosterChannel, errorChannel := Redis.ServeCacheAndUpdateBehind(guildstring, id, BlizzardOpenAPI.GuildWithMembers{}, Internal.FetchGuildRooster)
-			select {
-
-			case GuildRoster := <- GuildRosterChannel:
-				copier.Copy(guildwithmembers, GuildRoster)
+			GuildRosterChannel := Redis.ServeCacheAndUpdateBehind(guildstring, id, BlizzardOpenAPI.GuildWithMembers{}, Internal.FetchGuildRooster)
+			Result := <- GuildRosterChannel
+			if Result.Error == nil{
+				guildwithmembers := Result.Obj.(*BlizzardOpenAPI.GuildWithMembers)
 				isOfficer := false
 				for _, member := range guildwithmembers.Members {
 					if member.Rank <= GuildStruct.Officer && member.Character.Name == charactername {
@@ -91,20 +96,17 @@ func RequireOfficer(HandleFunction func(w http.ResponseWriter, r *http.Request, 
 					}
 				}
 				if isOfficer {
-					HandleFunction(w,r, GuildStruct.Id)
+					HandleFunction(w, r, GuildStruct.Id)
 				} else {
 					log.Info("User was not guildmaster of guild")
 					w.WriteHeader(http.StatusBadRequest)
 					w.Write([]byte("User was not guildmaster, which this operation requires"))
 				}
-
-			case e := <- errorChannel:
+			} else {
 				log.Info("User is not in a detectable guild")
 				w.WriteHeader(http.StatusBadRequest)
-				w.Write([]byte(e.Error()))
-
+				w.Write([]byte(Result.Error.Error()))
 			}
-
 
 		} else {
 			log.Info("User did not have a main")
@@ -112,18 +114,19 @@ func RequireOfficer(HandleFunction func(w http.ResponseWriter, r *http.Request, 
 			w.Write([]byte("User did not have a main"))
 		}
 
-
-
-
 	}
 }
 
-func RequireRaider(HandleFunction func(w http.ResponseWriter, r *http.Request, guildid int)) func(w http.ResponseWriter, r *http.Request, id int, region string){
+func RequireRaider(HandleFunction func(w http.ResponseWriter, r *http.Request, guildid int)) func(w http.ResponseWriter, r *http.Request, id int, region string) {
 	return func(w http.ResponseWriter, r *http.Request, id int, region string) {
 		charactername, _, _, e := Postgres.GetMain(id)
-		if e == nil{
+		if e == nil {
 
-			guildstring := Redis.Get("GUILD:" + strconv.Itoa(id))
+			guildstring, e := Redis.Get("GUILD:" + strconv.Itoa(id))
+			if e != nil{
+				InterErrorHeader(w, e)
+				return
+			}
 			split := strings.Split(guildstring, ":")
 			guild := struct {
 				Name   string
@@ -131,41 +134,35 @@ func RequireRaider(HandleFunction func(w http.ResponseWriter, r *http.Request, g
 				Region string
 			}{Name: split[0], Realm: split[1], Region: split[2]}
 			GuildStruct, e := Postgres.GetGuildByComposite(guild.Name, guild.Realm, guild.Region)
-			if e != nil{
+			if e != nil {
 				log.WithLocation().WithError(e).Error("Could not get guild, might not be registered")
 				w.WriteHeader(http.StatusBadRequest)
-				w.Write([]byte(e.Error()+" --- Guild might not be registered"))
+				w.Write([]byte(e.Error() + " --- Guild might not be registered"))
 			}
 
-
-			var guildwithmembers BlizzardOpenAPI.GuildWithMembers
-			GuildRosterChannel, errorChannel := Redis.ServeCacheAndUpdateBehind(guildstring, id, BlizzardOpenAPI.GuildWithMembers{}, Internal.FetchGuildRooster)
-			select {
-
-			case GuildRoster := <- GuildRosterChannel:
-				copier.Copy(guildwithmembers, GuildRoster)
-				isRaider := false
+			GuildRosterChannel := Redis.ServeCacheAndUpdateBehind(guildstring, id, BlizzardOpenAPI.GuildWithMembers{}, Internal.FetchGuildRooster)
+			Result := <- GuildRosterChannel
+			if Result.Error == nil{
+				guildwithmembers := Result.Obj.(*BlizzardOpenAPI.GuildWithMembers)
+				isOfficer := false
 				for _, member := range guildwithmembers.Members {
 					if member.Rank <= GuildStruct.Raider && member.Character.Name == charactername {
-						isRaider = true
+						isOfficer = true
 						break
 					}
 				}
-				if isRaider {
-					HandleFunction(w,r, GuildStruct.Id)
+				if isOfficer {
+					HandleFunction(w, r, GuildStruct.Id)
 				} else {
 					log.Info("User was not guildmaster of guild")
 					w.WriteHeader(http.StatusBadRequest)
 					w.Write([]byte("User was not guildmaster, which this operation requires"))
 				}
-
-			case e := <- errorChannel:
+			} else {
 				log.Info("User is not in a detectable guild")
 				w.WriteHeader(http.StatusBadRequest)
-				w.Write([]byte(e.Error()))
-
+				w.Write([]byte(Result.Error.Error()))
 			}
-
 
 		} else {
 			log.Info("User did not have a main")
@@ -173,18 +170,19 @@ func RequireRaider(HandleFunction func(w http.ResponseWriter, r *http.Request, g
 			w.Write([]byte("User did not have a main"))
 		}
 
-
-
-
 	}
 }
 
-func RequireTrial(HandleFunction func(w http.ResponseWriter, r *http.Request, guildid int)) func(w http.ResponseWriter, r *http.Request, id int, region string){
+func RequireTrial(HandleFunction func(w http.ResponseWriter, r *http.Request, guildid int)) func(w http.ResponseWriter, r *http.Request, id int, region string) {
 	return func(w http.ResponseWriter, r *http.Request, id int, region string) {
 		charactername, _, _, e := Postgres.GetMain(id)
-		if e == nil{
+		if e == nil {
 
-			guildstring := Redis.Get("GUILD:" + strconv.Itoa(id))
+			guildstring, e := Redis.Get("GUILD:" + strconv.Itoa(id))
+			if e != nil{
+				InterErrorHeader(w, e)
+				return
+			}
 			split := strings.Split(guildstring, ":")
 			guild := struct {
 				Name   string
@@ -192,50 +190,42 @@ func RequireTrial(HandleFunction func(w http.ResponseWriter, r *http.Request, gu
 				Region string
 			}{Name: split[0], Realm: split[1], Region: split[2]}
 			GuildStruct, e := Postgres.GetGuildByComposite(guild.Name, guild.Realm, guild.Region)
-			if e != nil{
+			if e != nil {
 				log.WithLocation().WithError(e).Error("Could not get guild, might not be registered")
 				w.WriteHeader(http.StatusBadRequest)
-				w.Write([]byte(e.Error()+" --- Guild might not be registered"))
+				w.Write([]byte(e.Error() + " --- Guild might not be registered"))
+				return
 			}
 
-
-			var guildwithmembers BlizzardOpenAPI.GuildWithMembers
-			GuildRosterChannel, errorChannel := Redis.ServeCacheAndUpdateBehind(guildstring, id, BlizzardOpenAPI.GuildWithMembers{}, Internal.FetchGuildRooster)
-			select {
-
-			case GuildRoster := <- GuildRosterChannel:
-				copier.Copy(guildwithmembers, GuildRoster)
-				isTrial := false
+			GuildRosterChannel := Redis.ServeCacheAndUpdateBehind(guildstring, id, BlizzardOpenAPI.GuildWithMembers{}, Internal.FetchGuildRooster)
+			Result := <- GuildRosterChannel
+			if Result.Error == nil{
+				guildwithmembers := Result.Obj.(*BlizzardOpenAPI.GuildWithMembers)
+				isOfficer := false
 				for _, member := range guildwithmembers.Members {
 					if member.Rank <= GuildStruct.Trial && member.Character.Name == charactername {
-						isTrial = true
+						isOfficer = true
 						break
 					}
 				}
-				if isTrial {
-					HandleFunction(w,r, GuildStruct.Id)
+				if isOfficer {
+					HandleFunction(w, r, GuildStruct.Id)
 				} else {
 					log.Info("User was not guildmaster of guild")
 					w.WriteHeader(http.StatusBadRequest)
 					w.Write([]byte("User was not guildmaster, which this operation requires"))
 				}
-
-			case e := <- errorChannel:
+			} else {
 				log.Info("User is not in a detectable guild")
 				w.WriteHeader(http.StatusBadRequest)
-				w.Write([]byte(e.Error()))
-
+				w.Write([]byte(Result.Error.Error()))
 			}
-
 
 		} else {
 			log.Info("User did not have a main")
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte("User did not have a main"))
 		}
-
-
-
 
 	}
 }

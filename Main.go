@@ -14,8 +14,8 @@ var json = jsoniter.ConfigFastest
 
 // LatentTODO: Setup service for API and make that running
 
-// TODO: Fanger ikke warcraft reports? Done?
-
+// TODO: Fanger ikke warcraft reports? Done????
+// TODO: Instead of copy! do type assertions!.
 
 func main() {
 
@@ -39,7 +39,7 @@ func main() {
 
 }
 
-func StartLocalhost(handler http.Handler){
+func StartLocalhost(handler http.Handler) {
 	cfg := &tls.Config{
 		MinVersion:               tls.VersionTLS12,
 		CurvePreferences:         []tls.CurveID{tls.CurveP521, tls.CurveP384, tls.CurveP256},
@@ -68,7 +68,7 @@ func StartLocalhost(handler http.Handler){
 	log.Fatal(srv.ListenAndServeTLS(os.Getenv("CERT_PUBLIC"), os.Getenv("CERT_PRIVATE")))
 }
 
-func StartProduction(handler http.Handler){
+func StartProduction(handler http.Handler) {
 	log.Info("Starting production server")
 	log.Fatal(http.ListenAndServe(":http", handler))
 }
