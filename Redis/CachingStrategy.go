@@ -6,11 +6,11 @@ import (
 )
 
 type ChannelResult struct {
-	Obj interface{}
+	Obj   interface{}
 	Error error
 }
 
-func ServeCacheAndUpdateBehind(key string, id int, expectedType interface{}, fetcher func(id int, obj *interface{}) error) (chan ChannelResult) {
+func ServeCacheAndUpdateBehind(key string, id int, expectedType interface{}, fetcher func(id int, obj *interface{}) error) chan ChannelResult {
 	channel := make(chan ChannelResult)
 	rediskey := key + strconv.Itoa(id)
 
@@ -33,7 +33,6 @@ func ServeCacheAndUpdateBehind(key string, id int, expectedType interface{}, fet
 			}
 		}
 		channel <- ChannelResult{result, e}
-
 
 	}()
 

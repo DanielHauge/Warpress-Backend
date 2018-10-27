@@ -10,7 +10,7 @@ import (
 
 func FetchGuildRooster(id int, Guild *interface{}) error {
 	guildstring, e := Redis.Get("GUILD:" + strconv.Itoa(id))
-	if e != nil{
+	if e != nil {
 		return e
 	}
 	split := strings.Split(guildstring, ":")

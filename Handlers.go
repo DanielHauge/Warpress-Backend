@@ -74,7 +74,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 func HandleGetPersonalFull(w http.ResponseWriter, r *http.Request, id int, region string) {
 
 	channel := Redis.ServeCacheAndUpdateBehind("PERSONAL:", id, Personal.Overview{}, Personal.FetchFullPersonal)
-	result := <- channel
+	result := <-channel
 	if result.Error == nil {
 
 		msg, err := json.Marshal(result.Obj)
@@ -97,7 +97,7 @@ func HandleGetPersonalFull(w http.ResponseWriter, r *http.Request, id int, regio
 func HandleGetPersonalRaiderio(w http.ResponseWriter, r *http.Request, id int, region string) {
 
 	channel := Redis.ServeCacheAndUpdateBehind("PERSONAL/RAIDERIO:", id, Raider_io.CharacterProfile{}, Personal.FetchRaiderioPersonal)
-	result := <- channel
+	result := <-channel
 	if result.Error == nil {
 
 		msg, err := json.Marshal(result.Obj)
@@ -120,7 +120,7 @@ func HandleGetPersonalRaiderio(w http.ResponseWriter, r *http.Request, id int, r
 func HandleGetPersonalWarcraftLogs(w http.ResponseWriter, r *http.Request, id int, region string) {
 
 	channel := Redis.ServeCacheAndUpdateBehind("PERSONAL/LOGS:", id, WarcraftLogs.Encounter{}, Personal.FetchWarcraftlogsPersonal)
-	result := <- channel
+	result := <-channel
 	if result.Error == nil {
 
 		msg, err := json.Marshal(result.Obj)
@@ -143,7 +143,7 @@ func HandleGetPersonalWarcraftLogs(w http.ResponseWriter, r *http.Request, id in
 func HandleGetPersonalBlizzardChar(w http.ResponseWriter, r *http.Request, id int, region string) {
 
 	channel := Redis.ServeCacheAndUpdateBehind("PERSONAL/BLIZZARD:", id, BlizzardOpenAPI.FullCharInfo{}, Personal.FetchBlizzardPersonal)
-	result := <- channel
+	result := <-channel
 	if result.Error == nil {
 
 		msg, err := json.Marshal(result.Obj)
@@ -165,7 +165,7 @@ func HandleGetPersonalBlizzardChar(w http.ResponseWriter, r *http.Request, id in
 func HandleGetPersonalImprovements(w http.ResponseWriter, r *http.Request, id int, region string) {
 
 	channel := Redis.ServeCacheAndUpdateBehind("PERSONAL/IMPROVEMENT:", id, Personal.Improvements{}, Personal.FetchPersonalImprovementsFull)
-	result := <- channel
+	result := <-channel
 	if result.Error == nil {
 
 		msg, err := json.Marshal(result.Obj)
@@ -188,7 +188,7 @@ func HandleGetPersonalImprovements(w http.ResponseWriter, r *http.Request, id in
 func HandleGetGuildOverview(w http.ResponseWriter, r *http.Request, guildid int) {
 
 	channel := Redis.ServeCacheAndUpdateBehind("GUILD/OVERVIEW:", guildid, Guild.Overview{}, Guild.FetchFullGuildOverview)
-	result := <- channel
+	result := <-channel
 	if result.Error == nil {
 
 		msg, err := json.Marshal(result.Obj)

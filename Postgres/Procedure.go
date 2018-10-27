@@ -50,17 +50,15 @@ func QueryMultiple(query string, args []interface{}, obj interface{}) error {
 
 	ty := reflect.TypeOf(obj).Elem()
 
-
 	results := reflect.MakeSlice(reflect.TypeOf(obj).Elem(), 0, 500)
 	for rows.Next() {
 
 		single := reflect.New(ty.Elem())
 		var fieldPointers []interface{}
 
-		for i := 0; i < single.Elem().NumField(); i++{
+		for i := 0; i < single.Elem().NumField(); i++ {
 			fieldPointers = append(fieldPointers, single.Elem().Field(i).Addr().Interface())
 		}
-
 
 		if err := rows.Scan(fieldPointers...); err != nil {
 			log.WithLocation().WithField("Query", query).WithField("Struct", single).WithField("Arguments", args).WithError(err).Error("Could not map struct from row")

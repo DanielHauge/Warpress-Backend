@@ -16,7 +16,7 @@ func FetchFullGuildOverview(id int, result *interface{}) error {
 	var FullGuildOverview Overview
 
 	Guild, e := Postgres.GetGuildByID(id)
-	if e != nil{
+	if e != nil {
 		return e
 	}
 

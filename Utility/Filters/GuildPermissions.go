@@ -18,15 +18,15 @@ func RequireGuildMaster(HandleFunction func(w http.ResponseWriter, r *http.Reque
 		if e == nil {
 
 			guildstring, e := Redis.Get("GUILD:" + strconv.Itoa(id))
-			if e != nil{
+			if e != nil {
 				InterErrorHeader(w, e)
 				return
 			}
 
 			GuildRosterChannel := Redis.ServeCacheAndUpdateBehind(guildstring, id, BlizzardOpenAPI.GuildWithMembers{}, Internal.FetchGuildRooster)
-			Result := <- GuildRosterChannel
+			Result := <-GuildRosterChannel
 
-			if Result.Error == nil{
+			if Result.Error == nil {
 
 				guildwithmembers, _ := Result.Obj.(*BlizzardOpenAPI.GuildWithMembers)
 				isGM := false
@@ -67,7 +67,7 @@ func RequireOfficer(HandleFunction func(w http.ResponseWriter, r *http.Request, 
 		if e == nil {
 
 			guildstring, e := Redis.Get("GUILD:" + strconv.Itoa(id))
-			if e != nil{
+			if e != nil {
 				InterErrorHeader(w, e)
 				return
 			}
@@ -85,8 +85,8 @@ func RequireOfficer(HandleFunction func(w http.ResponseWriter, r *http.Request, 
 			}
 
 			GuildRosterChannel := Redis.ServeCacheAndUpdateBehind(guildstring, id, BlizzardOpenAPI.GuildWithMembers{}, Internal.FetchGuildRooster)
-			Result := <- GuildRosterChannel
-			if Result.Error == nil{
+			Result := <-GuildRosterChannel
+			if Result.Error == nil {
 				guildwithmembers := Result.Obj.(*BlizzardOpenAPI.GuildWithMembers)
 				isOfficer := false
 				for _, member := range guildwithmembers.Members {
@@ -123,7 +123,7 @@ func RequireRaider(HandleFunction func(w http.ResponseWriter, r *http.Request, g
 		if e == nil {
 
 			guildstring, e := Redis.Get("GUILD:" + strconv.Itoa(id))
-			if e != nil{
+			if e != nil {
 				InterErrorHeader(w, e)
 				return
 			}
@@ -141,8 +141,8 @@ func RequireRaider(HandleFunction func(w http.ResponseWriter, r *http.Request, g
 			}
 
 			GuildRosterChannel := Redis.ServeCacheAndUpdateBehind(guildstring, id, BlizzardOpenAPI.GuildWithMembers{}, Internal.FetchGuildRooster)
-			Result := <- GuildRosterChannel
-			if Result.Error == nil{
+			Result := <-GuildRosterChannel
+			if Result.Error == nil {
 				guildwithmembers := Result.Obj.(*BlizzardOpenAPI.GuildWithMembers)
 				isOfficer := false
 				for _, member := range guildwithmembers.Members {
@@ -179,7 +179,7 @@ func RequireTrial(HandleFunction func(w http.ResponseWriter, r *http.Request, gu
 		if e == nil {
 
 			guildstring, e := Redis.Get("GUILD:" + strconv.Itoa(id))
-			if e != nil{
+			if e != nil {
 				InterErrorHeader(w, e)
 				return
 			}
@@ -198,8 +198,8 @@ func RequireTrial(HandleFunction func(w http.ResponseWriter, r *http.Request, gu
 			}
 
 			GuildRosterChannel := Redis.ServeCacheAndUpdateBehind(guildstring, id, BlizzardOpenAPI.GuildWithMembers{}, Internal.FetchGuildRooster)
-			Result := <- GuildRosterChannel
-			if Result.Error == nil{
+			Result := <-GuildRosterChannel
+			if Result.Error == nil {
 				guildwithmembers := Result.Obj.(*BlizzardOpenAPI.GuildWithMembers)
 				isOfficer := false
 				for _, member := range guildwithmembers.Members {

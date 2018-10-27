@@ -21,9 +21,9 @@ func GetCharactersForRegistration(w http.ResponseWriter, r *http.Request, id int
 
 	channel := Redis.ServeCacheAndUpdateBehind("CHARS:", id, wowCharacters{}, MakeFetcherFunction(region, WowCharacters))
 
-	result := <- channel
+	result := <-channel
 
-	if result.Error == nil{
+	if result.Error == nil {
 		msg, err := json.Marshal(result)
 		if err != nil {
 			log.WithLocation().WithError(err).Error("was not able to marshal chars")
@@ -39,7 +39,6 @@ func GetCharactersForRegistration(w http.ResponseWriter, r *http.Request, id int
 		w.WriteHeader(500)
 		w.Write([]byte(result.Error.Error()))
 	}
-
 
 }
 

@@ -32,15 +32,15 @@ func Get(key string) (string, error) {
 	return v, e
 }
 
-func refreshGuild(key string) (string,error){
+func refreshGuild(key string) (string, error) {
 	split := strings.Split(key, ":")
 	id, e := strconv.Atoi(split[1])
 	name, realm, region, e := Postgres.GetMain(id)
 	if e != nil {
 		log.WithLocation().WithError(e).WithField("User", id).Error("There is no main registered to the user!")
-		return "",e
+		return "", e
 	}
 	blizzChar, e := BlizzardOpenAPI.GetBlizzardChar(realm, name, region)
 	go Set("GUILD:"+strconv.Itoa(id), blizzChar.Guild.Name+":"+blizzChar.Guild.Realm+":"+region)
-	return blizzChar.Guild.Name+":"+blizzChar.Guild.Realm+":"+region, e
+	return blizzChar.Guild.Name + ":" + blizzChar.Guild.Realm + ":" + region, e
 }

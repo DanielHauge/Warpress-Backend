@@ -140,7 +140,7 @@ var routes = Routes{
 		RequireAuthentication(RequireOfficer(HandleAddRaidNight)),
 		struct {
 			Duration time.Duration `json:"duration"`
-			Start    time.Duration     `json:"start"`
+			Start    time.Duration `json:"start"`
 			Day      int           `json:"day"`
 		}{},
 		nil,
@@ -152,7 +152,7 @@ var routes = Routes{
 		RequireAuthentication(RequireOfficer(HandleEditRaidNight)),
 		struct {
 			Duration    time.Duration `json:"duration"`
-			Start       time.Duration     `json:"start"`
+			Start       time.Duration `json:"start"`
 			Day         int           `json:"day"`
 			RaidnightId int           `json:"raidnight_id"`
 		}{},
