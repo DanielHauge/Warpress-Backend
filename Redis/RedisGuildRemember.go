@@ -2,7 +2,7 @@ package Redis
 
 import (
 	"../Integrations/BlizzardOpenAPI"
-	"../Postgres"
+	Postgres "../Postgres/PreparedProcedures"
 	log "../Utility/Logrus"
 	"github.com/go-redis/redis"
 	"strconv"

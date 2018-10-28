@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-var Addr = os.Getenv("CONNECTION_STRING")
+var Addr = os.Getenv("CONNECTION_REDIS")
 var Port = ":6379"
 var Password = ""
 var DB = 0

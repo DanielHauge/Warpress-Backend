@@ -2,7 +2,7 @@ package Personal
 
 import (
 	"../../Integrations/WarcraftLogs"
-	"../../Postgres"
+	Postgres "../../Postgres/PreparedProcedures"
 	log "../../Utility/Logrus"
 	"github.com/jinzhu/copier"
 	"strconv"

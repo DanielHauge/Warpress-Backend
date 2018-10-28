@@ -16,6 +16,7 @@ var json = jsoniter.ConfigFastest
 
 // TODO: Fanger ikke warcraft reports? Done????
 // TODO: Instead of copy! do type assertions!.
+// TODO: Warcraftlogs parsing, total: dps -> Men hvad med når det en healing rank?
 
 func main() {
 

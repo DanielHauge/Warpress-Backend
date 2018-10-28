@@ -5,7 +5,7 @@ import (
 	"../../Integrations/Raider.io"
 	"../../Integrations/WarcraftLogs"
 	"../../Integrations/Wowprogress"
-	"../../Postgres"
+	Postgres "../../Postgres/PreparedProcedures"
 	"../../Redis"
 	log "../../Utility/Logrus"
 	"github.com/avelino/slugify"
@@ -30,6 +30,15 @@ func FetchFullPersonal(id int, profile *interface{}) error {
 
 	copier.Copy(profile, Profile)
 
+	return e
+}
+
+func FetchFullInspect(name string, realm string, region string, profile *interface{}) error {
+	var Profile Overview
+	blizzard, raiderio, logs, wowprog, e := fetchAll(0, name, realm, region)
+	fillUpPersonal(blizzard, raiderio, logs, wowprog, &Profile)
+
+	copier.Copy(profile, Profile)
 	return e
 }
 
@@ -233,9 +242,12 @@ func fetchAll(id int, name string, realm string, region string) (BlizzardOpenAPI
 	wg.Add(4)
 	var e error
 	var blizzChar BlizzardOpenAPI.FullCharInfo
+
 	go func() {
 		blizzChar, e = BlizzardOpenAPI.GetBlizzardChar(realm, name, region)
-		go Redis.Set("GUILD:"+strconv.Itoa(id), blizzChar.Guild.Name+":"+slugify.Slugify(blizzChar.Guild.Realm)+":"+region)
+		if id != 0{
+			go Redis.Set("GUILD:"+strconv.Itoa(id), blizzChar.Guild.Name+":"+slugify.Slugify(blizzChar.Guild.Realm)+":"+region)
+		}
 		wg.Done()
 		blizzwait.Done()
 	}()

@@ -3,7 +3,7 @@ package Filters
 import (
 	"../../DataFormatters/Internal"
 	"../../Integrations/BlizzardOpenAPI"
-	"../../Postgres"
+	Postgres "../../Postgres/PreparedProcedures"
 	"../../Redis"
 	. "../../Utility/HttpHelper"
 	log "../Logrus"

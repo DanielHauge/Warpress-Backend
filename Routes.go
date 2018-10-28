@@ -3,6 +3,7 @@ package main
 import (
 	"./DataFormatters/Guild"
 	"./DataFormatters/Personal"
+	. "./Handlers"
 	"./Integrations/BlizzardOauthAPI"
 	"./Integrations/BlizzardOpenAPI"
 	"./Integrations/Raider.io"
@@ -70,6 +71,14 @@ var routes = Routes{
 		"GET",
 		"/personal",
 		RequireAuthentication(HandleGetPersonalFull),
+		nil,
+		Personal.Overview{},
+	},
+	Route{
+		"Get Full Inspect view",
+		"GET",
+		"/personal/inspect/{region}/{realm}/{name}",
+HandleGetInspectFull,
 		nil,
 		Personal.Overview{},
 	},
@@ -175,6 +184,90 @@ var routes = Routes{
 		RequireAuthentication(RequireTrial(HandleGetRaidNights)),
 		nil,
 		DataModel.RaidNight{},
+	},
+	Route{
+		"Add Weakaura",
+		"POST",
+		"/guild/weakauras",
+		RequireAuthentication(RequireOfficer(HandleAddWeakaura)),
+		struct{
+			Name string `json:"name"`
+			Link string `json:"link"`
+			Import string `json:"import"`
+		}{},
+		nil,
+	},
+	Route{
+		"Edit Weakaura",
+		"PUT",
+		"/guild/weakauras",
+		RequireAuthentication(RequireOfficer(HandleEditWeakaura)),
+		struct {
+			Name string `json:"name"`
+			Link string `json:"link"`
+			Import string `json:"import"`
+			Id int `json:"id"`
+		}{},
+		nil,
+	},
+	Route{
+		"Delete Weakaura",
+		"DELETE",
+		"/guild/weakauras",
+		RequireAuthentication(RequireOfficer(HandleDeleteWeakaura)),
+		struct {
+			URLParameter string
+		}{URLParameter: "id"},
+		nil,
+	},
+	Route{
+		"Get Weakauras",
+		"GET",
+		"/guild/weakauras",
+		RequireAuthentication(RequireTrial(HandleGetWeakauras)),
+		nil,
+		DataModel.Weakaura{},
+	},
+	Route{
+		"Add Addon",
+		"POST",
+		"/guild/addon",
+		RequireAuthentication(RequireOfficer(HandleAddAddon)),
+		struct{
+			Name string `json:"name"`
+			TwitchLink string `json:"twitch_link"`
+		}{},
+		nil,
+	},
+	Route{
+		"Edit Addon",
+		"PUT",
+		"/guild/addon",
+		RequireAuthentication(RequireOfficer(HandleEditAddon)),
+		struct{
+			Name string `json:"name"`
+			TwitchLink string `json:"twitch_link"`
+			Id int `json:"id"`
+		}{},
+		nil,
+	},
+	Route{
+		"Delete Addon",
+		"DELETE",
+		"/guild/addon",
+		RequireAuthentication(RequireOfficer(HandleDeleteAddon)),
+		struct {
+			URLParameter string
+		}{URLParameter: "id"},
+		nil,
+	},
+	Route{
+		"Get Addons",
+		"GET",
+		"/guild/addon",
+		RequireAuthentication(RequireTrial(HandleGetAddon)),
+		nil,
+		DataModel.Addon{},
 	},
 }
 

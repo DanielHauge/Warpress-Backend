@@ -4,7 +4,7 @@ import (
 	"../../Integrations/BlizzardOpenAPI"
 	"../../Integrations/Raider.io"
 	"../../Integrations/WarcraftLogs"
-	"../../Postgres"
+	Postgres "../../Postgres/PreparedProcedures"
 	"github.com/jinzhu/copier"
 	"strconv"
 	"time"

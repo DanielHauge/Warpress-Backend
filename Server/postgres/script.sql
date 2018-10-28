@@ -43,12 +43,15 @@ create unique index if not exists guild_guildid_uindex
 
 create table if not exists raidnight
 (
-  duration     interval not null,
-  start        time     not null,
-  dayoftheweek integer  not null,
-  guildid      integer  not null
+  dayoftheweek integer not null,
+  guildid      integer not null
     constraint raidnight_guild_guildid_fk
-    references guild
+    references guild,
+  id           serial  not null
+    constraint raidnight_pk
+    primary key,
+  duration     bigint  not null,
+  start        bigint  not null
 );
 
 alter table raidnight
@@ -57,6 +60,9 @@ alter table raidnight
 create index if not exists raidnight_guildid_index
   on raidnight (guildid);
 
+create unique index if not exists raidnight_id_uindex
+  on raidnight (id);
+
 create table if not exists weakauras
 (
   guildid integer      not null
@@ -64,7 +70,10 @@ create table if not exists weakauras
     references guild,
   name    varchar(150) not null,
   link    varchar(250) not null,
-  import  bytea
+  import  bytea,
+  id      serial       not null
+    constraint weakauras_pk
+    primary key
 );
 
 alter table weakauras
@@ -73,16 +82,24 @@ alter table weakauras
 create index if not exists addons_guildid_index
   on weakauras (guildid);
 
+create unique index if not exists weakauras_id_uindex
+  on weakauras (id);
+
 create table if not exists addons
 (
   name       varchar(50)  not null,
   twitchlink varchar(250) not null,
   guildid    integer      not null
     constraint addons_guild_guildid_fk
-    references guild
+    references guild,
+  id         serial       not null
+    constraint addons_pk
+    primary key
 );
 
 alter table addons
   owner to admin;
 
+create unique index if not exists addons_id_uindex
+  on addons (id);
 

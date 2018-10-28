@@ -1,7 +1,7 @@
 package BlizzardOauthAPI
 
 import (
-	"../../Postgres"
+	Postgres "../../Postgres/PreparedProcedures"
 	"../../Redis"
 	"../../Utility/HttpHelper"
 	log "../../Utility/Logrus"

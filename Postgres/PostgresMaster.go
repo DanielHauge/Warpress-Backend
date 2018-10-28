@@ -10,7 +10,7 @@ import (
 var db *sql.DB
 
 func init() {
-	connectionPool, err := sql.Open("postgres", "postgres://"+os.Getenv("DBPASS")+"@localhost/postgres?sslmode=disable")
+	connectionPool, err := sql.Open("postgres", "postgres://"+os.Getenv("DBPASS")+"@"+os.Getenv("CONNECTION_POSTGRES")+"/postgres?sslmode=disable")
 	if err != nil {
 		log.WithLocation().WithError(err).Fatal("Could not establish connection pool for postgres")
 	}

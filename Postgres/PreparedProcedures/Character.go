@@ -1,10 +1,9 @@
-package Postgres
+package PreparedProcedures
 
 import (
-	. "./DataModel"
+	. "../../Postgres"
+	. "../DataModel"
 )
-
-// TODO: Not the way to do it.
 
 func SetMain(id int, name string, realm string, region string) error {
 	_, e := Execute("INSERT INTO main (accountId, name, realm, region) "+

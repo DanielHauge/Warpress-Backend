@@ -33,7 +33,6 @@ func QuerySingle(query string, args []interface{}, obj ...interface{}) error {
 	return err
 }
 
-// TODO: Debug and fix this.
 func QueryMultiple(query string, args []interface{}, obj interface{}) error {
 	statement, err := db.Prepare(query)
 	defer statement.Close()
