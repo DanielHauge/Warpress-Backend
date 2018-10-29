@@ -3,6 +3,8 @@ package PreparedProcedures
 import (
 	. "../../Postgres"
 	. "../DataModel"
+	"database/sql"
+	"github.com/pkg/errors"
 	"time"
 )
 
@@ -33,6 +35,10 @@ func GetRaidNights(guildid int) ([]RaidNight, error) {
 		[]interface{}{guildid},
 		&res,
 	)
+
+	if e == sql.ErrNoRows{
+		e = errors.New("No raid nights have been added for this guild")
+	}
 
 	return res, e
 }

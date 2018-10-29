@@ -17,7 +17,7 @@ func HandleAddAddon(w http.ResponseWriter, r *http.Request, guildid int) {
 	ReadFromRequest(w, r, &Addon)
 
 	if e := Postgres.AddAddon(Addon.Name, Addon.TwitchLink, guildid); e != nil {
-		InterErrorHeader(w, e)
+		InterErrorHeader(w, e, "Addon could not be added", GetStatusCodeByError(e))
 		return
 	}
 
@@ -35,7 +35,7 @@ func HandleEditAddon(w http.ResponseWriter, r *http.Request, guildid int) {
 	ReadFromRequest(w, r, &Addon)
 
 	if e := Postgres.EditAddon(Addon.Name, Addon.TwitchLink, guildid, Addon.Id); e != nil {
-		InterErrorHeader(w, e)
+		InterErrorHeader(w, e, "Addon could not be edited", GetStatusCodeByError(e))
 		return
 	}
 
@@ -50,7 +50,7 @@ func HandleDeleteAddon(w http.ResponseWriter, r *http.Request, guildid int) {
 		log.WithLocation().WithError(err).Error("Was not an integer?")
 	}
 	if e := Postgres.DeleteAddon(guildid, id); e != nil {
-		InterErrorHeader(w, e)
+		InterErrorHeader(w, e, "Addon could not be deleted", GetStatusCodeByError(e))
 		return
 	}
 
@@ -61,9 +61,13 @@ func HandleDeleteAddon(w http.ResponseWriter, r *http.Request, guildid int) {
 func HandleGetAddon(w http.ResponseWriter, r *http.Request, guildid int) {
 
 	addons, e := Postgres.GetAddon(guildid)
+	if e != nil{
+		InterErrorHeader(w, e, "Cannot get addons", GetStatusCodeByError(e))
+		return
+	}
 	msg, e := json.Marshal(&addons)
 	if e != nil {
-		InterErrorHeader(w, e)
+		InterErrorHeader(w, e, "Cannot marshal", GetStatusCodeByError(e))
 	} else {
 		SuccessHeader(w, msg)
 	}

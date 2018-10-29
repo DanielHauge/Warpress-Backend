@@ -79,16 +79,16 @@ func HandleGetPersonalFull(w http.ResponseWriter, r *http.Request, id int, regio
 
 		msg, err := json.Marshal(result.Obj)
 		if err != nil {
-			log.WithLocation().WithError(err).Error("Was not able to marshal raider.io profile")
-			InterErrorHeader(w, err)
+			log.WithLocation().WithError(err).Error("Was not able to marshal personal overview")
+			InterErrorHeader(w, err, "The object gotten from cache is not valid for marshaling", GetStatusCodeByError(err))
 		} else {
 			SuccessHeader(w, msg)
 		}
 
 	} else {
 
-		log.WithLocation().WithError(result.Error).Error("How!")
-		InterErrorHeader(w, result.Error)
+		log.WithLocation().WithError(result.Error).Error("Was not able to get Personal Overview")
+		InterErrorHeader(w, result.Error, "Was not able to get Personal Overview", GetStatusCodeByError(result.Error))
 
 	}
 
@@ -109,16 +109,16 @@ func HandleGetInspectFull(w http.ResponseWriter, r *http.Request){
 
 		msg, err := json.Marshal(result.Obj)
 		if err != nil {
-			log.WithLocation().WithError(err).Error("Was not able to marshal raider.io profile")
-			InterErrorHeader(w, err)
+			log.WithLocation().WithError(err).Error("Was not able to marshal inspect")
+			InterErrorHeader(w, err, "The object gotten from cache is not valid for marshaling", GetStatusCodeByError(err))
 		} else {
 			SuccessHeader(w, msg)
 		}
 
 	} else {
 
-		log.WithLocation().WithError(result.Error).Error("How!")
-		InterErrorHeader(w, result.Error)
+		log.WithLocation().WithError(result.Error).Error("Was not able to get Inspect")
+		InterErrorHeader(w, result.Error, "Was not able to get Inspect", GetStatusCodeByError(result.Error))
 
 	}
 
@@ -135,15 +135,15 @@ func HandleGetPersonalRaiderio(w http.ResponseWriter, r *http.Request, id int, r
 		msg, err := json.Marshal(result.Obj)
 		if err != nil {
 			log.WithLocation().WithError(err).Error("Was not able to marshal raider.io profile")
-			InterErrorHeader(w, err)
+			InterErrorHeader(w, err, "The object gotten from cache is not valid for marshaling", GetStatusCodeByError(err))
 		} else {
 			SuccessHeader(w, msg)
 		}
 
 	} else {
 
-		log.WithLocation().WithError(result.Error).Error("How!")
-		InterErrorHeader(w, result.Error)
+		log.WithLocation().WithError(result.Error).Error("Was not able to get Personal Raider io")
+		InterErrorHeader(w, result.Error, "Was not able to get Personal Raider io", GetStatusCodeByError(result.Error))
 
 	}
 
@@ -157,8 +157,8 @@ func HandleGetPersonalWarcraftLogs(w http.ResponseWriter, r *http.Request, id in
 
 		msg, err := json.Marshal(result.Obj)
 		if err != nil {
-			log.WithLocation().WithError(err).Error("Was not able to marshal raider.io profile")
-			InterErrorHeader(w, err)
+			log.WithLocation().WithError(err).Error("Was not able to marshal personal warcraftlogs")
+			InterErrorHeader(w, err, "The object gotten from cache is not valid for marshaling", GetStatusCodeByError(err))
 		} else {
 			SuccessHeader(w, msg)
 		}
@@ -166,7 +166,7 @@ func HandleGetPersonalWarcraftLogs(w http.ResponseWriter, r *http.Request, id in
 	} else {
 
 		log.WithLocation().WithError(result.Error).Error("How!")
-		InterErrorHeader(w, result.Error)
+		InterErrorHeader(w, result.Error, "Was not able to get Personal Warcraftlogs", GetStatusCodeByError(result.Error))
 
 	}
 
@@ -180,8 +180,8 @@ func HandleGetPersonalBlizzardChar(w http.ResponseWriter, r *http.Request, id in
 
 		msg, err := json.Marshal(result.Obj)
 		if err != nil {
-			log.WithLocation().WithError(err).Error("Was not able to marshal raider.io profile")
-			InterErrorHeader(w, err)
+			log.WithLocation().WithError(err).Error("Was not able to marshal personal blizzard")
+			InterErrorHeader(w, err, "The object gotten from cache is not valid for marshaling", GetStatusCodeByError(err))
 		} else {
 			SuccessHeader(w, msg)
 		}
@@ -189,7 +189,7 @@ func HandleGetPersonalBlizzardChar(w http.ResponseWriter, r *http.Request, id in
 	} else {
 
 		log.WithLocation().WithError(result.Error).Error("How!")
-		InterErrorHeader(w, result.Error)
+		InterErrorHeader(w, result.Error, "Was not able to get Personal Blizzard", GetStatusCodeByError(result.Error))
 
 	}
 }
@@ -202,16 +202,16 @@ func HandleGetPersonalImprovements(w http.ResponseWriter, r *http.Request, id in
 
 		msg, err := json.Marshal(result.Obj)
 		if err != nil {
-			log.WithLocation().WithError(err).Error("Was not able to marshal raider.io profile")
-			InterErrorHeader(w, err)
+			log.WithLocation().WithError(err).Error("Was not able to marshal personal improvements")
+			InterErrorHeader(w, err, "The object gotten from cache is not valid for marshaling", GetStatusCodeByError(err))
 		} else {
 			SuccessHeader(w, msg)
 		}
 
 	} else {
 
-		log.WithLocation().WithError(result.Error).Error("How!")
-		InterErrorHeader(w, result.Error)
+		log.WithLocation().WithError(result.Error).Error("Was not able to get Personal Improvements")
+		InterErrorHeader(w, result.Error, "Was not able to get Personal Improvements", GetStatusCodeByError(result.Error))
 
 	}
 
@@ -225,16 +225,16 @@ func HandleGetGuildOverview(w http.ResponseWriter, r *http.Request, guildid int)
 
 		msg, err := json.Marshal(result.Obj)
 		if err != nil {
-			log.WithLocation().WithError(err).Error("Was not able to marshal raider.io profile")
-			InterErrorHeader(w, err)
+			log.WithLocation().WithError(err).Error("Was not able to marshal guild overview")
+			InterErrorHeader(w, err, "The object gotten from cache is not valid for marshaling", GetStatusCodeByError(err))
 		} else {
 			SuccessHeader(w, msg)
 		}
 
 	} else {
 
-		log.WithLocation().WithError(result.Error).Error("How!")
-		InterErrorHeader(w, result.Error)
+		log.WithLocation().WithError(result.Error).Error("Was not able to get Guild Overview")
+		InterErrorHeader(w, result.Error, "Was not able to get Guild Overview", GetStatusCodeByError(result.Error))
 
 	}
 
@@ -244,10 +244,9 @@ func HandleLogout(w http.ResponseWriter, r *http.Request, id int, region string)
 
 	e := Redis.DeleteKey("AT:" + strconv.Itoa(id))
 	if e != nil {
-		InterErrorHeader(w, e)
+		InterErrorHeader(w, e, "Was not able to logout", GetStatusCodeByError(e))
 	} else {
-		w.WriteHeader(200)
-		w.Write([]byte("OK!"))
+		SuccessHeader(w, []byte("\"message\":\"OK!\"}"))
 	}
 
 }
@@ -274,11 +273,11 @@ func HandleGuildRegistration(w http.ResponseWriter, r *http.Request, id int, reg
 	HttpHelper.ReadFromRequest(w, r, &Guild)
 
 	if e := Postgres.RegisterGuild(GuildFromRedis.Name, GuildFromRedis.Realm, GuildFromRedis.Region, Guild.Officerrank, Guild.Raiderrank, Guild.Trialrank); e != nil {
-		InterErrorHeader(w, e)
+		InterErrorHeader(w, e, "Was not able to register guild", GetStatusCodeByError(e))
 		return
 	}
 
-	SuccessHeader(w, []byte("Succes"))
+	SuccessHeader(w, []byte("\"message\":\"OK!\"}"))
 
 }
 

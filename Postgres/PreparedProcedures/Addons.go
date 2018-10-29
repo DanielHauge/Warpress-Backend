@@ -3,6 +3,8 @@ package PreparedProcedures
 import (
 	. "../../Postgres"
 	. "../DataModel"
+	"database/sql"
+	"github.com/pkg/errors"
 )
 
 func AddAddon(name string, twitchlink string, guildid int) error{
@@ -30,6 +32,10 @@ func GetAddon(guildid int) ([]Addon, error){
 		[]interface{}{guildid},
 		&res,
 	)
+
+	if e == sql.ErrNoRows{
+		e = errors.New("No Addons have been added for this guild")
+	}
 
 	return res, e
 }

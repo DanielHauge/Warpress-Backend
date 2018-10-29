@@ -3,6 +3,8 @@ package PreparedProcedures
 import (
 	. "../../Postgres"
 	. "../DataModel"
+	"database/sql"
+	"github.com/pkg/errors"
 )
 
 func SetMain(id int, name string, realm string, region string) error {
@@ -16,5 +18,8 @@ func SetMain(id int, name string, realm string, region string) error {
 func GetMain(id int) (string, string, string, error) {
 	var res Character
 	e := QuerySingle("SELECT name, realm, region FROM main WHERE accountid=$1", []interface{}{id}, &res.Name, &res.Realm, &res.Region)
+	if e == sql.ErrNoRows{
+		e = errors.New("No main registered")
+	}
 	return res.Name, res.Realm, res.Region, e
 }

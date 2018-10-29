@@ -19,7 +19,7 @@ func HandleAddRaidNight(w http.ResponseWriter, r *http.Request, guildid int) {
 	ReadFromRequest(w, r, &Raidnight)
 
 	if e := Postgres.AddRaidNight(Raidnight.Duration, Raidnight.Start, Raidnight.Day, guildid); e != nil {
-		InterErrorHeader(w, e)
+		InterErrorHeader(w, e, "Raidnight could not be added", GetStatusCodeByError(e))
 		return
 	}
 
@@ -38,7 +38,7 @@ func HandleEditRaidNight(w http.ResponseWriter, r *http.Request, guildid int) {
 	ReadFromRequest(w, r, &Raidnight)
 
 	if e := Postgres.EditRaidNight(Raidnight.Duration, Raidnight.Start, Raidnight.Day, Raidnight.RaidnightId, guildid); e != nil {
-		InterErrorHeader(w, e)
+		InterErrorHeader(w, e, "Raidnight could not be edited", GetStatusCodeByError(e))
 		return
 	}
 
@@ -53,7 +53,7 @@ func HandleDeleteRaidNight(w http.ResponseWriter, r *http.Request, guildid int) 
 		log.WithLocation().WithError(err).Error("Was not an integer?")
 	}
 	if e := Postgres.DeleteRaidNight(id, guildid); e != nil {
-		InterErrorHeader(w, e)
+		InterErrorHeader(w, e, "Raidnight could not be delete", GetStatusCodeByError(e))
 		return
 	}
 
@@ -64,9 +64,13 @@ func HandleDeleteRaidNight(w http.ResponseWriter, r *http.Request, guildid int) 
 func HandleGetRaidNights(w http.ResponseWriter, r *http.Request, guildid int) {
 
 	nights, e := Postgres.GetRaidNights(guildid)
+	if e != nil{
+		InterErrorHeader(w, e, "Cannot get raidnights", GetStatusCodeByError(e))
+		return
+	}
 	msg, e := json.Marshal(&nights)
 	if e != nil {
-		InterErrorHeader(w, e)
+		InterErrorHeader(w, e, "Cannot marshal", GetStatusCodeByError(e))
 	} else {
 		SuccessHeader(w, msg)
 	}

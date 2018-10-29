@@ -4,6 +4,8 @@ package PreparedProcedures
 import (
 	. "../../Postgres"
 	. "../DataModel"
+	"database/sql"
+	"github.com/pkg/errors"
 )
 
 func AddWeakaura(guildid int, name string, link string, imp string) error{
@@ -31,6 +33,8 @@ func GetWeakaura(guildid int) ([]Weakaura, error){
 		[]interface{}{guildid},
 		&res,
 	)
-
+	if e == sql.ErrNoRows{
+		e = errors.New("No Weakaura have been added for this guild")
+	}
 	return res, e
 }

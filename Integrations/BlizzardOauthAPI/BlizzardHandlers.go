@@ -9,6 +9,7 @@ import (
 	"github.com/avelino/slugify"
 	"github.com/jinzhu/copier"
 	"github.com/json-iterator/go"
+	"github.com/pkg/errors"
 	"golang.org/x/oauth2"
 	"net/http"
 	"sort"
@@ -85,16 +86,29 @@ func MakeFetcherFunction(region string, fetcher func(id int, region string) (wow
 func SetMainCharacter(w http.ResponseWriter, r *http.Request, id int, region string) {
 
 	ids := strconv.Itoa(id)
-	w.WriteHeader(201)
+
 	Redis.DeleteKey("MAIN:"+ids, "PERSONAL:"+ids, "PERSONAL/RAIDERIO:"+ids, "PERSONAL/LOGS:"+ids, "PERSONAL/BLIZZARD:"+ids, "PERSONAL/IMPROVEMENT:"+ids, "GUILD/OVERVIEW:"+ids, "GUILD:"+ids)
+	var chars wowCharacters
+	_ := Redis.CacheGetResult("CHARS:"+ids, &chars)
 
 	var char CharacterMinimal
 	HttpHelper.ReadFromRequest(w, r, &char)
 
-	char.Realm = slugify.Slugify(char.Realm)
-	char.Region = region
+	didExist := false
+	for _, v := range chars.Chars{
+		if v.Name == char.Name { didExist = true }
+	}
 
-	Postgres.SetMain(id, char.Name, char.Realm, char.Region)
+	if didExist{
+		w.WriteHeader(201)
+		char.Realm = slugify.Slugify(char.Realm)
+		char.Region = region
+		Postgres.SetMain(id, char.Name, char.Realm, char.Region)
+	} else {
+		e := errors.New("Character did not seem to be owned by requesters account, try main registration again")
+		HttpHelper.InterErrorHeader(w, e, "Was not able to register main", HttpHelper.GetStatusCodeByError(e))
+	}
+
 }
 
 func GetMainCharacter(w http.ResponseWriter, r *http.Request, id int, region string) {

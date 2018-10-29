@@ -21,7 +21,7 @@ func HandleAddWeakaura(w http.ResponseWriter, r *http.Request, guildid int) {
 	ReadFromRequest(w, r, &Weak)
 
 	if e := Postgres.AddWeakaura(guildid, Weak.Name, Weak.Link, Weak.Import); e != nil {
-		InterErrorHeader(w, e)
+		InterErrorHeader(w, e, "Weakaura could not be added", GetStatusCodeByError(e))
 		return
 	}
 
@@ -40,7 +40,7 @@ func HandleEditWeakaura(w http.ResponseWriter, r *http.Request, guildid int) {
 	ReadFromRequest(w, r, &Weak)
 
 	if e := Postgres.EditWeakaura(guildid, Weak.Name, Weak.Link, Weak.Import, Weak.Id); e != nil {
-		InterErrorHeader(w, e)
+		InterErrorHeader(w, e, "Weakaura could not be edited", GetStatusCodeByError(e))
 		return
 	}
 
@@ -55,7 +55,7 @@ func HandleDeleteWeakaura(w http.ResponseWriter, r *http.Request, guildid int) {
 		log.WithLocation().WithError(err).Error("Was not an integer?")
 	}
 	if e := Postgres.DeleteWeakaura(guildid, id); e != nil {
-		InterErrorHeader(w, e)
+		InterErrorHeader(w, e, "Weakaura could not be deleted", GetStatusCodeByError(e))
 		return
 	}
 
@@ -66,9 +66,14 @@ func HandleDeleteWeakaura(w http.ResponseWriter, r *http.Request, guildid int) {
 func HandleGetWeakauras(w http.ResponseWriter, r *http.Request, guildid int) {
 
 	weakauras, e := Postgres.GetWeakaura(guildid)
+	if e != nil{
+		InterErrorHeader(w, e, "Cannot get weakauras", GetStatusCodeByError(e))
+		return
+	}
+
 	msg, e := json.Marshal(&weakauras)
 	if e != nil {
-		InterErrorHeader(w, e)
+		InterErrorHeader(w, e, "Cannot marshal", GetStatusCodeByError(e))
 	} else {
 		SuccessHeader(w, msg)
 	}
