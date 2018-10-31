@@ -45,7 +45,7 @@ func GetWarcraftGuildReports(guildname string, realm string, region string, star
 
 	urlguildname := strings.Replace(guildname, " ", "%20", -1)
 	fullUrl := warcraftLogsAPIURL + "/reports/guild/" + urlguildname + "/" + slugify.Slugify(realm) + "/" + region + "?start=" + strconv.FormatInt(startime*1000, 10) + "&end=" + strconv.FormatInt(endtime*1000, 10) + "&api_key=" + os.Getenv("PUBLIC_LOGS")
-	log.WithFields(logrus.Fields{"Guild": guildname, "Realm": realm, "Region": region, "From": startime*1000, "To": endtime*1000, "Url": fullUrl}).Info("Gojaxing guild reports")
+	log.WithFields(logrus.Fields{"Guild": guildname, "Realm": realm, "Region": region, "From": startime * 1000, "To": endtime * 1000, "Url": fullUrl}).Info("Gojaxing guild reports")
 	var report []GuildReports
 
 	now := time.Now()

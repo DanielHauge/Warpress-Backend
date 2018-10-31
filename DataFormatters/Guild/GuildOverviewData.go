@@ -8,7 +8,7 @@ import (
 type Overview struct {
 	Name               string                      `json:"name"`
 	Realm              string                      `json:"realm"`
-	SluggedRealm 		string		`json:"slugged_realm"`
+	SluggedRealm       string                      `json:"slugged_realm"`
 	LastRaid           string                      `json:"last_raid"`
 	NextRaid           string                      `json:"next_raid"`
 	TimeUntilNextRaid  string                      `json:"time_until_next_raid"`

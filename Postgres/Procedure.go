@@ -72,7 +72,7 @@ func QueryMultiple(query string, args []interface{}, obj interface{}) error {
 		"Struct":    obj,
 	}).Info("Postgress query")
 
-	if results.Len() == 0{
+	if results.Len() == 0 {
 		return sql.ErrNoRows
 	} else {
 		err = copier.Copy(obj, results.Interface())

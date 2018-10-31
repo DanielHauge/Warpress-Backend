@@ -14,13 +14,12 @@ var json = jsoniter.ConfigFastest
 
 // LatentTODO: Setup service for API and make that running
 
-
 // TODO: Warcraftlogs parsing, total: dps -> Men hvad med når det en healing rank?
-
 
 // TODO: Postgres migration 100%
 // TODO: Fileserver med pictures
 // TODO: Make shared docker repo
+// TODO: Preload cache on login!!! :D
 // TODO: CI for stuff
 
 func main() {

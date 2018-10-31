@@ -36,7 +36,7 @@ func GetRaidNights(guildid int) ([]RaidNight, error) {
 		&res,
 	)
 
-	if e == sql.ErrNoRows{
+	if e == sql.ErrNoRows {
 		e = errors.New("No raid nights have been added for this guild")
 	}
 

@@ -94,9 +94,9 @@ func HandleGetPersonalFull(w http.ResponseWriter, r *http.Request, id int, regio
 
 }
 
-func HandleGetInspectFull(w http.ResponseWriter, r *http.Request){
+func HandleGetInspectFull(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	charString := vars["region"]+":"+vars["realm"]+":"+vars["name"]
+	charString := vars["region"] + ":" + vars["realm"] + ":" + vars["name"]
 
 	unwrapFunc := func(id int, obj *interface{}) error {
 		e := Personal.FetchFullInspect(vars["name"], vars["realm"], vars["region"], obj)
@@ -121,8 +121,6 @@ func HandleGetInspectFull(w http.ResponseWriter, r *http.Request){
 		InterErrorHeader(w, result.Error, "Was not able to get Inspect", GetStatusCodeByError(result.Error))
 
 	}
-
-
 
 }
 
@@ -280,5 +278,3 @@ func HandleGuildRegistration(w http.ResponseWriter, r *http.Request, id int, reg
 	SuccessHeader(w, []byte("\"message\":\"OK!\"}"))
 
 }
-
-

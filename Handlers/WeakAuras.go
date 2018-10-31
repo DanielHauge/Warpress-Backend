@@ -13,9 +13,9 @@ var json = jsoniter.ConfigFastest
 
 func HandleAddWeakaura(w http.ResponseWriter, r *http.Request, guildid int) {
 
-	var Weak struct{
-		Name string `json:"name"`
-		Link string `json:"link"`
+	var Weak struct {
+		Name   string `json:"name"`
+		Link   string `json:"link"`
 		Import string `json:"import"`
 	}
 	ReadFromRequest(w, r, &Weak)
@@ -32,10 +32,10 @@ func HandleAddWeakaura(w http.ResponseWriter, r *http.Request, guildid int) {
 func HandleEditWeakaura(w http.ResponseWriter, r *http.Request, guildid int) {
 
 	var Weak struct {
-		Name string `json:"name"`
-		Link string `json:"link"`
+		Name   string `json:"name"`
+		Link   string `json:"link"`
 		Import string `json:"import"`
-		Id int `json:"id"`
+		Id     int    `json:"id"`
 	}
 	ReadFromRequest(w, r, &Weak)
 
@@ -66,7 +66,7 @@ func HandleDeleteWeakaura(w http.ResponseWriter, r *http.Request, guildid int) {
 func HandleGetWeakauras(w http.ResponseWriter, r *http.Request, guildid int) {
 
 	weakauras, e := Postgres.GetWeakaura(guildid)
-	if e != nil{
+	if e != nil {
 		InterErrorHeader(w, e, "Cannot get weakauras", GetStatusCodeByError(e))
 		return
 	}

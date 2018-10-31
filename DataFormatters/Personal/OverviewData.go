@@ -3,7 +3,7 @@ package Personal
 type Overview struct {
 	Character       character        `json:"character"`
 	Guild           guild            `json:"guild"`
-	BestParses      []dificultyParse      `json:"best_parses"`
+	BestParses      []dificultyParse `json:"best_parses"`
 	RaiderIOProfile characterProfile `json:"raider_io_profile"`
 }
 
@@ -66,6 +66,7 @@ type affix struct {
 type logs struct {
 	BestParses []dificultyParse `json:"best_parses"`
 }
+
 /*
 type Parses struct {
 	Mythic dificultyParse `json:"mythic"`
@@ -75,9 +76,9 @@ type Parses struct {
 */
 
 type dificultyParse struct {
-	Logs []encounter `json:"logs"`
-	Specs []string `json:"specs"`
-	Difficulty string `json:"difficulty"`
+	Logs       []encounter `json:"logs"`
+	Specs      []string    `json:"specs"`
+	Difficulty string      `json:"difficulty"`
 }
 
 type encounter struct {
@@ -95,19 +96,19 @@ type encounter struct {
 }
 
 type character struct {
-	Name    string         `json:"name"`
-	Realm   string         `json:"realm"`
-	SluggedRealm string `json:"slugged_realm"`
-	Class   int            `json:"class"`
-	Race    int            `json:"race"`
-	Stats   Stats         `json:"stats"`
-	Gender  int            `json:"gender"`
-	Level   int            `json:"level"`
-	Avatar  string         `json:"avatar"`
-	Main    string         `json:"main"`
-	Faction int            `json:"faction"`
-	Spec    specialization `json:"spec"`
-	Items   items          `json:"items"`
+	Name         string         `json:"name"`
+	Realm        string         `json:"realm"`
+	SluggedRealm string         `json:"slugged_realm"`
+	Class        int            `json:"class"`
+	Race         int            `json:"race"`
+	Stats        Stats          `json:"stats"`
+	Gender       int            `json:"gender"`
+	Level        int            `json:"level"`
+	Avatar       string         `json:"avatar"`
+	Main         string         `json:"main"`
+	Faction      int            `json:"faction"`
+	Spec         specialization `json:"spec"`
+	Items        items          `json:"items"`
 }
 
 type specialization struct {
@@ -116,55 +117,55 @@ type specialization struct {
 	BackgroundImage string       `json:"backgroundImage"`
 	Icon            string       `json:"icon"`
 	Description     string       `json:"description"`
-	MasterySpellID 	int 			`json:"mastery_spell_id"`
+	MasterySpellID  int          `json:"mastery_spell_id"`
 	Order           int          `json:"order"`
 	Talents         []talentTier `json:"talents"`
 }
 
 type Stats struct {
-	Health int `json:"health"`
-	PowerType string `json:"powerType"`
-	Power int `json:"power"`
-	Str int `json:"str"`
-	Agi int `json:"agi"`
-	Int int `json:"int"`
-	Sta int `json:"sta"`
-	SpeedRating float32 `json:"speedRating"`
-	SpeedRatingBonus float32 `json:"speedRatingBonus"`
-	Crit float32 `json:"crit"`
-	CritRating int `json:"critRating"`
-	Haste float32 `json:"haste"`
-	HasteRating int `json:"hasteRating"`
-	HasteRatingPercent float32 `json:"hasteRatingPercent"`
-	Mastery float32 `json:"mastery"`
-	MasteryRating int `json:"masteryRating"`
-	Leech float32 `json:"leech"`
-	LeechRating float32 `json:"leechRating"`
-	LeechRatingBonus float32 `json:"leechRatingBonus"`
-	Versatility int `json:"versatility"`
-	VersatilityDamageDoneBonus float32 `json:"versatilityDamageDoneBonus"`
+	Health                      int     `json:"health"`
+	PowerType                   string  `json:"powerType"`
+	Power                       int     `json:"power"`
+	Str                         int     `json:"str"`
+	Agi                         int     `json:"agi"`
+	Int                         int     `json:"int"`
+	Sta                         int     `json:"sta"`
+	SpeedRating                 float32 `json:"speedRating"`
+	SpeedRatingBonus            float32 `json:"speedRatingBonus"`
+	Crit                        float32 `json:"crit"`
+	CritRating                  int     `json:"critRating"`
+	Haste                       float32 `json:"haste"`
+	HasteRating                 int     `json:"hasteRating"`
+	HasteRatingPercent          float32 `json:"hasteRatingPercent"`
+	Mastery                     float32 `json:"mastery"`
+	MasteryRating               int     `json:"masteryRating"`
+	Leech                       float32 `json:"leech"`
+	LeechRating                 float32 `json:"leechRating"`
+	LeechRatingBonus            float32 `json:"leechRatingBonus"`
+	Versatility                 int     `json:"versatility"`
+	VersatilityDamageDoneBonus  float32 `json:"versatilityDamageDoneBonus"`
 	VersatilityHealingDoneBonus float32 `json:"versatilityHealingDoneBonus"`
 	VersatilityDamageTakenBonus float32 `json:"versatilityDamageTakenBonus"`
-	AvoidanceRating float32 `json:"avoidanceRating"`
-	AvoidanceRatingBonus float32 `json:"avoidanceRatingBonus"`
-	SpellPen int `json:"spellPen"`
-	SpellCrit float32 `json:"spellCrit"`
-	SpellCritRating int `json:"spellCritRating"`
-	Armor int `json:"armor"`
-	Dodge float32 `json:"dodge"`
-	DodgeRating int `json:"dodgeRating"`
-	MainHandDmgMin float32 `json:"mainHandDmgMin"`
-	MainHandDmgMax float32 `json:"mainHandDmgMax"`
-	MainHandSpeed float32 `json:"mainHandSpeed"`
-	MainHandDps float32 `json:"mainHandDps"`
-	OffHandDmgMin float32 `json:"offHandDmgMin"`
-	OffHandDmgMax float32 `json:"offHandDmgMax"`
-	OffHandSpeed float32 `json:"offHandSpeed"`
-	OffHandDps float32 `json:"offHandDps"`
-	RangedDmgMin float32 `json:"offHandDmgMin"`
-	RangedDmgMax float32 `json:"offHandDmgMax"`
-	RangedSpeed float32 `json:"offHandSpeed"`
-	RangedDps float32 `json:"offHandDps"`
+	AvoidanceRating             float32 `json:"avoidanceRating"`
+	AvoidanceRatingBonus        float32 `json:"avoidanceRatingBonus"`
+	SpellPen                    int     `json:"spellPen"`
+	SpellCrit                   float32 `json:"spellCrit"`
+	SpellCritRating             int     `json:"spellCritRating"`
+	Armor                       int     `json:"armor"`
+	Dodge                       float32 `json:"dodge"`
+	DodgeRating                 int     `json:"dodgeRating"`
+	MainHandDmgMin              float32 `json:"mainHandDmgMin"`
+	MainHandDmgMax              float32 `json:"mainHandDmgMax"`
+	MainHandSpeed               float32 `json:"mainHandSpeed"`
+	MainHandDps                 float32 `json:"mainHandDps"`
+	OffHandDmgMin               float32 `json:"offHandDmgMin"`
+	OffHandDmgMax               float32 `json:"offHandDmgMax"`
+	OffHandSpeed                float32 `json:"offHandSpeed"`
+	OffHandDps                  float32 `json:"offHandDps"`
+	RangedDmgMin                float32 `json:"offHandDmgMin"`
+	RangedDmgMax                float32 `json:"offHandDmgMax"`
+	RangedSpeed                 float32 `json:"offHandSpeed"`
+	RangedDps                   float32 `json:"offHandDps"`
 }
 
 type talentTier struct {

@@ -95,11 +95,13 @@ func SetMainCharacter(w http.ResponseWriter, r *http.Request, id int, region str
 	HttpHelper.ReadFromRequest(w, r, &char)
 
 	didExist := false
-	for _, v := range chars.Chars{
-		if v.Name == char.Name { didExist = true }
+	for _, v := range chars.Chars {
+		if v.Name == char.Name {
+			didExist = true
+		}
 	}
 
-	if didExist{
+	if didExist {
 		w.WriteHeader(201)
 		char.Realm = slugify.Slugify(char.Realm)
 		char.Region = region

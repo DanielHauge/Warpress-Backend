@@ -78,7 +78,7 @@ var routes = Routes{
 		"Get Full Inspect view",
 		"GET",
 		"/personal/inspect/{region}/{realm}/{name}",
-HandleGetInspectFull,
+		HandleGetInspectFull,
 		nil,
 		Personal.Overview{},
 	},
@@ -190,9 +190,9 @@ HandleGetInspectFull,
 		"POST",
 		"/guild/weakauras",
 		RequireAuthentication(RequireOfficer(HandleAddWeakaura)),
-		struct{
-			Name string `json:"name"`
-			Link string `json:"link"`
+		struct {
+			Name   string `json:"name"`
+			Link   string `json:"link"`
 			Import string `json:"import"`
 		}{},
 		nil,
@@ -203,10 +203,10 @@ HandleGetInspectFull,
 		"/guild/weakauras",
 		RequireAuthentication(RequireOfficer(HandleEditWeakaura)),
 		struct {
-			Name string `json:"name"`
-			Link string `json:"link"`
+			Name   string `json:"name"`
+			Link   string `json:"link"`
 			Import string `json:"import"`
-			Id int `json:"id"`
+			Id     int    `json:"id"`
 		}{},
 		nil,
 	},
@@ -233,8 +233,8 @@ HandleGetInspectFull,
 		"POST",
 		"/guild/addon",
 		RequireAuthentication(RequireOfficer(HandleAddAddon)),
-		struct{
-			Name string `json:"name"`
+		struct {
+			Name       string `json:"name"`
 			TwitchLink string `json:"twitch_link"`
 		}{},
 		nil,
@@ -244,10 +244,10 @@ HandleGetInspectFull,
 		"PUT",
 		"/guild/addon",
 		RequireAuthentication(RequireOfficer(HandleEditAddon)),
-		struct{
-			Name string `json:"name"`
+		struct {
+			Name       string `json:"name"`
 			TwitchLink string `json:"twitch_link"`
-			Id int `json:"id"`
+			Id         int    `json:"id"`
 		}{},
 		nil,
 	},

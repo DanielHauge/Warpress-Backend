@@ -1,4 +1,4 @@
-FROM golang:jessie
+FROM golang:jessie as build-stage
 WORKDIR /go
 # RUN go get ...
 RUN go get github.com/gorilla/mux
@@ -25,8 +25,14 @@ RUN go get github.com/pkg/errors
 # Copy the server code into the container
 COPY . /go
 
-EXPOSE 443
-EXPOSE 80
 
 RUN go build
+
+# Production
+FROM golang:jessie as production-stage
+WORKDIR /go
+COPY --from=build-stage /go/go /go/go
+COPY --from=build-stage /go/TestCerts /go
+EXPOSE 443
+EXPOSE 80
 ENTRYPOINt ["./go"]

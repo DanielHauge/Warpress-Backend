@@ -10,8 +10,8 @@ import (
 
 func HandleAddAddon(w http.ResponseWriter, r *http.Request, guildid int) {
 
-	var Addon struct{
-		Name string `json:"name"`
+	var Addon struct {
+		Name       string `json:"name"`
 		TwitchLink string `json:"twitch_link"`
 	}
 	ReadFromRequest(w, r, &Addon)
@@ -27,10 +27,10 @@ func HandleAddAddon(w http.ResponseWriter, r *http.Request, guildid int) {
 
 func HandleEditAddon(w http.ResponseWriter, r *http.Request, guildid int) {
 
-	var Addon struct{
-		Name string `json:"name"`
+	var Addon struct {
+		Name       string `json:"name"`
 		TwitchLink string `json:"twitch_link"`
-		Id int `json:"id"`
+		Id         int    `json:"id"`
 	}
 	ReadFromRequest(w, r, &Addon)
 
@@ -61,7 +61,7 @@ func HandleDeleteAddon(w http.ResponseWriter, r *http.Request, guildid int) {
 func HandleGetAddon(w http.ResponseWriter, r *http.Request, guildid int) {
 
 	addons, e := Postgres.GetAddon(guildid)
-	if e != nil{
+	if e != nil {
 		InterErrorHeader(w, e, "Cannot get addons", GetStatusCodeByError(e))
 		return
 	}

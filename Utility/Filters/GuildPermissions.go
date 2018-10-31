@@ -32,7 +32,7 @@ func RequireGuildMaster(HandleFunction func(w http.ResponseWriter, r *http.Reque
 				guildwithmembers, _ := Result.Obj.(*BlizzardOpenAPI.GuildWithMembers)
 				isGM := false
 				for _, member := range guildwithmembers.Members {
-					if /*member.Rank == 0 &&  */member.Character.Name == charactername { // TODO: make guild master only.
+					if /*member.Rank == 0 &&  */ member.Character.Name == charactername { // TODO: make guild master only.
 						isGM = true
 						break
 					}

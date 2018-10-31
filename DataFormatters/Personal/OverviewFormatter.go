@@ -54,7 +54,7 @@ func fillUpPersonal(blizzard BlizzardOpenAPI.FullCharInfo, raider Raider_io.Char
 	profile.Character.Main = strings.Replace(blizzard.Thumbnail, "-avatar.", "-main.", 1)
 	profile.Character.Faction = blizzard.Faction
 	profile.Character.Spec = findAndFormatActiveSpec(blizzard)
-	profile.Character.Spec.MasterySpellID = getMasteryID(profile.Character.Class ,profile.Character.Spec.Name)
+	profile.Character.Spec.MasterySpellID = getMasteryID(profile.Character.Class, profile.Character.Spec.Name)
 	profile.Character.Items = formatItems(blizzard.Items)
 	profile.Character.Stats = formatStats(blizzard.Stats)
 	profile.Guild.Name = blizzard.Guild.Name
@@ -69,7 +69,7 @@ func fillUpPersonal(blizzard BlizzardOpenAPI.FullCharInfo, raider Raider_io.Char
 	profile.RaiderIOProfile.MythicPlusRecentRuns = formatRuns(raider.MythicPlusRecentRuns)
 	profile.RaiderIOProfile.MythicPlusWeeklyHighestLevelRuns = formatRuns(raider.MythicPlusWeeklyHighestLevelRuns)
 }
-func getMasteryID(class int,spec string) int {
+func getMasteryID(class int, spec string) int {
 
 	result := -1
 
@@ -190,10 +190,6 @@ func getMasteryID(class int,spec string) int {
 	default:
 		return 1
 
-
-
-
-	
 	}
 
 	return result
@@ -347,13 +343,13 @@ func formatEncounters(encounters []WarcraftLogs.Encounter) []dificultyParse {
 		}
 	}
 
-	for i := range mythicSpecs{
+	for i := range mythicSpecs {
 		mythic.Specs = append(mythic.Specs, i)
 	}
-	for i := range heroicSpecs{
+	for i := range heroicSpecs {
 		heroic.Specs = append(heroic.Specs, i)
 	}
-	for i := range normalSpecs{
+	for i := range normalSpecs {
 		normal.Specs = append(normal.Specs, i)
 	}
 
@@ -369,7 +365,6 @@ func formatEncounters(encounters []WarcraftLogs.Encounter) []dificultyParse {
 		result = append(result, normal)
 	}
 
-
 	return result
 }
 func formatEmblemFromGuild(input BlizzardOpenAPI.Emblem) emblem {
@@ -384,7 +379,7 @@ func formatEmblemFromGuild(input BlizzardOpenAPI.Emblem) emblem {
 		BackgroundColorId: input.BorderColorId,
 	}
 }
-func formatItems(input BlizzardOpenAPI.Items) (items) {
+func formatItems(input BlizzardOpenAPI.Items) items {
 	head := formatItem(input.Head)
 	neck := formatItem(input.Neck)
 	shoulder := formatItem(input.Shoulder)
@@ -406,7 +401,7 @@ func formatItems(input BlizzardOpenAPI.Items) (items) {
 
 }
 
-func formatItem(input BlizzardOpenAPI.Item) (item) {
+func formatItem(input BlizzardOpenAPI.Item) item {
 
 	result := item{
 		Id:          input.Id,
@@ -456,7 +451,7 @@ func fetchAll(id int, name string, realm string, region string) (BlizzardOpenAPI
 
 	go func() {
 		blizzChar, e = BlizzardOpenAPI.GetBlizzardChar(realm, name, region)
-		if id != 0{
+		if id != 0 {
 			go Redis.Set("GUILD:"+strconv.Itoa(id), blizzChar.Guild.Name+":"+slugify.Slugify(blizzChar.Guild.Realm)+":"+region)
 		}
 		wg.Done()

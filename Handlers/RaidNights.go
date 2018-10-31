@@ -64,7 +64,7 @@ func HandleDeleteRaidNight(w http.ResponseWriter, r *http.Request, guildid int) 
 func HandleGetRaidNights(w http.ResponseWriter, r *http.Request, guildid int) {
 
 	nights, e := Postgres.GetRaidNights(guildid)
-	if e != nil{
+	if e != nil {
 		InterErrorHeader(w, e, "Cannot get raidnights", GetStatusCodeByError(e))
 		return
 	}
