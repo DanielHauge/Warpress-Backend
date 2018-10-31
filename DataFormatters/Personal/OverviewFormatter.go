@@ -44,6 +44,7 @@ func FetchFullInspect(name string, realm string, region string, profile *interfa
 
 func fillUpPersonal(blizzard BlizzardOpenAPI.FullCharInfo, raider Raider_io.CharacterProfile, encounters WarcraftLogs.Encounters, rank Wowprogress.GuildRank, profile *Overview) {
 	profile.Character.Realm = blizzard.Realm
+	profile.Character.SluggedRealm = slugify.Slugify(blizzard.Realm)
 	profile.Character.Name = blizzard.Name
 	profile.Character.Class = blizzard.Class
 	profile.Character.Race = blizzard.Race
@@ -53,7 +54,9 @@ func fillUpPersonal(blizzard BlizzardOpenAPI.FullCharInfo, raider Raider_io.Char
 	profile.Character.Main = strings.Replace(blizzard.Thumbnail, "-avatar.", "-main.", 1)
 	profile.Character.Faction = blizzard.Faction
 	profile.Character.Spec = findAndFormatActiveSpec(blizzard)
-	profile.Character.Items, profile.Character.Stats = formatItems(blizzard.Items)
+	profile.Character.Spec.MasterySpellID = getMasteryID(profile.Character.Class ,profile.Character.Spec.Name)
+	profile.Character.Items = formatItems(blizzard.Items)
+	profile.Character.Stats = formatStats(blizzard.Stats)
 	profile.Guild.Name = blizzard.Guild.Name
 	profile.Guild.Realm = blizzard.Guild.Realm
 	profile.Guild.Members = blizzard.Guild.Members
@@ -65,6 +68,184 @@ func fillUpPersonal(blizzard BlizzardOpenAPI.FullCharInfo, raider Raider_io.Char
 	profile.RaiderIOProfile.MythicPlusHighestLevelRuns = formatRuns(raider.MythicPlusHighestLevelRuns)
 	profile.RaiderIOProfile.MythicPlusRecentRuns = formatRuns(raider.MythicPlusRecentRuns)
 	profile.RaiderIOProfile.MythicPlusWeeklyHighestLevelRuns = formatRuns(raider.MythicPlusWeeklyHighestLevelRuns)
+}
+func getMasteryID(class int,spec string) int {
+
+	result := -1
+
+	switch class {
+	case 1: // Warrior
+		switch spec {
+		case "Arms":
+			result = 76838
+		case "Fury":
+			return 76856
+		case "Protection":
+			return 76857
+		}
+
+	case 2: // Paladin
+
+		switch spec {
+		case "Retribution":
+			result = 267316
+		case "Protection":
+			result = 76671
+		case "Holy":
+			result = 183997
+		}
+
+	case 3: // Hunter
+		switch spec {
+		case "Beast Mastery":
+			return 76657
+		case "Marksmanship":
+			return 193468
+		case "Survival":
+			return 191334
+		}
+	case 4: // Rogue
+		switch spec {
+		case "Assassination":
+			result = 76803
+		case "Outlaw":
+			result = 76806
+		case "Subtlety":
+			result = 76808
+		}
+	case 5: // Priest
+		switch spec {
+		case "Discipline":
+			result = 271534
+		case "Holy":
+			result = 77485
+		case "Shadow":
+			result = 77486
+		}
+	case 6: // Death Knight
+		switch spec {
+		case "Frost":
+			result = 77514
+		case "Blood":
+			return 77513
+		case "Unholy":
+			return 77515
+		}
+	case 7: // Shaman
+		switch spec {
+		case "Elemental":
+			result = 168534
+		case "Enhancement":
+			result = 77223
+		case "Restoration":
+			result = 77226
+		}
+	case 8: // Mage
+		switch spec {
+		case "Arcane":
+			result = 190740
+		case "Fire":
+			result = 12846
+		case "Frost":
+			result = 76613
+		}
+	case 9: // Warlock
+		switch spec {
+		case "Affliction":
+			result = 77215
+		case "Demonology":
+			result = 77219
+		case "Destruction":
+			result = 77220
+		}
+	case 10: // Monk
+		switch spec {
+		case "Brewmaster":
+			result = 117906
+		case "Mistweaver":
+			result = 117907
+		case "Windwalker":
+			result = 115636
+		}
+	case 11: // Druid
+		switch spec {
+		case "Balance":
+			return 77492
+		case "Feral":
+			return 77493
+		case "Guardian":
+			return 155783
+		case "Restoration":
+			return 77495
+		}
+
+	case 12: // Demon Hunter
+		switch spec {
+		case "Havoc":
+			result = 185164
+		case "Vengeance":
+			return 203747
+		}
+
+	default:
+		return 1
+
+
+
+
+	
+	}
+
+	return result
+}
+func formatStats(stats BlizzardOpenAPI.Stats) Stats {
+
+	return Stats{
+		stats.Health,
+		stats.PowerType,
+		stats.Power,
+		stats.Str,
+		stats.Agi,
+		stats.Int,
+		stats.Sta,
+		stats.SpeedRating,
+		stats.SpeedRatingBonus,
+		stats.Crit,
+		stats.CritRating,
+		stats.Haste,
+		stats.HasteRating,
+		stats.HasteRatingPercent,
+		stats.Mastery,
+		stats.MasteryRating,
+		stats.Leech,
+		stats.LeechRating,
+		stats.LeechRatingBonus,
+		stats.Versatility,
+		stats.VersatilityDamageDoneBonus,
+		stats.VersatilityHealingDoneBonus,
+		stats.VersatilityDamageTakenBonus,
+		stats.AvoidanceRating,
+		stats.AvoidanceRatingBonus,
+		stats.SpellPen,
+		stats.SpellCrit,
+		stats.SpellCritRating,
+		stats.Armor,
+		stats.Dodge,
+		stats.DodgeRating,
+		stats.MainHandDmgMin,
+		stats.MainHandDmgMax,
+		stats.MainHandSpeed,
+		stats.MainHandDps,
+		stats.OffHandDmgMin,
+		stats.OffHandDmgMax,
+		stats.OffHandSpeed,
+		stats.OffHandDps,
+		stats.RangedDmgMin,
+		stats.RangedDmgMax,
+		stats.RangedSpeed,
+		stats.RangedDps,
+	}
+
 }
 func formatRuns(runs []Raider_io.DungeonRun) []dungeonRun {
 	var result []dungeonRun
@@ -106,27 +287,90 @@ func formatMythicRanks(ranks Raider_io.MythicRanks) mythicRanks {
 func formatRank(input Raider_io.Rank) rank {
 	return rank{input.World, input.Region, input.World}
 }
-func formatEncounters(encounters []WarcraftLogs.Encounter) []encounter {
-	var enc []encounter
+func formatEncounters(encounters []WarcraftLogs.Encounter) []dificultyParse {
+	var mythic dificultyParse
+	mythic.Difficulty = "Mythic"
+	var heroic dificultyParse
+	heroic.Difficulty = "Heroic"
+	var normal dificultyParse
+	normal.Difficulty = "Normal"
+	mythicSpecs := map[string]bool{}
+	heroicSpecs := map[string]bool{}
+	normalSpecs := map[string]bool{}
+
 	for _, v := range encounters {
-		enc = append(enc, encounter{
-			v.EncounterID,
-			v.EncounterName,
-			v.Class,
-			v.Spec,
-			v.Rank,
-			v.OutOf,
-			v.Duration,
-			"https://www.warcraftlogs.com/reports/" + v.ReportID,
-			v.Difficulty,
-			v.CharacterName,
-			v.Server,
-			v.Percentile,
-			v.ItemLevelKeyOrPath,
-			v.Total,
-		})
+		if v.Difficulty == 5 {
+			mythicSpecs[v.Spec] = true
+			mythic.Logs = append(mythic.Logs, encounter{
+				v.EncounterID,
+				v.EncounterName,
+				v.Spec,
+				v.Rank,
+				v.OutOf,
+				v.Duration,
+				"https://www.warcraftlogs.com/reports/" + v.ReportID,
+				v.CharacterName,
+				v.Percentile,
+				v.ItemLevelKeyOrPath,
+				v.Total,
+			})
+		} else if v.Difficulty == 4 {
+			heroicSpecs[v.Spec] = true
+			heroic.Logs = append(heroic.Logs, encounter{
+				v.EncounterID,
+				v.EncounterName,
+				v.Spec,
+				v.Rank,
+				v.OutOf,
+				v.Duration,
+				"https://www.warcraftlogs.com/reports/" + v.ReportID,
+				v.CharacterName,
+				v.Percentile,
+				v.ItemLevelKeyOrPath,
+				v.Total,
+			})
+		} else if v.Difficulty == 3 {
+			normalSpecs[v.Spec] = true
+			normal.Logs = append(normal.Logs, encounter{
+				v.EncounterID,
+				v.EncounterName,
+				v.Spec,
+				v.Rank,
+				v.OutOf,
+				v.Duration,
+				"https://www.warcraftlogs.com/reports/" + v.ReportID,
+				v.CharacterName,
+				v.Percentile,
+				v.ItemLevelKeyOrPath,
+				v.Total,
+			})
+		}
 	}
-	return enc
+
+	for i := range mythicSpecs{
+		mythic.Specs = append(mythic.Specs, i)
+	}
+	for i := range heroicSpecs{
+		heroic.Specs = append(heroic.Specs, i)
+	}
+	for i := range normalSpecs{
+		normal.Specs = append(normal.Specs, i)
+	}
+
+	var result []dificultyParse
+
+	if len(mythic.Logs) != 0 {
+		result = append(result, mythic)
+	}
+	if len(heroic.Logs) != 0 {
+		result = append(result, heroic)
+	}
+	if len(normal.Logs) != 0 {
+		result = append(result, normal)
+	}
+
+
+	return result
 }
 func formatEmblemFromGuild(input BlizzardOpenAPI.Emblem) emblem {
 	return emblem{
@@ -140,58 +384,29 @@ func formatEmblemFromGuild(input BlizzardOpenAPI.Emblem) emblem {
 		BackgroundColorId: input.BorderColorId,
 	}
 }
-func formatItems(input BlizzardOpenAPI.Items) (items, []stat) {
-	var AllStats [][]stat
-	head, stat := formatItem(input.Head)
-	AllStats = append(AllStats, stat)
-	neck, stat := formatItem(input.Neck)
-	AllStats = append(AllStats, stat)
-	shoulder, stat := formatItem(input.Shoulder)
-	AllStats = append(AllStats, stat)
-	back, stat := formatItem(input.Back)
-	AllStats = append(AllStats, stat)
-	check, stat := formatItem(input.Chest)
-	AllStats = append(AllStats, stat)
-	wrist, stat := formatItem(input.Wrist)
-	AllStats = append(AllStats, stat)
-	hands, stat := formatItem(input.Hands)
-	AllStats = append(AllStats, stat)
-	waist, stat := formatItem(input.Waist)
-	AllStats = append(AllStats, stat)
-	legs, stat := formatItem(input.Legs)
-	AllStats = append(AllStats, stat)
-	feet, stat := formatItem(input.Feet)
-	AllStats = append(AllStats, stat)
-	finger1, stat := formatItem(input.Finger1)
-	AllStats = append(AllStats, stat)
-	finger2, stat := formatItem(input.Finger2)
-	AllStats = append(AllStats, stat)
-	trinket1, stat := formatItem(input.Trinket1)
-	AllStats = append(AllStats, stat)
-	trinket2, stat := formatItem(input.Trinket2)
-	AllStats = append(AllStats, stat)
-	main, stat := formatItem(input.MainHand)
-	AllStats = append(AllStats, stat)
-	off, stat := formatItem(input.OffHand)
-	AllStats = append(AllStats, stat)
+func formatItems(input BlizzardOpenAPI.Items) (items) {
+	head := formatItem(input.Head)
+	neck := formatItem(input.Neck)
+	shoulder := formatItem(input.Shoulder)
+	back := formatItem(input.Back)
+	check := formatItem(input.Chest)
+	wrist := formatItem(input.Wrist)
+	hands := formatItem(input.Hands)
+	waist := formatItem(input.Waist)
+	legs := formatItem(input.Legs)
+	feet := formatItem(input.Feet)
+	finger1 := formatItem(input.Finger1)
+	finger2 := formatItem(input.Finger2)
+	trinket1 := formatItem(input.Trinket1)
+	trinket2 := formatItem(input.Trinket2)
+	main := formatItem(input.MainHand)
+	off := formatItem(input.OffHand)
 	i := items{input.AverageItemLevel, input.AverItemLevelEquipped, head, neck, shoulder, back, check, wrist, hands, waist, legs, feet, finger1, finger2, trinket1, trinket2, main, off}
-	return i, aggregateStats(AllStats)
+	return i
 
 }
-func aggregateStats(stats [][]stat) []stat {
-	st := map[int]int{}
-	for _, e := range stats {
-		for _, d := range e {
-			st[d.Stat] = st[d.Stat] + d.Amount
-		}
-	}
-	var result []stat
-	for statid, amount := range st {
-		result = append(result, stat{statid, amount})
-	}
-	return result
-}
-func formatItem(input BlizzardOpenAPI.Item) (item, []stat) {
+
+func formatItem(input BlizzardOpenAPI.Item) (item) {
 
 	result := item{
 		Id:          input.Id,
@@ -208,12 +423,8 @@ func formatItem(input BlizzardOpenAPI.Item) (item, []stat) {
 	for _, e := range input.AzeriteEmpoweredItem.AzeritePowers {
 		result.AzeriteEmpoweredItem = append(result.AzeriteEmpoweredItem, azeritePower{e.Id, e.Tier, e.SpellId, e.BonusListId})
 	}
-	var stats []stat
-	for _, s := range input.Stats {
-		stats = append(stats, stat{s.Stat, s.Amount})
-	}
-	stats = append(stats, stat{-1, input.Armor})
-	return result, stats
+
+	return result
 }
 func findAndFormatActiveSpec(info BlizzardOpenAPI.FullCharInfo) specialization {
 	for _, e := range info.Talents {

@@ -21,7 +21,7 @@ func FetchFullGuildOverview(id int, result *interface{}) error {
 	}
 
 	FullGuildOverview.Name = Guild.Name
-	FullGuildOverview.Realm = Guild.Realm
+	FullGuildOverview.SluggedRealm = Guild.Realm
 	Progression, e := Raider_io.GetRaiderIOGuild(Guild.Region, Guild.Realm, Guild.Name)
 
 	FullGuildOverview.Progress = Progression.RaidProgression
@@ -33,7 +33,7 @@ func FetchFullGuildOverview(id int, result *interface{}) error {
 	FullGuildOverview.WarcraftlogReports = WarcraftlogsReports
 
 	Roster, e := BlizzardOpenAPI.GetBlizzardGuildMembers(Guild.Name, Guild.Realm, Guild.Region)
-
+	FullGuildOverview.Realm = Roster.Realm
 	var guildmembers []Member
 	for _, v := range Roster.Members {
 		if v.Rank == Guild.Trial || v.Rank == Guild.Raider || v.Rank == Guild.Officer || v.Rank == 0 {

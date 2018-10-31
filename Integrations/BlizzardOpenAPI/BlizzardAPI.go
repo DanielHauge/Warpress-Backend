@@ -16,7 +16,7 @@ var json = jsoniter.ConfigFastest
 
 func GetBlizzardChar(realm string, name string, region string) (FullCharInfo, error) {
 
-	url := "https://" + region + ".api.battle.net/wow/" + "character/" + realm + "/" + name + "?fields=guild+items+talents&locale=en_GB&apikey=" + os.Getenv("BLIZZARD_APIKEY")
+	url := "https://" + region + ".api.battle.net/wow/" + "character/" + realm + "/" + name + "?fields=guild+items+talents+stats&locale=en_GB&apikey=" + os.Getenv("BLIZZARD_APIKEY")
 	log.WithFields(logrus.Fields{"Character": name, "Realm": realm, "Region": region, "Url": url}).Info("Gojaxing Blizzard Open for character")
 	var fullChar FullCharInfo
 	now := time.Now()

@@ -43,3 +43,5 @@ func GetGuildByComposite(name string, realm string, region string) (Guild, error
 	}
 	return res, e
 }
+
+// TODO: change guildranks settings

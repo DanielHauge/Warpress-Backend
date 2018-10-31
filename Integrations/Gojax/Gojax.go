@@ -16,7 +16,7 @@ func Get(url string, obj interface{}) error {
 
 	e = json.NewDecoder(resp.Body).Decode(&obj)
 	if e != nil {
-		log.WithLocation().WithError(e).WithField("Struct", obj).Error("json decoding failed")
+		log.WithLocation().WithError(e).WithField("Struct", obj).WithField("URL", url).Error("json decoding failed")
 	}
 
 	return e

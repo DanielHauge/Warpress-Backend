@@ -25,7 +25,7 @@ func GetCharactersForRegistration(w http.ResponseWriter, r *http.Request, id int
 	result := <-channel
 
 	if result.Error == nil {
-		msg, err := json.Marshal(result)
+		msg, err := json.Marshal(result.Obj)
 		if err != nil {
 			log.WithLocation().WithError(err).Error("was not able to marshal chars")
 			w.WriteHeader(500)
@@ -89,7 +89,7 @@ func SetMainCharacter(w http.ResponseWriter, r *http.Request, id int, region str
 
 	Redis.DeleteKey("MAIN:"+ids, "PERSONAL:"+ids, "PERSONAL/RAIDERIO:"+ids, "PERSONAL/LOGS:"+ids, "PERSONAL/BLIZZARD:"+ids, "PERSONAL/IMPROVEMENT:"+ids, "GUILD/OVERVIEW:"+ids, "GUILD:"+ids)
 	var chars wowCharacters
-	_ := Redis.CacheGetResult("CHARS:"+ids, &chars)
+	Redis.CacheGetResult("CHARS:"+ids, &chars)
 
 	var char CharacterMinimal
 	HttpHelper.ReadFromRequest(w, r, &char)

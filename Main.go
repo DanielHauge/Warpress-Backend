@@ -15,8 +15,13 @@ var json = jsoniter.ConfigFastest
 // LatentTODO: Setup service for API and make that running
 
 
-// TODO: Fanger ikke guildens warcraft reports? Done????
 // TODO: Warcraftlogs parsing, total: dps -> Men hvad med når det en healing rank?
+
+
+// TODO: Postgres migration 100%
+// TODO: Fileserver med pictures
+// TODO: Make shared docker repo
+// TODO: CI for stuff
 
 func main() {
 
@@ -37,7 +42,6 @@ func main() {
 	} else {
 		StartProduction(handler)
 	}
-
 }
 
 func StartLocalhost(handler http.Handler) {
