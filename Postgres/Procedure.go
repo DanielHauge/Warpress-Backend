@@ -100,3 +100,33 @@ func Execute(query string, args ...interface{}) (sql.Result, error) {
 
 	return res, err
 }
+
+func QueryExist(query string, args ...interface{}) (bool, error){
+
+	q := "SELECT EXISTS("+query+");"
+
+	statement, err := db.Prepare(q)
+	defer statement.Close()
+	if err != nil {
+		log.WithLocation().WithError(err).WithField("Query", query).Error("Could not prepare statement")
+	}
+
+	var exists bool
+
+	err = statement.QueryRow(args...).Scan(&exists)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			log.WithField("Query", query).WithField("Arguments", args).Info("Could not find any results")
+		} else {
+			log.WithField("Query", query).WithField("Arguments", args).WithError(err).Error("Could not map struct from row")
+		}
+	}
+
+	log.WithFields(logrus.Fields{
+		"Postgres":  "Query Single",
+		"Query":     query,
+		"Arguments": args,
+	}).Info("Postgress query")
+
+	return exists, err
+}

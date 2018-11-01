@@ -18,6 +18,14 @@ func RegisterGuild(name string, realm string, region string, officer int, raider
 	return e
 }
 
+func UpdateGuild(name string, realm string, region string, officer int, raider int, trial int) error {
+
+	_, e := Execute("UPDATE guild "+
+		"SET officerrank = $1, raiderrank = $2, trialrank = $3 "+
+		"WHERE name = $4 AND realm = $5 AND region = $6;", officer, raider, trial, name, realm, region)
+	return e
+}
+
 func GetGuildByID(guildid int) (Guild, error) {
 	var res Guild
 	e := QuerySingle("SELECT name, realm, region, officerrank, raiderrank, trialrank, guildid FROM guild WHERE guildid=$1;",

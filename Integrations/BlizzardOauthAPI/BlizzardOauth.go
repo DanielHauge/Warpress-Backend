@@ -5,10 +5,12 @@ import (
 	log "../../Utility/Logrus"
 	"../../Utility/Monitoring"
 	"./BattleNetOauth"
+	postgres "../../Postgres/PreparedProcedures"
 	"context"
 	"golang.org/x/oauth2"
 	"net/http"
 	"os"
+	"sort"
 	"strconv"
 )
 
@@ -55,6 +57,16 @@ func HandleOauthCallback(w http.ResponseWriter, r *http.Request) {
 	user, _, e := client.Account().User()
 	log.WithField("User", user.ID).WithField("Token", token).Debug("Token")
 
+	var wowchars wowCharacters
+	chars, _, _ := client.Profile().WOW()
+	sort.Sort(bnet.ByLevel(chars.Characters))
+	if len(chars.Characters) > 4 {
+		wowchars = wowCharacters{chars.Characters[0:5]}
+	} else {
+		wowchars = wowCharacters{chars.Characters[0:]}
+	}
+	Redis.CacheSetResult("CHARS:"+strconv.Itoa(user.ID), wowchars)
+
 	Monitoring.LoginInc()
 
 	// Caches the AccessToken in redis for later validation.
@@ -63,7 +75,7 @@ func HandleOauthCallback(w http.ResponseWriter, r *http.Request) {
 	setAccessTokenCookieOnClient(user.ID, region, token, w)
 
 	// If user.id exists in database, fetch data and redirect to login with that pass and accesstoken.
-	isRegistered := Redis.DoesKeyExist("MAIN:" + strconv.Itoa(user.ID))
+	isRegistered, e := postgres.MainExists(user.ID)
 	if isRegistered {
 		http.Redirect(w, r, "https://wowhub.io/#/", http.StatusPermanentRedirect)
 	} else { // Redirect to register

@@ -49,8 +49,8 @@ var routes = Routes{
 		"/main",
 		RequireAuthentication(BlizzardOauthAPI.SetMainCharacter),
 		struct {
-			Name   string
-			Reealm string
+			Name   string `json:"name"`
+			Reealm string `json:"reealm"`
 		}{},
 		nil,
 	},
@@ -61,9 +61,9 @@ var routes = Routes{
 		RequireAuthentication(BlizzardOauthAPI.GetMainCharacter),
 		nil,
 		struct {
-			Name   string
-			Reealm string
-			Region string
+			Name   string `json:"name"`
+			Reealm string `json:"realm"`
+			Region string `json:"region"`
 		}{},
 	},
 	Route{
@@ -135,6 +135,18 @@ var routes = Routes{
 		"POST",
 		"/guild",
 		RequireAuthentication(RequireGuildMaster(HandleGuildRegistration)),
+		struct {
+			Officerrank int `json:"officerrank"`
+			Raiderrank  int `json:"raiderrank"`
+			Trialrank   int `json:"trialrank"`
+		}{},
+		nil,
+	},
+	Route{
+		"Update Guild",
+		"PUT",
+		"/guild",
+		RequireAuthentication(RequireGuildMaster(HandleGuildUpdate)),
 		struct {
 			Officerrank int `json:"officerrank"`
 			Raiderrank  int `json:"raiderrank"`

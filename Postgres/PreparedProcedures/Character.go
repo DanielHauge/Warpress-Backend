@@ -23,3 +23,7 @@ func GetMain(id int) (string, string, string, error) {
 	}
 	return res.Name, res.Realm, res.Region, e
 }
+
+func MainExists(id int) (bool, error) {
+	return QueryExist("SELECT * FROM main WHERE accountid=$1", id)
+}

@@ -62,6 +62,28 @@ func getAccessTokenCookieFromClient(r *http.Request) (oauth2.Token, int, string,
 	return oauth2.Token{}, 0, "", err
 }
 
+func DeleteCookies(w http.ResponseWriter){
+	at := &http.Cookie{
+		Name:     "WowHubAccessToken",
+		Value:    "",
+		Expires:  time.Unix(0, 0),
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   true,
+	}
+	oauth := &http.Cookie{
+		Name:     "oauthstate",
+		Value:    "",
+		Expires:  time.Unix(0,0),
+		HttpOnly: true,
+		Secure:   true,
+		Path:     "/bnet/auth/callback",
+	}
+
+	http.SetCookie(w, at)
+	http.SetCookie(w, oauth)
+}
+
 func setStateOauthCookie(w http.ResponseWriter, region string) string {
 	var expiration = time.Now().Add(30 * 24 * time.Hour)
 	b := make([]byte, 16)

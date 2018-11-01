@@ -3,6 +3,7 @@ package main
 import (
 	"./DataFormatters/Guild"
 	"./DataFormatters/Personal"
+	"./Integrations/BlizzardOauthAPI"
 	"./Integrations/BlizzardOpenAPI"
 	"./Integrations/Raider.io"
 	"./Integrations/WarcraftLogs"
@@ -241,10 +242,11 @@ func HandleGetGuildOverview(w http.ResponseWriter, r *http.Request, guildid int)
 func HandleLogout(w http.ResponseWriter, r *http.Request, id int, region string) {
 
 	e := Redis.DeleteKey("AT:" + strconv.Itoa(id))
+	BlizzardOauthAPI.DeleteCookies(w)
 	if e != nil {
 		InterErrorHeader(w, e, "Was not able to logout", GetStatusCodeByError(e))
 	} else {
-		SuccessHeader(w, []byte("\"message\":\"OK!\"}"))
+		SuccessHeader(w, []byte("{\"message\":\"OK!\"}"))
 	}
 
 }
@@ -275,6 +277,32 @@ func HandleGuildRegistration(w http.ResponseWriter, r *http.Request, id int, reg
 		return
 	}
 
-	SuccessHeader(w, []byte("\"message\":\"OK!\"}"))
+	SuccessHeader(w, []byte("{\"message\":\"OK!\"}"))
+
+}
+
+func HandleGuildUpdate(w http.ResponseWriter, r *http.Request, id int, region string, guildstring string){
+
+	split := strings.Split(guildstring, ":")
+	GuildFromRedis := struct {
+		Name   string
+		Realm  string
+		Region string
+	}{Name: split[0], Realm: split[1], Region: split[2]}
+
+	var Guild struct {
+		Officerrank int `json:"officerrank"`
+		Raiderrank  int `json:"raiderrank"`
+		Trialrank   int `json:"trialrank"`
+	}
+	HttpHelper.ReadFromRequest(w, r, &Guild)
+
+	e := Postgres.UpdateGuild(GuildFromRedis.Name, GuildFromRedis.Realm, GuildFromRedis.Region, Guild.Officerrank, Guild.Raiderrank, Guild.Trialrank)
+
+	if e != nil{
+		InterErrorHeader(w, e, "Was not able to update guild", GetStatusCodeByError(e))
+		return
+	}
+	SuccessHeader(w, []byte("{\"message\":\"OK!\"}"))
 
 }

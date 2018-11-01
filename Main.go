@@ -13,20 +13,17 @@ import (
 var json = jsoniter.ConfigFastest
 
 // LatentTODO: Setup service for API and make that running
+// LatentTODO: Fileserver med pictures
 
 // TODO: Warcraftlogs parsing, total: dps -> Men hvad med når det en healing rank?
 
-// TODO: Postgres migration 100%
-// TODO: Fileserver med pictures
-// TODO: Make shared docker repo
-// TODO: Preload cache on login!!! :D
 // TODO: CI for stuff
 
 func main() {
 
 	router := NewRouter()
 	handler := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:8080", "https://wowhub.io"},
+		AllowedOrigins:   []string{"http://localhost:8080", "https://wowhub.io", "https://wowhub.io/", "https://", "https://wowhub.io/*", "https://wowhub.io/#/*"},
 		AllowCredentials: true,
 		Debug:            false,
 	}).Handler(router)
