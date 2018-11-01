@@ -281,7 +281,7 @@ func formatMythicRanks(ranks Raider_io.MythicRanks) mythicRanks {
 	}
 }
 func formatRank(input Raider_io.Rank) rank {
-	return rank{input.World, input.Region, input.World}
+	return rank{input.World, input.Region, input.Realm}
 }
 func formatEncounters(encounters []WarcraftLogs.Encounter) []dificultyParse {
 	var mythic dificultyParse
@@ -304,7 +304,7 @@ func formatEncounters(encounters []WarcraftLogs.Encounter) []dificultyParse {
 				v.Rank,
 				v.OutOf,
 				v.Duration,
-				"https://www.warcraftlogs.com/reports/" + v.ReportID,
+				"https://www.warcraftlogs.com/reports/" + v.ReportID+"#fight="+strconv.Itoa(v.FightID),
 				v.CharacterName,
 				v.Percentile,
 				v.ItemLevelKeyOrPath,
@@ -319,7 +319,7 @@ func formatEncounters(encounters []WarcraftLogs.Encounter) []dificultyParse {
 				v.Rank,
 				v.OutOf,
 				v.Duration,
-				"https://www.warcraftlogs.com/reports/" + v.ReportID,
+				"https://www.warcraftlogs.com/reports/" + v.ReportID+"#fight="+strconv.Itoa(v.FightID),
 				v.CharacterName,
 				v.Percentile,
 				v.ItemLevelKeyOrPath,
@@ -334,7 +334,7 @@ func formatEncounters(encounters []WarcraftLogs.Encounter) []dificultyParse {
 				v.Rank,
 				v.OutOf,
 				v.Duration,
-				"https://www.warcraftlogs.com/reports/" + v.ReportID,
+				"https://www.warcraftlogs.com/reports/" + v.ReportID+"#fight="+strconv.Itoa(v.FightID),
 				v.CharacterName,
 				v.Percentile,
 				v.ItemLevelKeyOrPath,
@@ -460,7 +460,7 @@ func fetchAll(id int, name string, realm string, region string) (BlizzardOpenAPI
 
 	var raiderio Raider_io.CharacterProfile
 	go func() {
-		raiderio, e = Raider_io.GetRaiderIORank(Raider_io.CharInput{Name: name, Realm: realm, Region: region})
+		raiderio, e = Raider_io.GetRaiderIORank(name, realm, region)
 		wg.Done()
 	}()
 
@@ -490,7 +490,7 @@ func FetchRaiderioPersonal(id int, Profile *interface{}) error {
 		log.WithLocation().WithError(e).WithField("User", id).Error("There is no main registered to the user!")
 		return e
 	}
-	prof, e := Raider_io.GetRaiderIORank(Raider_io.CharInput{Name: name, Realm: realm, Region: region})
+	prof, e := Raider_io.GetRaiderIORank(name, realm, region)
 	copier.Copy(Profile, &prof)
 	return e
 }

@@ -6,16 +6,18 @@ import (
 	"../Gojax"
 	"github.com/json-iterator/go"
 	"github.com/sirupsen/logrus"
+	url2 "net/url"
 	"strings"
 	"time"
 )
 
 var json = jsoniter.ConfigFastest
 
-func GetRaiderIORank(input CharInput) (CharacterProfile, error) {
+func GetRaiderIORank(name string, realm string, region string) (CharacterProfile, error) {
 
-	url := "https://raider.io/api/v1/characters/profile?region=" + input.Region + "&realm=" + input.Realm + "&name=" + input.Name + "&fields=mythoc_plus_scores%2Cmythic_plus_ranks%2Cmythic_plus_recent_runs%2Cmythic_plus_highest_level_runs%2Cmythic_plus_weekly_highest_level_runs%2C"
-	log.WithFields(logrus.Fields{"Character": input.Name, "Realm": input.Realm, "Region": input.Region, "Url": url}).Info("Gojaxing Raider.io ranks for character")
+	url := "https://raider.io/api/v1/characters/profile?region="+region+"&realm="+realm+"&name="+url2.QueryEscape(name)+"&fields=mythic_plus_scores%2Cmythic_plus_ranks%2Cmythic_plus_recent_runs%2Cmythic_plus_highest_level_runs%2Cmythic_plus_weekly_highest_level_runs%2C"
+
+	log.WithFields(logrus.Fields{"Character": name, "Realm": realm, "Region": region, "Url": url}).Info("Gojaxing Raider.io ranks for character")
 	var rankings CharacterProfile
 	now := time.Now()
 	e := Gojax.Get(url, &rankings)

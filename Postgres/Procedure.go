@@ -85,11 +85,13 @@ func Execute(query string, args ...interface{}) (sql.Result, error) {
 	defer statement.Close()
 	if err != nil {
 		log.WithLocation().WithError(err).WithField("Query", query).Error("Could not prepare statement")
+		return nil, err
 	}
 
 	res, err := statement.Exec(args...)
 	if err != nil {
 		log.WithLocation().WithError(err).WithField("Query", query).Error("Could not Execute statement")
+		return nil, err
 	}
 	log.WithFields(logrus.Fields{
 		"Postgres":  "Execute",

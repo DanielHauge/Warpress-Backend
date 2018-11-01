@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	_ "github.com/lib/pq"
 	"os"
+	"time"
 )
 
 var db *sql.DB
@@ -20,7 +21,8 @@ func init() {
 	}
 
 	connectionPool.SetMaxIdleConns(1)
-	connectionPool.SetMaxOpenConns(10)
+	connectionPool.SetMaxOpenConns(5)
+	connectionPool.SetConnMaxLifetime(time.Hour)
 	db = connectionPool
 
 }
