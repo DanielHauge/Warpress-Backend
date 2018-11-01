@@ -1,11 +1,11 @@
 package BlizzardOauthAPI
 
 import (
+	postgres "../../Postgres/PreparedProcedures"
 	"../../Redis"
 	log "../../Utility/Logrus"
 	"../../Utility/Monitoring"
 	"./BattleNetOauth"
-	postgres "../../Postgres/PreparedProcedures"
 	"context"
 	"golang.org/x/oauth2"
 	"net/http"

@@ -62,7 +62,7 @@ func getAccessTokenCookieFromClient(r *http.Request) (oauth2.Token, int, string,
 	return oauth2.Token{}, 0, "", err
 }
 
-func DeleteCookies(w http.ResponseWriter){
+func DeleteCookies(w http.ResponseWriter) {
 	at := &http.Cookie{
 		Name:     "WowHubAccessToken",
 		Value:    "",
@@ -74,7 +74,7 @@ func DeleteCookies(w http.ResponseWriter){
 	oauth := &http.Cookie{
 		Name:     "oauthstate",
 		Value:    "",
-		Expires:  time.Unix(0,0),
+		Expires:  time.Unix(0, 0),
 		HttpOnly: true,
 		Secure:   true,
 		Path:     "/bnet/auth/callback",

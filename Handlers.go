@@ -281,7 +281,7 @@ func HandleGuildRegistration(w http.ResponseWriter, r *http.Request, id int, reg
 
 }
 
-func HandleGuildUpdate(w http.ResponseWriter, r *http.Request, id int, region string, guildstring string){
+func HandleGuildUpdate(w http.ResponseWriter, r *http.Request, id int, region string, guildstring string) {
 
 	split := strings.Split(guildstring, ":")
 	GuildFromRedis := struct {
@@ -299,7 +299,7 @@ func HandleGuildUpdate(w http.ResponseWriter, r *http.Request, id int, region st
 
 	e := Postgres.UpdateGuild(GuildFromRedis.Name, GuildFromRedis.Realm, GuildFromRedis.Region, Guild.Officerrank, Guild.Raiderrank, Guild.Trialrank)
 
-	if e != nil{
+	if e != nil {
 		InterErrorHeader(w, e, "Was not able to update guild", GetStatusCodeByError(e))
 		return
 	}

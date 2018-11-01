@@ -101,9 +101,9 @@ func Execute(query string, args ...interface{}) (sql.Result, error) {
 	return res, err
 }
 
-func QueryExist(query string, args ...interface{}) (bool, error){
+func QueryExist(query string, args ...interface{}) (bool, error) {
 
-	q := "SELECT EXISTS("+query+");"
+	q := "SELECT EXISTS(" + query + ");"
 
 	statement, err := db.Prepare(q)
 	defer statement.Close()
