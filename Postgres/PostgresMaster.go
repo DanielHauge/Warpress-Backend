@@ -20,9 +20,10 @@ func init() {
 		log.WithLocation().WithError(e).Fatal("Could not establish connection to postgres")
 	}
 
-	connectionPool.SetMaxIdleConns(1)
+	connectionPool.SetMaxIdleConns(0)
 	connectionPool.SetMaxOpenConns(5)
-	connectionPool.SetConnMaxLifetime(time.Hour)
+	connectionPool.SetConnMaxLifetime(time.Minute*5)
+
 	db = connectionPool
 
 }

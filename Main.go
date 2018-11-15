@@ -20,7 +20,6 @@ var json = jsoniter.ConfigFastest
 // TODO: CI for stuff
 
 func main() {
-
 	router := NewRouter()
 	handler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:8080", "https://wowhub.io", "https://wowhub.io/", "https://", "https://wowhub.io/*", "https://wowhub.io/#/*"},

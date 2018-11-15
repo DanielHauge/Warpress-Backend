@@ -28,7 +28,7 @@ func generateWarcraftLogs(id int) ([]BossImprovement, error) {
 	if e != nil {
 		log.WithLocation().WithError(e).Error("Hov!")
 	}
-	copier.Copy(logs, interfaceLogs)
+	copier.Copy(&logs, interfaceLogs)
 
 	mapOfCharIds := map[string]int{}
 	for _, value := range logs.Encounters {
